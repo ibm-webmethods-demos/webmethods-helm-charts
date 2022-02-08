@@ -28,26 +28,26 @@ containerPorts:
     protocol: TCP
 
 settings:
-  tenant: tenant1
+  tenant: default
   loadbalancerUrl: ""
   javaMemMin: 1g
   javaMemMax: 1g
   javaOpts: ""
   envConfigs: {}
   envSecretConfigs: {}
-  licenseSecret:
-    name: ""
-    key: ""
-    path: ""
+  licenseSecret: {}
+    # name: ""
+    # key: ""
+    # path: ""
   licensePath: "/opt/softwareag/licenseKey.xml"  
   clustering:
     enabled: true
   elastic:
     uris: "http://es:9200"
     username: elastic
-    passwordSecret:
-      name: ""
-      key: ""
+    passwordSecret: {}
+      # name: ""
+      # key: ""
   waitforelastic:
     enabled: true
     image:
