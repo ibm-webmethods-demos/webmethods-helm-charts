@@ -51,9 +51,9 @@ settings:
   waitforelastic:
     enabled: true
     image:
-      repository: "ubi8-minimal"
+      repository: registry.access.redhat.com/ubi8/ubi-minimal
       pullPolicy: IfNotPresent
-      tag: "latest"
+      tag: latest
 
 configurator:
   enabled: false
