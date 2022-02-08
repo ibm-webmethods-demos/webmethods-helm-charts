@@ -1,0 +1,51 @@
+{{- if .Values.configurator.enabled }}
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: "{{ include "webmethods-devportal.fullname" . }}-configurator"
+  labels:
+    {{- include "webmethods-devportal.labels" . | nindent 4 }}
+  annotations:
+    # This is what defines this resource as a hook. Without this line, the
+    # job is considered part of the release.
+    "helm.sh/hook": post-install,post-upgrade
+    "helm.sh/hook-weight": "1"
+    "helm.sh/hook-delete-policy": before-hook-creation
+spec:
+  backoffLimit: 5
+  activeDeadlineSeconds: 1800
+  template:
+    spec:
+      restartPolicy: Never
+      {{- with .Values.configurator.image.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      containers:
+      - name: "{{ include "webmethods-devportal.fullname" . }}-configurator"
+        image: "{{ .Values.configurator.image.repository }}:{{ .Values.configurator.image.tag | default .Chart.AppVersion }}"
+        imagePullPolicy: {{ .Values.configurator.image.pullPolicy }}
+        {{- if .Values.configurator.verbose }}
+        args: ["-vvv","apply_configs.yaml"]
+        {{- else }}
+        args: ["apply_configs.yaml"]
+        {{- end }}
+        env:
+          {{- with .Values.configurator.envConfigs }}
+          {{- include "webmethods-devportal.dictToEnvs" . | indent 10 }}
+          {{- end }}
+          {{- with .Values.configurator.envSecretConfigs }}
+          {{- include "webmethods-devportal.secretsDictToEnvs" . | indent 10 }}
+          {{- end }}
+          {{- if .Values.configurator.sampleData }}
+          {{- with .Values.configurator.envSampleDataConfigs }}
+          {{- include "webmethods-devportal.secretsDictToEnvs" . | indent 10 }}
+          {{- end }}
+          {{- with .Values.configurator.envSampleDataSecretConfigs }}
+          {{- include "webmethods-devportal.secretsDictToEnvs" . | indent 10 }}
+          {{- end }}
+          {{- end }}
+          {{- with .Values.configurator.env }}
+          {{- toYaml . | nindent 10 }}
+          {{- end }}
+{{- end }}

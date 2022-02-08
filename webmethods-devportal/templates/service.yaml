@@ -1,0 +1,81 @@
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "webmethods-devportal.fullname" . }}
+  labels:
+    {{- include "webmethods-devportal.labels" . | nindent 4 }}
+  {{- with .Values.service.annotations }}
+  annotations:
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
+spec:
+  type: {{ .Values.service.type }}
+  ports:
+    - name: {{ .Values.service.portname | default "http" }}
+      port: {{ .Values.service.port }}
+      protocol: TCP
+  selector:
+    {{- include "webmethods-devportal.selectorLabels" . | nindent 4 }}
+
+---
+
+# Headless Service for embedded ignite clustering
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "webmethods-devportal.fullname.headless" . }}
+  labels:
+    {{- include "webmethods-devportal.labels" . | nindent 4 }}
+  annotations:
+    service.alpha.kubernetes.io/tolerate-unready-endpoints: "true"
+spec:
+  type: ClusterIP
+  clusterIP: None
+  sessionAffinity: None
+  # Create endpoints even if the related pod isn't ready
+  publishNotReadyAddresses: true
+  ports:
+    - name: ignite-port-one
+      port: 47500
+      protocol: TCP
+      targetPort: 47500
+    - name: ignite-port-two
+      port: 47501
+      protocol: TCP
+      targetPort: 47501
+    - name: ignite-port-three
+      port: 47502
+      protocol: TCP
+      targetPort: 47502
+    - name: ignite-port-four
+      port: 47503
+      protocol: TCP
+      targetPort: 47503
+    - name: ignite-port-five
+      port: 47504
+      protocol: TCP
+      targetPort: 47504
+    - name: ignite-port-six
+      port: 47505
+      protocol: TCP
+      targetPort: 47505
+    - name: ignite-port-seven
+      port: 47506
+      protocol: TCP
+      targetPort: 47506
+    - name: ignite-port-eight
+      port: 47507
+      protocol: TCP
+      targetPort: 47507
+    - name: ignite-port-nine
+      port: 47508
+      protocol: TCP
+      targetPort: 47508
+    - name: ignite-port-ten
+      port: 47509
+      protocol: TCP
+      targetPort: 47509
+  selector:
+    {{- include "webmethods-devportal.selectorLabels" . | nindent 4 }}
+    role: clustercore

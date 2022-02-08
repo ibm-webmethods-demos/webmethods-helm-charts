@@ -1,0 +1,9 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  labels:
+    {{- include "webmethods-apigateway.labels" . | nindent 4 }}
+  name: {{ include "webmethods-apigateway.fullname" . }}
+data:
+  gateway_full.yml: |
+    {{- toYaml .Values.config | nindent 4 }}

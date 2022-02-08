@@ -1,0 +1,211 @@
+{{- $replicas := int (toString (.Values.replicaCount)) }}
+{{- if gt $replicas 3 }}
+{{- $replicas = 3 }}
+{{- end }}
+---
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: {{ include "webmethods-devportal.fullname" . }}
+  labels:
+    {{- include "webmethods-devportal.labels" . | nindent 4 }}
+    role: clustercore
+spec:
+  serviceName: {{ include "webmethods-devportal.fullname.headless" . }}
+  replicas: {{ $replicas }}
+  # The default is to deploy all pods serially. By setting this to parallel all pods are started at
+  # the same time when bootstrapping the cluster
+  podManagementPolicy: "Parallel"
+  updateStrategy:
+    type: RollingUpdate
+    rollingUpdate: 
+      partition: 0
+  selector:
+    matchLabels:
+      {{- include "webmethods-devportal.selectorLabels" . | nindent 6 }}
+      role: clustercore
+  template:
+    metadata:
+      {{- with .Values.podAnnotations }}
+      annotations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      labels:
+        {{- include "webmethods-devportal.selectorLabels" . | nindent 8 }}
+        role: clustercore
+    spec:
+      {{- with .Values.image.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      serviceAccountName: {{ include "webmethods-devportal.serviceAccountName" . }}
+      securityContext:
+        {{- toYaml .Values.podSecurityContext | nindent 8 }}
+      initContainers:
+        - name: wait-for-es
+          image: "{{ .Values.settings.waitforelastic.image.repository }}:{{ .Values.settings.waitforelastic.image.tag | default .Chart.AppVersion }}"
+          imagePullPolicy: {{ .Values.settings.waitforelastic.image.pullPolicy }}
+          env:
+            {{- if .Values.settings.elastic.uris }}
+            - name: ELASTIC_URI
+              value: "{{ .Values.settings.elastic.uris }}"
+            {{- end }}
+            {{- if .Values.settings.elastic.username }}
+            - name: ELASTIC_USERNAME
+              value: "{{ .Values.settings.elastic.username }}"
+            {{- end }}
+            {{- if .Values.settings.elastic.passwordSecret.name }}
+            - name: ELASTIC_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: "{{ .Values.settings.elastic.passwordSecret.name }}"
+                  key: "{{ .Values.settings.elastic.passwordSecret.key }}"
+            {{- end }}
+          command:
+            - sh
+            - -c
+            - |
+              #!/bin/sh -e
+              http () {
+                  local path="${1}"
+                  if [ -n "${ELASTIC_USERNAME}" ] && [ -n "${ELASTIC_PASSWORD}" ]; then
+                    BASIC_AUTH="-u ${ELASTIC_USERNAME}:${ELASTIC_PASSWORD}"
+                  else
+                    BASIC_AUTH=''
+                  fi
+                  curl -XGET -s -k --fail ${BASIC_AUTH} ${ELASTIC_URI}${path}
+              }
+
+              until http "/_cluster/health?wait_for_status=green&timeout=1s"; do
+                  echo "waiting for Elasticsearch..."
+                  sleep 10;
+              done
+              echo ""
+              echo "Elasticsearch available!"
+              exit 0;
+        {{- with .Values.initContainers }}
+        {{- toYaml . | nindent 8 }}
+        {{- end }}
+      containers:
+        - name: {{ include "webmethods-devportal.fullname" . }}
+          securityContext:
+            {{- toYaml .Values.securityContext | nindent 12 }}
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          {{- with .Values.containerPorts }}
+          ports:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+          startupProbe:
+            failureThreshold: 20
+            periodSeconds: 15
+            exec:
+              command:
+              - /bin/bash
+              - ./healthcheck.sh
+          readinessProbe:
+            successThreshold: 1
+            failureThreshold: 2
+            periodSeconds: 10
+            timeoutSeconds: 5
+            exec:
+              command:
+              - /bin/bash
+              - ./healthcheck.sh
+          livenessProbe:
+            successThreshold: 1
+            failureThreshold: 4
+            periodSeconds: 15
+            timeoutSeconds: 5
+            exec:
+              command:
+              - /bin/bash
+              - ./healthcheck.sh
+          resources:
+            {{- with .Values.resources }}
+            {{- toYaml . | nindent 12 }}
+            {{- end }}
+          env:
+            {{- if .Values.settings.javaMemMin }}
+            - name: JAVA_MIN_MEM
+              value: "{{ .Values.settings.javaMemMin }}"
+            {{- end }}
+            {{- if .Values.settings.javaMemMax }}
+            - name: JAVA_MAX_MEM
+              value: "{{ .Values.settings.javaMemMax }}"
+            {{- end }}
+            {{- if .Values.settings.javaOpts }}
+            - name: JAVA_OPTS
+              value: "{{ .Values.settings.javaOpts }}"
+            {{- end }}
+            {{- if .Values.settings.tenant }}
+            - name: PORTAL_SERVER_CONFIG_TENANT
+              value: "{{ .Values.settings.tenant }}"
+            {{- end }}
+            {{- if .Values.settings.licensePath }}
+            - name: PORTAL_SERVER_CONFIG_LICENSE
+              value: "{{ .Values.settings.licensePath }}"
+            {{- end }}
+            {{- if .Values.settings.elastic.uris }}
+            - name: SPRING_ELASTICSEARCH_REST_URIS
+              value: "{{ .Values.settings.elastic.uris }}"
+            {{- end }}
+            {{- if .Values.settings.elastic.username }}
+            - name: SPRING_ELASTICSEARCH_REST_USERNAME
+              value: "{{ .Values.settings.elastic.username }}"
+            {{- end }}
+            {{- if .Values.settings.elastic.passwordSecret.name }}
+            - name: SPRING_ELASTICSEARCH_REST_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: "{{ .Values.settings.elastic.passwordSecret.name }}"
+                  key: "{{ .Values.settings.elastic.passwordSecret.key }}"
+            {{- end }}
+            {{- if .Values.settings.loadbalancerUrl }}
+            - name: PORTAL_SERVER_UMC_LB_URL
+              value: "{{ .Values.settings.loadbalancerUrl }}"
+            {{- end }}
+            {{- include "webmethods-devportal.dpo_endpoints_envs" . | indent 12 }}
+            {{- with .Values.settings.envConfigs }}
+            {{- include "webmethods-devportal.dictToEnvs" . | indent 12 }}
+            {{- end }}
+            {{- with .Values.settings.envSecretConfigs }}
+            {{- include "webmethods-devportal.secretsDictToEnvs" . | indent 12 }}
+            {{- end }}
+            {{- with .Values.settings.env }}
+            {{- toYaml . | nindent 12 }}
+            {{- end }}
+          volumeMounts:
+            {{- if .Values.settings.licenseSecret }}
+            - name: apiportal-license
+              mountPath: {{ .Values.settings.licensePath }}
+              subPath: {{ .Values.settings.licenseSecret.path }}
+              readOnly: true
+            {{- end }}
+            {{- with .Values.volumeMounts }}
+            {{- toYaml . | nindent 12 }}
+            {{- end }}
+      volumes:
+      {{- if .Values.settings.licenseSecret }}
+      - name: apiportal-license
+        secret:
+          secretName: {{ .Values.settings.licenseSecret.name }}
+          items:
+          - key: {{ .Values.settings.licenseSecret.key }}
+            path: {{ .Values.settings.licenseSecret.path }}
+      {{- end }}
+      {{- with .Values.volumes }}
+      {{- toYaml . | nindent 6 }}
+      {{- end }}
+      {{- with .Values.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}

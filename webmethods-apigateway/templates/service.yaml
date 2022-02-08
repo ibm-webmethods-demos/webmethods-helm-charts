@@ -1,0 +1,38 @@
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "webmethods-apigateway.fullname" . }}-gwruntime
+  labels:
+    {{- include "webmethods-apigateway.labels" . | nindent 4 }}
+  {{- with .Values.service.gwruntime.annotations }}
+  annotations:
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
+spec:
+  type: {{ .Values.service.gwruntime.type }}
+  ports:
+    - port: {{ .Values.service.gwruntime.port }}
+      protocol: TCP
+      name: gwruntime
+  selector:
+    {{- include "webmethods-apigateway.selectorLabels" . | nindent 4 }}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "webmethods-apigateway.fullname" . }}-gwui
+  labels:
+    {{- include "webmethods-apigateway.labels" . | nindent 4 }}
+  {{- with .Values.service.gwui.annotations }}
+  annotations:
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
+spec:
+  type: {{ .Values.service.gwui.type }}
+  ports:
+    - port: {{ .Values.service.gwui.port }}
+      protocol: TCP
+      name: gwui
+  selector:
+    {{- include "webmethods-apigateway.selectorLabels" . | nindent 4 }}

@@ -1,0 +1,15 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: "{{ include "webmethods-terracotta.fullname" . }}-test-connection"
+  labels:
+    {{- include "webmethods-terracotta.labels" . | nindent 4 }}
+  annotations:
+    "helm.sh/hook": test
+spec:
+  containers:
+    - name: wget
+      image: busybox
+      command: ['wget']
+      args: ['{{ include "webmethods-terracotta.fullname" . }}:{{ .Values.service.port }}']
+  restartPolicy: Never
