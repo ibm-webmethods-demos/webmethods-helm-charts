@@ -1,6 +1,6 @@
 apiVersion: v2
 name: webmethods-devportal
-description: A Helm chart for webMethods Devloper Portal
+description: A Helm chart for webMethods Developer Portal
 
 # A chart can be either an 'application' or a 'library' chart.
 #

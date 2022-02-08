@@ -29,10 +29,10 @@ containerPorts:
 
 settings:
   tenant: default
-  loadbalancerUrl: ""
-  javaMemMin: 1g
-  javaMemMax: 1g
-  javaOpts: ""
+  loadbalancerUrl:
+  javaMemMin: 512m
+  javaMemMax: 512m
+  javaOpts:
   envConfigs: {}
   envSecretConfigs: {}
   licenseSecret: {}
