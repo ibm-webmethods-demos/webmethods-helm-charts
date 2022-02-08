@@ -11,5 +11,5 @@ spec:
     - name: wget
       image: busybox
       command: ['wget']
-      args: ['{{ include "webmethods-terracotta.fullname" . }}:{{ .Values.service.port }}']
+      args: ['{{ include "webmethods-terracotta.fullname" . }}.{{ include "webmethods-terracotta.fullname" . }}-hl:9530']
   restartPolicy: Never
