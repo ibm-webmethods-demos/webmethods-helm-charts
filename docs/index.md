@@ -4,7 +4,7 @@ This is a Helm Charts repository for the container images provided and maintaine
 
 ### For more info on Software AG Government Solutions container images:
 
-The webMethods containers provided by Software AG Government Solutions are ***security-enhanced and maintained*** containers with the following highlights:
+The webMethods containers provided by Software AG Government Solutions are ***security-enhanced and continuously maintained*** containers with the following highlights:
 
 - Hardened Container base images sourced from Iron Bank for extra security,
 - Continuously updated with latest OS fix levels,
@@ -12,7 +12,7 @@ The webMethods containers provided by Software AG Government Solutions are ***se
 - Extra configuration capabilities for easier deployment into various container platforms,
 - Availability of Sample blueprint deployments
 
-Product images are currently hosted in Software AG Government Solutions ***protected*** registry at: [ghcr.io/softwareag-government-solutions/](https://github.com/orgs/softwareag-government-solutions/packages)
+Product images are currently hosted in ***Software AG Government Solutions protected registry*** at: [ghcr.io/softwareag-government-solutions/](https://github.com/orgs/softwareag-government-solutions/packages)
 
 To request access, contact Software AG Government Solutions at ***info@softwareaggov.com***
 
