@@ -14,10 +14,20 @@ This is a Helm Charts repository for the containers provided and maintained by S
 helm repo add saggov-helm-charts https://softwareag-government-solutions.github.io/saggov-helm-charts
 ```
 
+### Verify
+
+```bash
+helm search repo webmethods-devportal
+helm search repo webmethods-apigateway
+helm search repo webmethods-terracotta
+```
+
 ### Deploy the charts
 
 ```
 helm install webmethods-devportal saggov-helm-charts/webmethods-devportal
+helm install webmethods-devportal saggov-helm-charts/webmethods-apigateway
+helm install webmethods-devportal saggov-helm-charts/webmethods-terracotta
 ```
 
 ### Support or Contact
