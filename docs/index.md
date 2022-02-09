@@ -49,7 +49,7 @@ helm install webmethods-terracotta saggov-helm-charts/webmethods-terracotta
 
 ## Support or Contact
 
-Having trouble with these charts? Please submit an issue, right here, on github!
+Having trouble with these charts? Please submit an issue, right here, on GitHub!
 
 Also, please refer to our blue-print sample deployments project at [webmethods-container-deployments](https://github.com/softwareag-government-solutions/webmethods-container-deployments)
 
