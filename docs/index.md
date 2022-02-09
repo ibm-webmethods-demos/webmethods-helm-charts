@@ -1,37 +1,32 @@
-## Welcome to GitHub Pages
+## Helm Charts by SoftwareAG Government Solutions
 
-You can use the [editor on GitHub](https://github.com/softwareag-government-solutions/saggov-helm-charts/edit/gh-pages/index.md) to maintain and preview the content for your website in Markdown files.
+This is a Helm Charts repository for the containers provided and maintained by Software AG Government Solutions
 
-Whenever you commit to this repository, GitHub Pages will run [Jekyll](https://jekyllrb.com/) to rebuild the pages in your site, from the content in your Markdown files.
+### Current charts
 
-### Markdown
+- saggov-helm-charts/webmethods-apigateway
+- saggov-helm-charts/webmethods-devportal
+- saggov-helm-charts/webmethods-terracotta
 
-Markdown is a lightweight and easy-to-use syntax for styling your writing. It includes conventions for
+### Install the repo
 
-```markdown
-Syntax highlighted code block
-
-# Header 1
-## Header 2
-### Header 3
-
-- Bulleted
-- List
-
-1. Numbered
-2. List
-
-**Bold** and _Italic_ and `Code` text
-
-[Link](url) and ![Image](src)
+```bash
+helm repo add saggov-helm-charts https://softwareag-government-solutions.github.io/saggov-helm-charts
 ```
 
-For more details see [Basic writing and formatting syntax](https://docs.github.com/en/github/writing-on-github/getting-started-with-writing-and-formatting-on-github/basic-writing-and-formatting-syntax).
+### Deploy the charts
 
-### Jekyll Themes
-
-Your Pages site will use the layout and styles from the Jekyll theme you have selected in your [repository settings](https://github.com/softwareag-government-solutions/saggov-helm-charts/settings/pages). The name of this theme is saved in the Jekyll `_config.yml` configuration file.
+```
+helm install webmethods-devportal saggov-helm-charts/webmethods-devportal
+```
 
 ### Support or Contact
 
-Having trouble with Pages? Check out our [documentation](https://docs.github.com/categories/github-pages-basics/) or [contact support](https://support.github.com/contact) and we’ll help you sort it out.
+Having trouble with these charts? Please submit an issue, right here, on github!
+______________________
+Also, please refer to our blue-print sample deployments project at [webmethods-container-deployments](https://github.com/softwareag-government-solutions/webmethods-container-deployments)
+______________________
+For more information on the SoftwareAG products, you can Ask a Question in the [TECHcommunity Forums](http://tech.forums.softwareag.com).
+You can also find additional information in the [Software AG TECHcommunity](http://techcommunity.softwareag.com).
+______________________
+Finally, for access and other general question, contact Software AG Government Solutions at info@softwareaggov.com 
