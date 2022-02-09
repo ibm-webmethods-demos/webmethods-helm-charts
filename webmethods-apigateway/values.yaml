@@ -99,7 +99,7 @@ serviceAccount:
 
 podAnnotations: {}
 
-podSecurityContext: {}
+podSecurityContext:
   runAsUser: 1724
   runAsGroup: 1724
   fsGroup: 1724
