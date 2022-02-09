@@ -1,6 +1,6 @@
 ## Helm Charts by SoftwareAG Government Solutions
 
-This is a Helm Charts repository for the containers provided and maintained by Software AG Government Solutions
+This is a Helm Charts repository for the containers provided and maintained by [Software AG Government Solutions](https://www.softwareaggov.com)
 
 ### Current charts
 
@@ -36,7 +36,8 @@ Having trouble with these charts? Please submit an issue, right here, on github!
 
 Also, please refer to our blue-print sample deployments project at [webmethods-container-deployments](https://github.com/softwareag-government-solutions/webmethods-container-deployments)
 
-For more information on the SoftwareAG products, you can Ask a Question in the [TECHcommunity Forums](http://tech.forums.softwareag.com).
-You can also find additional information in the [Software AG TECHcommunity](http://techcommunity.softwareag.com).
+For more information on the SoftwareAG products:
+ - You can Ask a Question in the [TECHcommunity Forums](http://tech.forums.softwareag.com).
+ - You can also find additional information in the [Software AG TECHcommunity](http://techcommunity.softwareag.com).
 
 Finally, for access and other general question, contact Software AG Government Solutions at info@softwareaggov.com 
