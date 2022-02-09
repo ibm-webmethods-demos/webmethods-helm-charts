@@ -1,6 +1,20 @@
 ## Helm Charts by SoftwareAG Government Solutions
 
-This is a Helm Charts repository for the containers provided and maintained by [Software AG Government Solutions](https://www.softwareaggov.com)
+This is a Helm Charts repository for the container images provided and maintained by [Software AG Government Solutions](https://www.softwareaggov.com)
+
+### For more info on Software AG Government Solutions container images:
+
+The webMethods containers provided by Software AG Government Solutions are ***security-enhanced and maintained*** containers with the following highlights:
+
+- Hardened Container base images sourced from Iron Bank for extra security,
+- Continuously updated with latest OS fix levels,
+- Continuously updated with latest SoftwareAG product fix levels,
+- Extra configuration capabilities for easier deployment into various container platforms,
+- Availability of Sample blueprint deployments
+
+Product images are currently hosted in Software AG Government Solutions ***protected*** registry at: [ghcr.io/softwareag-government-solutions/](https://github.com/orgs/softwareag-government-solutions/packages)
+
+To request access, contact Software AG Government Solutions at ***info@softwareaggov.com***
 
 ### Install the Chart Repo
 
@@ -43,4 +57,4 @@ For more information on the SoftwareAG products:
  - You can Ask a Question in the [TECHcommunity Forums](http://tech.forums.softwareag.com).
  - You can also find additional information in the [Software AG TECHcommunity](http://techcommunity.softwareag.com).
 
-Finally, for access and other general question, contact Software AG Government Solutions at info@softwareaggov.com 
+Finally, for access and other general question, contact Software AG Government Solutions at ***info@softwareaggov.com***
