@@ -2,19 +2,22 @@
 
 This is a Helm Charts repository for the containers provided and maintained by [Software AG Government Solutions](https://www.softwareaggov.com)
 
-### Current charts
-
-- saggov-helm-charts/webmethods-apigateway
-- saggov-helm-charts/webmethods-devportal
-- saggov-helm-charts/webmethods-terracotta
-
-### Install the repo
+### Install the Chart Repo
 
 ```bash
 helm repo add saggov-helm-charts https://softwareag-government-solutions.github.io/saggov-helm-charts
 ```
 
-### Verify
+### Charts for SoftwareAG API Management
+
+- saggov-helm-charts/webmethods-apigateway
+- saggov-helm-charts/webmethods-devportal
+- saggov-helm-charts/webmethods-terracotta
+
+Helm Charts sample deployments can be specifically found at: [webmethods API Management in Kubernetes](https://github.com/softwareag-government-solutions/webmethods-container-deployments/tree/main/kubernetes/api_management/)
+
+
+#### Verify availability in your cluster
 
 ```bash
 helm search repo webmethods-devportal
@@ -22,7 +25,7 @@ helm search repo webmethods-apigateway
 helm search repo webmethods-terracotta
 ```
 
-### Deploy the charts
+#### Deploy the charts
 
 ```
 helm install webmethods-devportal saggov-helm-charts/webmethods-devportal
@@ -30,7 +33,7 @@ helm install webmethods-apigateway saggov-helm-charts/webmethods-apigateway
 helm install webmethods-terracotta saggov-helm-charts/webmethods-terracotta
 ```
 
-### Support or Contact
+## Support or Contact
 
 Having trouble with these charts? Please submit an issue, right here, on github!
 
