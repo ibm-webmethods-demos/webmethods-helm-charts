@@ -26,17 +26,17 @@ helm search repo webmethods-terracotta
 
 ```
 helm install webmethods-devportal saggov-helm-charts/webmethods-devportal
-helm install webmethods-devportal saggov-helm-charts/webmethods-apigateway
-helm install webmethods-devportal saggov-helm-charts/webmethods-terracotta
+helm install webmethods-apigateway saggov-helm-charts/webmethods-apigateway
+helm install webmethods-terracotta saggov-helm-charts/webmethods-terracotta
 ```
 
 ### Support or Contact
 
 Having trouble with these charts? Please submit an issue, right here, on github!
-______________________
+
 Also, please refer to our blue-print sample deployments project at [webmethods-container-deployments](https://github.com/softwareag-government-solutions/webmethods-container-deployments)
-______________________
+
 For more information on the SoftwareAG products, you can Ask a Question in the [TECHcommunity Forums](http://tech.forums.softwareag.com).
 You can also find additional information in the [Software AG TECHcommunity](http://techcommunity.softwareag.com).
-______________________
+
 Finally, for access and other general question, contact Software AG Government Solutions at info@softwareaggov.com 
