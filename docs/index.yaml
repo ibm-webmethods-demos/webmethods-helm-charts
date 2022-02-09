@@ -1,0 +1,36 @@
+apiVersion: v1
+entries:
+  webmethods-apigateway:
+  - apiVersion: v2
+    appVersion: 10.x.x
+    created: "2022-02-09T12:36:36.180265-05:00"
+    description: A Helm chart for Kubernetes
+    digest: 88a4ec7f041e850763504eb34cf288630960078d7b49fe74fb28dc4a6eab4996
+    name: webmethods-apigateway
+    type: application
+    urls:
+    - https://softwareag-government-solutions.github.io/saggov-helm-charts/webmethods-apigateway-0.1.9.tgz
+    version: 0.1.9
+  webmethods-devportal:
+  - apiVersion: v2
+    appVersion: 10.11.x
+    created: "2022-02-09T12:36:36.18367-05:00"
+    description: A Helm chart for webMethods Developer Portal
+    digest: 6d7a969126a2084bf752c53b6e887e0baa1eeaff7a62386be74ba6a8b5b41a4a
+    name: webmethods-devportal
+    type: application
+    urls:
+    - https://softwareag-government-solutions.github.io/saggov-helm-charts/webmethods-devportal-0.0.1.tgz
+    version: 0.0.1
+  webmethods-terracotta:
+  - apiVersion: v2
+    appVersion: 4.3.x
+    created: "2022-02-09T12:36:36.184526-05:00"
+    description: A Helm chart for SoftwareAG Terracotta v4
+    digest: f2e4f3b72ef5a6dea1b2b24351e25b01ae900a05dfbb95a7847223385f05bec3
+    name: webmethods-terracotta
+    type: application
+    urls:
+    - https://softwareag-government-solutions.github.io/saggov-helm-charts/webmethods-terracotta-0.1.11.tgz
+    version: 0.1.11
+generated: "2022-02-09T12:36:36.174913-05:00"
