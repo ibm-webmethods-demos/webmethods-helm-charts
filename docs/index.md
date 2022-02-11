@@ -1,6 +1,7 @@
 ## Helm Charts by Software AG Government Solutions
 
-This is a Helm Charts repository for the Software AG Product Container Images provided and maintained by [Software AG Government Solutions](https://www.softwareaggov.com)
+This is a Helm Charts repository for the Software AG Product Container Images provided and maintained by [Software AG Government Solutions](https://www.softwareaggov.com).
+
 For more information on these containers, go to: [Product Containers by Software AG Government Solutions](https://softwareag-government-solutions.github.io/saggov-containers/)
 
 ### Install the Chart Repo
