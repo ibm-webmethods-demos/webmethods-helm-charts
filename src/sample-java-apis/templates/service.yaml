@@ -1,0 +1,13 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "webmethods-sample-apis.fullname" . }}
+  labels:
+    {{- include "webmethods-sample-apis.labels" . | nindent 4 }}
+spec:
+  type: {{ .Values.service.type }}
+  ports:
+    - name: {{ .Values.service.portname | default "http" }}
+      port: {{ .Values.service.port }}
+  selector:
+    {{- include "webmethods-sample-apis.selectorLabels" . | nindent 4 }}
