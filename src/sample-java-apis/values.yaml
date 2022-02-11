@@ -20,8 +20,8 @@ service:
 
 # app specifics
 appPort: 7071
-appContextPath:
-appHealthCheckPath:
+appContextPath: ""
+appHealthCheckPath: ""
 appHealthCheckHeaders: []           
 
 livenessProbe:

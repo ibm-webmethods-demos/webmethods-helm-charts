@@ -31,25 +31,25 @@ spec:
         - name: {{ .Chart.Name }}
           securityContext:
             {{- toYaml .Values.securityContext | nindent 12 }}
-          image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
+          image: {{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           ports:
-            - containerPort: 7071
-          {{- with .Values.livenessProbe }}
+            - containerPort: {{ .Values.appPort }}
           livenessProbe:
             httpGet:
-              path: {{- printf "%s/%s" .Values.appContextPath .Values.appHealthCheckPath }}
+              path: {{ printf "%s/%s" .Values.appContextPath .Values.appHealthCheckPath }}
               port: {{ .Values.service.port }}
               {{- with .Values.appHealthCheckHeaders }}
               httpHeaders:
                 {{- toYaml . | nindent 16 }}
               {{- end }}
+            {{- with .Values.livenessProbe }}
             successThreshold: {{ .successThreshold }}
             failureThreshold: {{ .failureThreshold }}
             initialDelaySeconds: {{ .initialDelaySeconds }}
             periodSeconds: {{ .periodSeconds }}
             timeoutSeconds: {{ .timeoutSeconds }}
-          {{- end }}
+            {{- end }}
           {{- with .Values.resources }}
           resources:
             {{- toYaml . | nindent 12 }}
