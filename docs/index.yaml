@@ -3,7 +3,17 @@ entries:
   sample-java-apis:
   - apiVersion: v2
     appVersion: 1.0.0
-    created: "2022-02-10T23:13:41.847192-05:00"
+    created: "2022-02-10T23:51:14.753494-05:00"
+    description: A Helm chart for sample java apis
+    digest: 229988745d7582939ce31f2f8db4accedc039f63239627bf744442e0261f4d99
+    name: sample-java-apis
+    type: application
+    urls:
+    - sample-java-apis-0.0.2.tgz
+    version: 0.0.2
+  - apiVersion: v2
+    appVersion: 1.0.0
+    created: "2022-02-10T23:51:14.753036-05:00"
     description: A Helm chart for sample java apis
     digest: 3adfa9f13349ce0f09369d4ba8320f9b0909e334b9d29f067d7db8e3cd0940c3
     name: sample-java-apis
@@ -14,7 +24,17 @@ entries:
   webmethods-apigateway:
   - apiVersion: v2
     appVersion: 10.x.x
-    created: "2022-02-10T23:13:41.847855-05:00"
+    created: "2022-02-10T23:51:14.754172-05:00"
+    description: A Helm chart for Kubernetes
+    digest: fd753b8b2c4800c522dfca302e3db10a1915469a1a9c5d85ba2bb23de774e61d
+    name: webmethods-apigateway
+    type: application
+    urls:
+    - webmethods-apigateway-0.1.10.tgz
+    version: 0.1.10
+  - apiVersion: v2
+    appVersion: 10.x.x
+    created: "2022-02-10T23:51:14.754802-05:00"
     description: A Helm chart for Kubernetes
     digest: 2fccca95b0da6112ddbf4b4c0ca6c7b3ceced1b029de13ed07b080d51ad42dfd
     name: webmethods-apigateway
@@ -25,7 +45,17 @@ entries:
   webmethods-devportal:
   - apiVersion: v2
     appVersion: 10.11.x
-    created: "2022-02-10T23:13:41.848643-05:00"
+    created: "2022-02-10T23:51:14.756331-05:00"
+    description: A Helm chart for webMethods Developer Portal
+    digest: 6afd51508b0bc6ecdd688b134f696ed6327639f4c91a73f44265693f253c645e
+    name: webmethods-devportal
+    type: application
+    urls:
+    - webmethods-devportal-0.0.2.tgz
+    version: 0.0.2
+  - apiVersion: v2
+    appVersion: 10.11.x
+    created: "2022-02-10T23:51:14.75555-05:00"
     description: A Helm chart for webMethods Developer Portal
     digest: 2a866abfbc5f408eee5a69c586c7372b6e094990afd8d9d06ed62d07baf3ae8b
     name: webmethods-devportal
@@ -36,7 +66,17 @@ entries:
   webmethods-terracotta:
   - apiVersion: v2
     appVersion: 4.3.x
-    created: "2022-02-10T23:13:41.849193-05:00"
+    created: "2022-02-10T23:51:14.758159-05:00"
+    description: A Helm chart for SoftwareAG Terracotta v4
+    digest: 63bf29a2f693acab34d9720b00ef9892c57a7f5608d491293c163a62b2e63b2d
+    name: webmethods-terracotta
+    type: application
+    urls:
+    - webmethods-terracotta-0.1.12.tgz
+    version: 0.1.12
+  - apiVersion: v2
+    appVersion: 4.3.x
+    created: "2022-02-10T23:51:14.757632-05:00"
     description: A Helm chart for SoftwareAG Terracotta v4
     digest: 304659bc4f3bc5347f7d3f0e1d14b451fdfa750967c6ff8752f48d3e9d8fe70a
     name: webmethods-terracotta
@@ -44,4 +84,4 @@ entries:
     urls:
     - webmethods-terracotta-0.1.11.tgz
     version: 0.1.11
-generated: "2022-02-10T23:13:41.846575-05:00"
+generated: "2022-02-10T23:51:14.752317-05:00"
