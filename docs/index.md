@@ -1,11 +1,11 @@
-## Helm Charts by SoftwareAG Government Solutions
+## Helm Charts by Software AG Government Solutions
 
 This is a Helm Charts repository for the container images provided and maintained by [Software AG Government Solutions](https://www.softwareaggov.com)
 
 ### For more info on Software AG Government Solutions container images:
 
 The webMethods containers provided by Software AG Government Solutions are ***security-enhanced and continuously maintained*** containers. 
-For more information, go to: [Product Containers by SoftwareAG Government Solutions](https://softwareag-government-solutions.github.io/saggov-containers/)
+For more information, go to: [Product Containers by Software AG Government Solutions](https://softwareag-government-solutions.github.io/saggov-containers/)
 
 ### Install the Chart Repo
 
@@ -13,7 +13,7 @@ For more information, go to: [Product Containers by SoftwareAG Government Soluti
 helm repo add saggov-helm-charts https://softwareag-government-solutions.github.io/saggov-helm-charts
 ```
 
-### Charts for SoftwareAG API Management
+### Charts for Software AG API Management
 
 - saggov-helm-charts/webmethods-apigateway
 - saggov-helm-charts/webmethods-devportal
@@ -53,7 +53,7 @@ Having trouble with these charts? Please submit an issue, right here, on GitHub!
 
 Also, please refer to our blue-print sample deployments project at [webmethods-container-deployments](https://github.com/softwareag-government-solutions/webmethods-container-deployments)
 
-For more information on the SoftwareAG products:
+For more information on the Software AG products:
  - You can Ask a Question in the [TECHcommunity Forums](http://tech.forums.softwareag.com).
  - You can also find additional information in the [Software AG TECHcommunity](http://techcommunity.softwareag.com).
 
