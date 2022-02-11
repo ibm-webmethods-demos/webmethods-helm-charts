@@ -1,89 +1,35 @@
-# Default values for webmethods-devportal.
+# Default values for webmethods-sample-apis.
 # This is a YAML-formatted file.
 # Declare variables to be passed into your templates.
 
 replicaCount: 1
 
+image:
+  repository: nginx
+  pullPolicy: IfNotPresent
+  # Overrides the image tag whose default is the chart appVersion.
+  tag: ""
+
+imagePullSecrets: []
 nameOverride: ""
 fullnameOverride: ""
 
-image:
-  repository: ghcr.io/softwareag-government-solutions/webmethods-devportal
-  pullPolicy: IfNotPresent
-  # Overrides the image tag whose default is the chart appVersion.
-  tag: dev-10.11-latest
-  imagePullSecrets: []
-
 service:
   type: ClusterIP
-  port: 18101
-  annotations: {}
+  port: 7071
 
-containerPorts:
-  - containerPort: 18101
-    name: httpui
-    protocol: TCP
-  - containerPort: 18102
-    name: httpsui
-    protocol: TCP
-
-settings:
-  tenant: default
-  loadbalancerUrl:
-  javaMemMin: 512m
-  javaMemMax: 512m
-  javaOpts:
-  envConfigs: {}
-  envSecretConfigs: {}
-  licenseSecret: {}
-    # name: ""
-    # key: ""
-    # path: ""
-  licensePath: "/opt/softwareag/licenseKey.xml"  
-  clustering:
-    enabled: true
-  elastic:
-    uris: "http://es:9200"
-    username: elastic
-    passwordSecret: {}
-      # name: ""
-      # key: ""
-  waitforelastic:
-    enabled: true
-    image:
-      repository: registry.access.redhat.com/ubi8/ubi-minimal
-      pullPolicy: IfNotPresent
-      tag: latest
-
-startupProbe:
-  failureThreshold: 60
-  periodSeconds: 15
-
-readinessProbe:
-  successThreshold: 1
-  failureThreshold: 2
-  periodSeconds: 10
-  timeoutSeconds: 5
+# app specifics
+appPort: 7071
+appContextPath:
+appHealthCheckPath:
+appHealthCheckHeaders: []           
 
 livenessProbe:
-  successThreshold: 1
+  successThreshold: 2
   failureThreshold: 4
-  periodSeconds: 15
-  timeoutSeconds: 5
-
-configurator:
-  enabled: false
-  verbose: false
-  sampleData: false
-  image:
-    repository: ""
-    pullPolicy: IfNotPresent
-    tag: ""
-    imagePullSecrets: []
-  envConfigs: {}
-  envSecretConfigs: {}
-  envSampleDataConfigs: {}
-  envSampleDataSecretConfigs: {}
+  periodSeconds: 10
+  timeoutSeconds: 3
+  initialDelaySeconds: 20
 
 serviceAccount:
   # Specifies whether a service account should be created
