@@ -58,3 +58,6 @@ For more information on the SoftwareAG products:
  - You can also find additional information in the [Software AG TECHcommunity](http://techcommunity.softwareag.com).
 
 Finally, for access and other general question, contact Software AG Government Solutions at ***info@softwareaggov.com***
+
+______________________
+These Charts are provided as-is and without warranty or support. They do not constitute part of the Software AG product suite. Users are free to use, fork and modify them, subject to the license agreement. While Software AG Government Solutions welcomes contributions, we cannot guarantee to include every contribution in the master project.
