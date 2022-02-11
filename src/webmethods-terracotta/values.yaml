@@ -5,7 +5,8 @@
 replicaCount: 1
 
 image:
-  repository: ghcr.io/softwareag-government-solutions/webmethods-terracotta
+  registry: ghcr.io/softwareag-government-solutions
+  repository: webmethods-terracotta
   pullPolicy: IfNotPresent
   # Overrides the image tag whose default is the chart appVersion.
   tag: dev-4.3-latest

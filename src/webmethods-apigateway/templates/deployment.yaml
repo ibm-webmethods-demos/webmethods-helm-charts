@@ -36,7 +36,11 @@ spec:
         - name: {{ .Chart.Name }}
           securityContext:
             {{- toYaml .Values.securityContext | nindent 12 }}
-          image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
+          {{- if .Values.image.registry }}
+          image: {{ printf "%s/%s:%s" .Values.image.registry .Values.image.repository (.Values.image.tag | default .Chart.AppVersion) }}
+          {{- else }}
+          image: {{ printf "%s:%s" .Values.image.repository (.Values.image.tag | default .Chart.AppVersion) }}
+          {{- end }}
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           {{- with .Values.containerPorts }}
           ports:
@@ -73,21 +77,17 @@ spec:
             - name: wm-derbydb-volume
               mountPath: /opt/softwareag/IntegrationServer/instances/default/db
               subPath: wmderbydb
-            {{- if .Values.apigwLicense }}
-            {{- with .Values.apigwLicense.licenseSecret }}
+            {{- if .Values.apigwLicenseSecret }}
             - name: apigateway-license
-              mountPath: {{ .Values.apigwLicense.licenseMountPath }}
+              mountPath: /opt/softwareag/IntegrationServer/instances/default/config/licenseKey.xml
               subPath: {{ .path }}
               readOnly: false
             {{- end }}
-            {{- end }}
-            {{- if .Values.apigwTerracottaLicense }}
-            {{- with .Values.apigwTerracottaLicense.licenseSecret }}
+            {{- if .Values.apigwTerracottaLicenseSecret }}
             - name: terracotta-license
-              mountPath: {{ .Values.apigwTerracottaLicense.licenseMountPath }}
+              mountPath: /opt/softwareag/common/conf/terracotta-license.key
               subPath: {{ .path }}
               readOnly: false
-            {{- end }}
             {{- end }}
       volumes:
       - name: configs-volume
@@ -96,8 +96,7 @@ spec:
       - name: wm-derbydb-volume
         emptyDir:
           sizeLimit: 5Gi
-      {{- if .Values.apigwLicense }}
-      {{- with .Values.apigwLicense.licenseSecret }}
+      {{- with .Values.apigwLicenseSecret }}
       - name: apigateway-license
         secret:
           secretName: {{ .name }}
@@ -105,16 +104,13 @@ spec:
           - key: {{ .key }}
             path: {{ .path }}
       {{- end }}
-      {{- end }}
-      {{- if .Values.apigwTerracottaLicense }}
-      {{- with .Values.apigwTerracottaLicense.licenseSecret }}
+      {{- with .Values.apigwTerracottaLicenseSecret }}
       - name: terracotta-license
         secret:
           secretName: {{ .name }}
           items:
           - key: {{ .key }}
             path: {{ .path }}
-      {{- end }}
       {{- end }}
       {{- with .Values.nodeSelector }}
       nodeSelector:

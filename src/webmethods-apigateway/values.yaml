@@ -5,7 +5,8 @@
 replicaCount: 1
 
 image:
-  repository: ghcr.io/softwareag-government-solutions/webmethods-apigateway
+  registry: ghcr.io/softwareag-government-solutions
+  repository: webmethods-apigateway
   pullPolicy: IfNotPresent
   # Overrides the image tag whose default is the chart appVersion.
   tag: dev-10.11-latest
@@ -68,19 +69,15 @@ config:
       autostart: false
 
 # the licensing needed for the product
-apigwLicense:
-  licenseSecret: {}
-    # name: ""
-    # key: ""
-    # path: ""
-  licenseMountPath: /opt/softwareag/IntegrationServer/instances/default/config/licenseKey.xml
+apigwLicenseSecret: {}
+  # name: ""
+  # key: ""
+  # path: ""
 
-apigwTerracottaLicense:
-  licenseSecret: {}
-    # name: ""
-    # key: ""
-    # path: ""
-  licenseMountPath: /opt/softwareag/common/conf/terracotta-license.key
+apigwTerracottaLicenseSecret: {}
+  # name: ""
+  # key: ""
+  # path: ""
 
 configurator:
   enabled: false

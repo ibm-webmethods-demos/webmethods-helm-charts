@@ -42,6 +42,7 @@ spec:
       securityContext:
         {{- toYaml .Values.podSecurityContext | nindent 8 }}
       initContainers:
+        {{- if .Values.settings.waitforelastic.enabled }}
         - name: wait-for-es
           image: "{{ .Values.settings.waitforelastic.image.repository }}:{{ .Values.settings.waitforelastic.image.tag | default .Chart.AppVersion }}"
           imagePullPolicy: {{ .Values.settings.waitforelastic.image.pullPolicy }}
@@ -83,6 +84,7 @@ spec:
               echo ""
               echo "Elasticsearch available!"
               exit 0;
+        {{- end }}
         {{- with .Values.initContainers }}
         {{- toYaml . | nindent 8 }}
         {{- end }}
@@ -90,7 +92,11 @@ spec:
         - name: {{ include "webmethods-devportal.fullname" . }}
           securityContext:
             {{- toYaml .Values.securityContext | nindent 12 }}
-          image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
+          {{- if .Values.image.registry }}
+          image: {{ printf "%s/%s:%s" .Values.image.registry .Values.image.repository (.Values.image.tag | default .Chart.AppVersion) }}
+          {{- else }}
+          image: {{ printf "%s:%s" .Values.image.repository (.Values.image.tag | default .Chart.AppVersion) }}
+          {{- end }}
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           {{- with .Values.containerPorts }}
           ports:
