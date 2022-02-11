@@ -27,6 +27,7 @@ helm repo add saggov-helm-charts https://softwareag-government-solutions.github.
 - saggov-helm-charts/webmethods-apigateway
 - saggov-helm-charts/webmethods-devportal
 - saggov-helm-charts/webmethods-terracotta
+- saggov-helm-charts/sample-java-apis
 
 Helm Charts sample deployments can be specifically found at: [webmethods API Management in Kubernetes](https://github.com/softwareag-government-solutions/webmethods-container-deployments/tree/main/kubernetes/api_management/)
 
@@ -34,17 +35,25 @@ Helm Charts sample deployments can be specifically found at: [webmethods API Man
 #### Verify availability in your cluster
 
 ```bash
-helm search repo webmethods-devportal
+helm search repo <chart_name>
+```
+
+ie.
+
+```bash
 helm search repo webmethods-apigateway
-helm search repo webmethods-terracotta
 ```
 
 #### Deploy the charts
 
+```bash
+helm install <name> saggov-helm-charts/<chart_name>
 ```
-helm install webmethods-devportal saggov-helm-charts/webmethods-devportal
+
+ie.
+
+```
 helm install webmethods-apigateway saggov-helm-charts/webmethods-apigateway
-helm install webmethods-terracotta saggov-helm-charts/webmethods-terracotta
 ```
 
 ## Support or Contact

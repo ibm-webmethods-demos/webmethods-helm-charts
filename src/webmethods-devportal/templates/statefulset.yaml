@@ -42,6 +42,7 @@ spec:
       securityContext:
         {{- toYaml .Values.podSecurityContext | nindent 8 }}
       initContainers:
+        {{- if .Values.settings.waitforelastic.enabled }}
         - name: wait-for-es
           image: "{{ .Values.settings.waitforelastic.image.repository }}:{{ .Values.settings.waitforelastic.image.tag | default .Chart.AppVersion }}"
           imagePullPolicy: {{ .Values.settings.waitforelastic.image.pullPolicy }}
@@ -83,6 +84,7 @@ spec:
               echo ""
               echo "Elasticsearch available!"
               exit 0;
+        {{- end }}
         {{- with .Values.initContainers }}
         {{- toYaml . | nindent 8 }}
         {{- end }}
@@ -90,41 +92,60 @@ spec:
         - name: {{ include "webmethods-devportal.fullname" . }}
           securityContext:
             {{- toYaml .Values.securityContext | nindent 12 }}
-          image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
+          {{- if .Values.image.registry }}
+          image: {{ printf "%s/%s:%s" .Values.image.registry .Values.image.repository (.Values.image.tag | default .Chart.AppVersion) }}
+          {{- else }}
+          image: {{ printf "%s:%s" .Values.image.repository (.Values.image.tag | default .Chart.AppVersion) }}
+          {{- end }}
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           {{- with .Values.containerPorts }}
           ports:
             {{- toYaml . | nindent 12 }}
           {{- end }}
+          {{- with .Values.startupProbe }}
+          {{- if .enabled }}
           startupProbe:
-            failureThreshold: 20
-            periodSeconds: 15
+            failureThreshold: {{ .failureThreshold }}
+            periodSeconds: {{ .periodSeconds }}
+            timeoutSeconds: {{ .timeoutSeconds }}
             exec:
               command:
-              - /bin/bash
-              - ./healthcheck.sh
+                - /bin/bash
+                - ./healthcheck.sh
+          {{- end }}
+          {{- end }}
+          {{- with .Values.readinessProbe }}
+          {{- if .enabled }}
           readinessProbe:
-            successThreshold: 1
-            failureThreshold: 2
-            periodSeconds: 10
-            timeoutSeconds: 5
+            successThreshold: {{ .successThreshold }}
+            failureThreshold: {{ .failureThreshold }}
+            initialDelaySeconds: {{ .initialDelaySeconds }}
+            periodSeconds: {{ .periodSeconds }}
+            timeoutSeconds: {{ .timeoutSeconds }}
             exec:
               command:
-              - /bin/bash
-              - ./healthcheck.sh
+                - /bin/bash
+                - ./healthcheck.sh
+          {{- end }}
+          {{- end }}
+          {{- with .Values.livenessProbe }}
+          {{- if .enabled }}
           livenessProbe:
-            successThreshold: 1
-            failureThreshold: 4
-            periodSeconds: 15
-            timeoutSeconds: 5
+            successThreshold: {{ .successThreshold }}
+            failureThreshold: {{ .failureThreshold }}
+            initialDelaySeconds: {{ .initialDelaySeconds }}
+            periodSeconds: {{ .periodSeconds }}
+            timeoutSeconds: {{ .timeoutSeconds }}
             exec:
               command:
-              - /bin/bash
-              - ./healthcheck.sh
+                - /bin/bash
+                - ./healthcheck.sh
+          {{- end }}
+          {{- end }}
+          {{- with .Values.resources }}
           resources:
-            {{- with .Values.resources }}
             {{- toYaml . | nindent 12 }}
-            {{- end }}
+          {{- end }}
           env:
             {{- if .Values.settings.javaMemMin }}
             - name: JAVA_MIN_MEM
