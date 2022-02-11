@@ -56,16 +56,22 @@ settings:
       tag: latest
 
 startupProbe:
-  failureThreshold: 60
+  enabled: true
+  failureThreshold: 20
   periodSeconds: 15
+  timeoutSeconds: 5
 
 readinessProbe:
+  enabled: true
+  initialDelaySeconds: 10
   successThreshold: 1
   failureThreshold: 2
   periodSeconds: 10
   timeoutSeconds: 5
 
 livenessProbe:
+  enabled: true
+  initialDelaySeconds: 10
   successThreshold: 1
   failureThreshold: 4
   periodSeconds: 15

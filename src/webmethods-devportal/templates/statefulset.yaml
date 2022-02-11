@@ -96,35 +96,50 @@ spec:
           ports:
             {{- toYaml . | nindent 12 }}
           {{- end }}
+          {{- with .Values.startupProbe }}
+          {{- if .enabled }}
           startupProbe:
-            failureThreshold: 20
-            periodSeconds: 15
+            failureThreshold: {{ .failureThreshold }}
+            periodSeconds: {{ .periodSeconds }}
+            timeoutSeconds: {{ .timeoutSeconds }}
             exec:
               command:
-              - /bin/bash
-              - ./healthcheck.sh
+                - /bin/bash
+                - ./healthcheck.sh
+          {{- end }}
+          {{- end }}
+          {{- with .Values.readinessProbe }}
+          {{- if .enabled }}
           readinessProbe:
-            successThreshold: 1
-            failureThreshold: 2
-            periodSeconds: 10
-            timeoutSeconds: 5
+            successThreshold: {{ .successThreshold }}
+            failureThreshold: {{ .failureThreshold }}
+            initialDelaySeconds: {{ .initialDelaySeconds }}
+            periodSeconds: {{ .periodSeconds }}
+            timeoutSeconds: {{ .timeoutSeconds }}
             exec:
               command:
-              - /bin/bash
-              - ./healthcheck.sh
+                - /bin/bash
+                - ./healthcheck.sh
+          {{- end }}
+          {{- end }}
+          {{- with .Values.livenessProbe }}
+          {{- if .enabled }}
           livenessProbe:
-            successThreshold: 1
-            failureThreshold: 4
-            periodSeconds: 15
-            timeoutSeconds: 5
+            successThreshold: {{ .successThreshold }}
+            failureThreshold: {{ .failureThreshold }}
+            initialDelaySeconds: {{ .initialDelaySeconds }}
+            periodSeconds: {{ .periodSeconds }}
+            timeoutSeconds: {{ .timeoutSeconds }}
             exec:
               command:
-              - /bin/bash
-              - ./healthcheck.sh
+                - /bin/bash
+                - ./healthcheck.sh
+          {{- end }}
+          {{- end }}
+          {{- with .Values.resources }}
           resources:
-            {{- with .Values.resources }}
             {{- toYaml . | nindent 12 }}
-            {{- end }}
+          {{- end }}
           env:
             {{- if .Values.settings.javaMemMin }}
             - name: JAVA_MIN_MEM
