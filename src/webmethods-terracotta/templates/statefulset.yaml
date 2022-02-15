@@ -140,9 +140,9 @@ spec:
           {{- end }}
           {{- with .Values.licenseSecret }}
             - name: terracotta-license
-              mountPath: {{ .Values.licenseMountPath }}
-              subPath: {{ .path }}
-              readOnly: false
+              mountPath: /opt/softwareag/Terracotta/
+              # subPath: {{ .path }}
+              readOnly: true
           {{- end }}
       volumes:
       {{- with .Values.licenseSecret }}
