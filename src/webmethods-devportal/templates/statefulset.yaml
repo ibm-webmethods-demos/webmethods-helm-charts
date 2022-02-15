@@ -44,7 +44,11 @@ spec:
       initContainers:
         {{- if .Values.settings.waitforelastic.enabled }}
         - name: wait-for-es
-          image: "{{ .Values.settings.waitforelastic.image.repository }}:{{ .Values.settings.waitforelastic.image.tag | default .Chart.AppVersion }}"
+          {{- if .Values.settings.waitforelastic.image.registry }}
+          image: {{ printf "%s/%s:%s" .Values.settings.waitforelastic.image.registry .Values.settings.waitforelastic.image.repository (.Values.settings.waitforelastic.image.tag | default .Chart.AppVersion) }}
+          {{- else }}
+          image: {{ printf "%s:%s" .Values.settings.waitforelastic.image.repository (.Values.settings.waitforelastic.image.tag | default .Chart.AppVersion) }}
+          {{- end }}
           imagePullPolicy: {{ .Values.settings.waitforelastic.image.pullPolicy }}
           env:
             {{- if .Values.settings.elastic.uris }}
