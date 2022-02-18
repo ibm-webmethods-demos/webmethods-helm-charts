@@ -88,3 +88,19 @@ Transform Secrets Dictionary into ENV array
       key: {{ $value.key | quote }}
 {{- end }}
 {{- end }}
+
+{{/*
+the name of the gw ui service
+*/}}
+{{- define "webmethods-apigateway.gwuiFullname" -}}
+{{- $uname := (include "webmethods-apigateway.fullname" .) }}
+{{- printf "%s-%s" $uname "gwui" }}
+{{- end }}
+
+{{/*
+the name of the gw runtime service
+*/}}
+{{- define "webmethods-apigateway.gwruntimeFullname" -}}
+{{- $uname := (include "webmethods-apigateway.fullname" .) }}
+{{- printf "%s-%s" $uname "gwruntime" }}
+{{- end }}

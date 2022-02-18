@@ -1,13 +1,90 @@
-{{- if .Values.ingress.enabled -}}
-{{- $fullName := include "webmethods-apigateway.fullname" . -}}
-{{- $svcPort := .Values.service.gwruntime.port -}}
-{{- if semverCompare ">=1.19-0" .Capabilities.KubeVersion.GitVersion -}}
+---
+{{- if .Values.ingress.gwruntime.enabled -}}
+{{- $uname := (include "webmethods-apigateway.gwruntimeFullname" .) }}
+{{- $port := .Values.service.gwruntime.port }}
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
-  name: {{ $fullName }}
+  name: {{ $uname }}
   labels:
     {{- include "webmethods-apigateway.labels" . | nindent 4 }}
+  {{- with .Values.ingress.gwruntime.annotations }}
+  annotations:
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
+spec:
+  {{- if .Values.ingress.gwruntime.tls }}
+  tls:
+    {{- range .Values.ingress.gwruntime.tls }}
+    - hosts:
+        {{- range .hosts }}
+        - {{ . | quote }}
+        {{- end }}
+      secretName: {{ .secretName }}
+    {{- end }}
+  {{- end }}
+  rules:
+    - host: {{ .Values.ingress.gwruntime.host | quote }}
+      http:
+        paths:
+          {{- range .Values.ingress.gwruntime.paths }}
+          - path: {{ .path | quote }}
+            pathType: {{ .pathType | quote }}
+            backend:
+              service:
+                name: {{ $uname }}
+                port:
+                  number: {{ $port }}
+          {{- end }}
+{{- end }}
+---
+{{- if .Values.ingress.gwui.enabled -}}
+{{- $uname := (include "webmethods-apigateway.gwuiFullname" .) }}
+{{- $port := .Values.service.gwui.port }}
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: {{ $uname }}
+  labels:
+    {{- include "webmethods-apigateway.labels" . | nindent 4 }}
+  {{- with .Values.ingress.gwui.annotations }}
+  annotations:
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
+spec:
+  {{- if .Values.ingress.gwui.tls }}
+  tls:
+    {{- range .Values.ingress.gwui.tls }}
+    - hosts:
+        {{- range .hosts }}
+        - {{ . | quote }}
+        {{- end }}
+      secretName: {{ .secretName }}
+    {{- end }}
+  {{- end }}
+  rules:
+    - host: {{ .Values.ingress.gwui.host | quote }}
+      http:
+        paths:
+          {{- range .Values.ingress.gwui.paths }}
+          - path: {{ .path | quote }}
+            pathType: {{ .pathType | quote }}
+            backend:
+              service:
+                name: {{ $uname }}
+                port:
+                  number: {{ $port }}
+          {{- end }}
+{{- end }}
+---
+{{- if .Values.ingress.custom.enabled -}}
+{{- $uname := (include "webmethods-apigateway.fullname" .) }}
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: {{ $uname }}
+  labels:
+    {{- include "webmethods-devportal.labels" . | nindent 4 }}
   {{- with .Values.ingress.annotations }}
   annotations:
     {{- toYaml . | nindent 4 }}
@@ -33,48 +110,9 @@ spec:
             pathType: {{ .pathType | quote }}
             backend:
               service:
-                name: {{ .backendServiceName | default $fullName }}
+                name: {{ .backendServiceName }}
                 port:
-                  number: {{ .backendServicePort | default $svcPort }}
+                  number: {{ .backendServicePort }}
           {{- end }}
     {{- end }}
-{{- else -}}
-{{- if semverCompare ">=1.14-0" .Capabilities.KubeVersion.GitVersion -}}
-apiVersion: networking.k8s.io/v1beta1
-{{- else -}}
-apiVersion: extensions/v1beta1
-{{- end }}
-kind: Ingress
-metadata:
-  name: {{ $fullName }}
-  labels:
-    {{- include "webmethods-apigateway.labels" . | nindent 4 }}
-  {{- with .Values.ingress.annotations }}
-  annotations:
-    {{- toYaml . | nindent 4 }}
-  {{- end }}
-spec:
-  {{- if .Values.ingress.tls }}
-  tls:
-    {{- range .Values.ingress.tls }}
-    - hosts:
-        {{- range .hosts }}
-        - {{ . | quote }}
-        {{- end }}
-      secretName: {{ .secretName }}
-    {{- end }}
-  {{- end }}
-  rules:
-    {{- range .Values.ingress.hosts }}
-    - host: {{ .host | quote }}
-      http:
-        paths:
-          {{- range .paths }}
-          - path: {{ .path | quote }}
-            backend:
-              serviceName: {{ .backendServiceName | default $fullName }}
-              servicePort: {{ .backendServicePort | default $svcPort }}
-          {{- end }}
-    {{- end }}
-  {{- end }}
-{{- end }}
+{{- end -}}
