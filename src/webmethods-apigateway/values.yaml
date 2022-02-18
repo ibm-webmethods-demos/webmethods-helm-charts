@@ -44,10 +44,27 @@ containerPorts:
     name: gwuissl
     protocol: TCP
 
+## config templates to aid in setup (possible values: standalone, clustered_terracotta, clustered_ignite)
+configs_templates: standalone
+
+configs_clustered_terracotta:
+  tsaUrls: ""
+
+configs_clustered_ignite:
+  hostnames: ""
+  discoveryPort: 47100
+  communicationPort: 47500
+  portRange: 5
+
 # external configs
-config:
+configs: {}
+
+#### common blocks to help with config building
+configs_default_elasticsearch:
   apigw:
     elasticsearch:
+      tenantId: apigateway
+      hosts: set_via_env_eshost1
       autostart: false
       http:
         keepAlive: true
@@ -58,6 +75,12 @@ config:
         maxRetryTimeout: 100000
       https:
         enabled: false
+        enforceHostnameVerification: false
+        # keystoreFilepath: "{{ webmethods_apigateway_keystore_filepath }}"
+        # truststoreFilepath: "{{ webmethods_apigateway_truststore_filepath }}"
+        # keystoreAlias: "{{ webmethods_apigateway_keystore_keyalias }}"
+        # keystorePassword: "{{ webmethods_apigateway_keystore_password }}"
+        # truststorePassword: "{{ webmethods_apigateway_truststore_password }}"
       sniff:
         enable: false
         timeInterval: 1000
@@ -65,8 +88,34 @@ config:
         enabled: false
         alias: somealias
       clientHttpResponseSize: 1001231
+
+configs_default_kibana:
+  apigw:
     kibana:
-      autostart: false
+      dashboardInstance: http://localhost:9405
+      autostart: true
+
+configs_default_clustering_terracotta:
+  apigw:
+    cluster:
+      aware: true
+      name: APIGatewayCluster
+      sessTimeout: 60
+      actionOnStartupError: shutdown
+      tsaUrls: set_via_env_tsa1:9510,set_via_env_tsa2:9510
+
+configs_default_clustering_ignite:
+  apigw:
+    cluster:
+      aware: true
+      name: APIGatewayCluster
+      sessTimeout: 60
+      actionOnStartupError: shutdown
+      ignite:
+        hostnames: set_via_env_apigwserver1,set_via_env_apigwserver2
+        discoveryPort: 47100
+        communicationPort: 47500
+        portRange: 5
 
 # the licensing needed for the product
 apigwLicenseSecret: {}

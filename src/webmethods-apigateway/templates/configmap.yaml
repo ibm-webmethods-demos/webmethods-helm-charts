@@ -5,5 +5,7 @@ metadata:
     {{- include "webmethods-apigateway.labels" . | nindent 4 }}
   name: {{ include "webmethods-apigateway.fullname" . }}
 data:
-  gateway_full.yml: |
+  {{- if .Values.config }}
+  common_settings.yml: |
     {{- toYaml .Values.config | nindent 4 }}
+  {{- end }}
