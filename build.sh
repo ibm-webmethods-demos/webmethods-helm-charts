@@ -10,7 +10,8 @@ helm package -u -d build/ src/*
 helm repo index --merge docs/index.yaml build/
 
 ## copy new index ot the final repo location
-cp -f build/index.yaml docs
+cp -f build/index.yaml docs/
+cp -f build/*.tgz docs/
 
 ## clean up
 rm -Rf build/
