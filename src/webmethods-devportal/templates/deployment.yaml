@@ -159,10 +159,6 @@ spec:
             - name: PORTAL_SERVER_CONFIG_TENANT
               value: "{{ .Values.settings.tenant }}"
             {{- end }}
-            {{- if .Values.settings.licensePath }}
-            - name: PORTAL_SERVER_CONFIG_LICENSE
-              value: "{{ .Values.settings.licensePath }}"
-            {{- end }}
             {{- if .Values.settings.elastic.uris }}
             - name: SPRING_ELASTICSEARCH_REST_URIS
               value: "{{ .Values.settings.elastic.uris }}"
@@ -182,6 +178,10 @@ spec:
             - name: PORTAL_SERVER_UMC_LB_URL
               value: "{{ .Values.settings.loadbalancerUrl }}"
             {{- end }}
+            {{- if .Values.licenseSecret }}
+            - name: PORTAL_SERVER_CONFIG_LICENSE
+              value: /opt/softwareag/licenseKey.xml
+            {{- end }}
             {{- include "webmethods-devportal.dpo_endpoints_envs" . | indent 12 }}
             {{- with .Values.settings.envConfigs }}
             {{- include "webmethods-devportal.dictToEnvs" . | indent 12 }}
@@ -194,8 +194,8 @@ spec:
             {{- end }}
           volumeMounts:
             {{- if .Values.licenseSecret }}
-            - name: apiportal-license
-              mountPath: {{ .Values.settings.licensePath }}
+            - name: devportal-license
+              mountPath: /opt/softwareag/licenseKey.xml
               subPath: {{ .Values.licenseSecret.path }}
               readOnly: true
             {{- end }}
@@ -204,7 +204,7 @@ spec:
             {{- end }}
       volumes:
       {{- if .Values.licenseSecret }}
-      - name: apiportal-license
+      - name: devportal-license
         secret:
           secretName: {{ .Values.licenseSecret.name }}
           items:
