@@ -80,11 +80,13 @@ spec:
             {{- if .Values.licenseSecret }}
             - name: apigateway-license
               mountPath: /opt/softwareag/IntegrationServer/instances/default/config/licenseKey.xml
+              subPath: {{ .Values.licenseSecret.path }}
               readOnly: false
             {{- end }}
             {{- if .Values.licenseTerracottaSecret }}
             - name: terracotta-license
               mountPath: /opt/softwareag/common/conf/terracotta-license.key
+              subPath: {{ .Values.licenseTerracottaSecret.path }}
               readOnly: false
             {{- end }}
       volumes:
