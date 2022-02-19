@@ -193,23 +193,23 @@ spec:
             {{- toYaml . | nindent 12 }}
             {{- end }}
           volumeMounts:
-            {{- if .Values.settings.licenseSecret }}
+            {{- if .Values.licenseSecret }}
             - name: apiportal-license
               mountPath: {{ .Values.settings.licensePath }}
-              subPath: {{ .Values.settings.licenseSecret.path }}
+              subPath: {{ .Values.licenseSecret.path }}
               readOnly: true
             {{- end }}
             {{- with .Values.volumeMounts }}
             {{- toYaml . | nindent 12 }}
             {{- end }}
       volumes:
-      {{- if .Values.settings.licenseSecret }}
+      {{- if .Values.licenseSecret }}
       - name: apiportal-license
         secret:
-          secretName: {{ .Values.settings.licenseSecret.name }}
+          secretName: {{ .Values.licenseSecret.name }}
           items:
-          - key: {{ .Values.settings.licenseSecret.key }}
-            path: {{ .Values.settings.licenseSecret.path }}
+          - key: {{ .Values.licenseSecret.key }}
+            path: {{ .Values.licenseSecret.path }}
       {{- end }}
       {{- with .Values.volumes }}
       {{- toYaml . | nindent 6 }}

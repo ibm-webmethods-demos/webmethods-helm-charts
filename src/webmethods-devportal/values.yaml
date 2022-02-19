@@ -43,7 +43,6 @@ settings:
   javaOpts:
   envConfigs: {}
   envSecretConfigs: {}
-  licensePath: "/opt/softwareag/licenseKey.xml"  
   clustering:
     enabled: true
   elastic:

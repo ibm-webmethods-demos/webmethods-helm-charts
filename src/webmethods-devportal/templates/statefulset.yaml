@@ -167,10 +167,6 @@ spec:
             - name: PORTAL_SERVER_CONFIG_TENANT
               value: "{{ .Values.settings.tenant }}"
             {{- end }}
-            {{- if .Values.settings.licensePath }}
-            - name: PORTAL_SERVER_CONFIG_LICENSE
-              value: "{{ .Values.settings.licensePath }}"
-            {{- end }}
             {{- if .Values.settings.elastic.uris }}
             - name: SPRING_ELASTICSEARCH_REST_URIS
               value: "{{ .Values.settings.elastic.uris }}"
@@ -190,6 +186,10 @@ spec:
             - name: PORTAL_SERVER_UMC_LB_URL
               value: "{{ .Values.settings.loadbalancerUrl }}"
             {{- end }}
+            {{- if .Values.licenseSecret }}
+            - name: PORTAL_SERVER_CONFIG_LICENSE
+              value: /opt/softwareag/licenseKey.xml
+            {{- end }}
             {{- include "webmethods-devportal.dpo_endpoints_envs" . | indent 12 }}
             {{- with .Values.settings.envConfigs }}
             {{- include "webmethods-devportal.dictToEnvs" . | indent 12 }}
@@ -201,23 +201,23 @@ spec:
             {{- toYaml . | nindent 12 }}
             {{- end }}
           volumeMounts:
-            {{- if .Values.settings.licenseSecret }}
+            {{- if .Values.licenseSecret }}
             - name: devportal-license
-              mountPath: {{ .Values.settings.licensePath }}
-              subPath: {{ .Values.settings.licenseSecret.path }}
+              mountPath: /opt/softwareag/licenseKey.xml
+              subPath: {{ .Values.licenseSecret.path }}
               readOnly: true
             {{- end }}
             {{- with .Values.volumeMounts }}
             {{- toYaml . | nindent 12 }}
             {{- end }}
       volumes:
-      {{- if .Values.settings.licenseSecret }}
+      {{- if .Values.licenseSecret }}
       - name: devportal-license
         secret:
-          secretName: {{ .Values.settings.licenseSecret.name }}
+          secretName: {{ .Values.licenseSecret.name }}
           items:
-          - key: {{ .Values.settings.licenseSecret.key }}
-            path: {{ .Values.settings.licenseSecret.path }}
+          - key: {{ .Values.licenseSecret.key }}
+            path: {{ .Values.licenseSecret.path }}
       {{- end }}
       {{- with .Values.volumes }}
       {{- toYaml . | nindent 6 }}
