@@ -1,5 +1,7 @@
 #!/bin/bash
 
+## NOTE: this build process is useful so the created date/time field only change for the new and updated charts (and remains the same for the old ones)
+
 ## create build dir
 mkdir -p build/
 
