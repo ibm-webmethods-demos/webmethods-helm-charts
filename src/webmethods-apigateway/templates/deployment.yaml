@@ -79,7 +79,7 @@ spec:
               subPath: wmderbydb
             {{- if .Values.licenseSecret }}
             - name: apigateway-license
-              mountPath: /opt/softwareag/IntegrationServer/instances/default/config
+              mountPath: /opt/softwareag/IntegrationServer/instances/default/config/licenseKey.xml
               readOnly: false
             {{- end }}
             {{- if .Values.licenseTerracottaSecret }}
@@ -100,7 +100,6 @@ spec:
           secretName: {{ .name }}
           items:
           - key: {{ .key }}
-            path: {{ .path }}
       {{- end }}
       {{- with .Values.licenseTerracottaSecret }}
       - name: terracotta-license
@@ -108,7 +107,6 @@ spec:
           secretName: {{ .name }}
           items:
           - key: {{ .key }}
-            path: {{ .path }}
       {{- end }}
       {{- with .Values.nodeSelector }}
       nodeSelector:
