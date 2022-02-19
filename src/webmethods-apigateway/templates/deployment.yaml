@@ -77,13 +77,13 @@ spec:
             - name: wm-derbydb-volume
               mountPath: /opt/softwareag/IntegrationServer/instances/default/db
               subPath: wmderbydb
-            {{- if .Values.apigwLicenseSecret }}
+            {{- if .Values.licenseSecret }}
             - name: apigateway-license
               mountPath: /opt/softwareag/IntegrationServer/instances/default/config/licenseKey.xml
               subPath: {{ .path }}
               readOnly: false
             {{- end }}
-            {{- if .Values.apigwTerracottaLicenseSecret }}
+            {{- if .Values.licenseTerracottaSecret }}
             - name: terracotta-license
               mountPath: /opt/softwareag/common/conf/terracotta-license.key
               subPath: {{ .path }}
@@ -96,7 +96,7 @@ spec:
       - name: wm-derbydb-volume
         emptyDir:
           sizeLimit: 5Gi
-      {{- with .Values.apigwLicenseSecret }}
+      {{- with .Values.licenseSecret }}
       - name: apigateway-license
         secret:
           secretName: {{ .name }}
@@ -104,7 +104,7 @@ spec:
           - key: {{ .key }}
             path: {{ .path }}
       {{- end }}
-      {{- with .Values.apigwTerracottaLicenseSecret }}
+      {{- with .Values.licenseTerracottaSecret }}
       - name: terracotta-license
         secret:
           secretName: {{ .name }}

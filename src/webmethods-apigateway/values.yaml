@@ -123,12 +123,12 @@ configs_default_clustering_ignite:
         portRange: 5
 
 # the licensing needed for the product
-apigwLicenseSecret: {}
+licenseSecret: {}
   # name: ""
   # key: ""
   # path: ""
 
-apigwTerracottaLicenseSecret: {}
+licenseTerracottaSecret: {}
   # name: ""
   # key: ""
   # path: ""

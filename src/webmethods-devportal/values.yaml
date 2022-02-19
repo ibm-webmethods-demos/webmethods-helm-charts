@@ -29,6 +29,12 @@ containerPorts:
     name: httpsui
     protocol: TCP
 
+# the licensing needed for the product
+licenseSecret: {}
+  # name: ""
+  # key: ""
+  # path: ""
+
 settings:
   tenant: default
   loadbalancerUrl:
@@ -37,10 +43,6 @@ settings:
   javaOpts:
   envConfigs: {}
   envSecretConfigs: {}
-  licenseSecret: {}
-    # name: ""
-    # key: ""
-    # path: ""
   licensePath: "/opt/softwareag/licenseKey.xml"  
   clustering:
     enabled: true
