@@ -26,7 +26,7 @@ spec:
         {{- include "webmethods-devportal.selectorLabels" . | nindent 8 }}
         role: clustersatellites
     spec:
-      {{- with .Values.image.imagePullSecrets }}
+      {{- with .Values.imagePullSecrets }}
       imagePullSecrets:
         {{- toYaml . | nindent 8 }}
       {{- end }}

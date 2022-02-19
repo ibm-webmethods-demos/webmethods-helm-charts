@@ -4,17 +4,18 @@
 
 replicaCount: 1
 
-nameOverride: ""
-fullnameOverride: ""
-
 image:
   registry: ghcr.io/softwareag-government-solutions
   repository: webmethods-devportal
   pullPolicy: IfNotPresent
   # Overrides the image tag whose default is the chart appVersion.
   tag: dev-10.11-latest
-  imagePullSecrets: []
 
+## image pull secrets
+imagePullSecrets: []
+
+nameOverride: ""
+fullnameOverride: ""
 service:
   type: ClusterIP
   port: 18101

@@ -34,7 +34,7 @@ spec:
         {{- include "webmethods-devportal.selectorLabels" . | nindent 8 }}
         role: clustercore
     spec:
-      {{- with .Values.image.imagePullSecrets }}
+      {{- with .Values.imagePullSecrets }}
       imagePullSecrets:
         {{- toYaml . | nindent 8 }}
       {{- end }}
