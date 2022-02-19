@@ -3,9 +3,9 @@ entries:
   sample-java-apis:
   - apiVersion: v2
     appVersion: 1.0.0
-    created: "2022-02-10T23:51:14.753494-05:00"
+    created: "2022-02-19T16:12:19.693155-05:00"
     description: A Helm chart for sample java apis
-    digest: 229988745d7582939ce31f2f8db4accedc039f63239627bf744442e0261f4d99
+    digest: ba1f7cd04271370494a8c3c23de45b5de1573f68c7958f4843e5e5235c9ef5b1
     name: sample-java-apis
     type: application
     urls:
@@ -22,6 +22,16 @@ entries:
     - sample-java-apis-0.0.1.tgz
     version: 0.0.1
   webmethods-apigateway:
+  - apiVersion: v2
+    appVersion: 10.x.x
+    created: "2022-02-19T16:12:19.69381-05:00"
+    description: A Helm chart for Kubernetes
+    digest: 5ec4d195f836f0196057f484f38bb18a717c49dd9c0098048336ab9101f534b6
+    name: webmethods-apigateway
+    type: application
+    urls:
+    - webmethods-apigateway-0.1.12-1.tgz
+    version: 0.1.12-1
   - apiVersion: v2
     appVersion: 10.x.x
     created: "2022-02-10T23:51:14.754172-05:00"
@@ -45,6 +55,16 @@ entries:
   webmethods-devportal:
   - apiVersion: v2
     appVersion: 10.11.x
+    created: "2022-02-19T16:12:19.694325-05:00"
+    description: A Helm chart for webMethods Developer Portal
+    digest: c65945e347c20d449f1a0cf25c0e066e63b27cef2a5b53d9905f3b334031560d
+    name: webmethods-devportal
+    type: application
+    urls:
+    - webmethods-devportal-0.0.3-1.tgz
+    version: 0.0.3-1
+  - apiVersion: v2
+    appVersion: 10.11.x
     created: "2022-02-10T23:51:14.756331-05:00"
     description: A Helm chart for webMethods Developer Portal
     digest: 6afd51508b0bc6ecdd688b134f696ed6327639f4c91a73f44265693f253c645e
@@ -66,9 +86,9 @@ entries:
   webmethods-terracotta:
   - apiVersion: v2
     appVersion: 4.3.x
-    created: "2022-02-10T23:51:14.758159-05:00"
+    created: "2022-02-19T16:12:19.69471-05:00"
     description: A Helm chart for SoftwareAG Terracotta v4
-    digest: 63bf29a2f693acab34d9720b00ef9892c57a7f5608d491293c163a62b2e63b2d
+    digest: 40f6518a5f365702dc079d33a67c55c95cb41e872b9ce5ebbd24e7c97a8627c6
     name: webmethods-terracotta
     type: application
     urls:
@@ -84,4 +104,4 @@ entries:
     urls:
     - webmethods-terracotta-0.1.11.tgz
     version: 0.1.11
-generated: "2022-02-10T23:51:14.752317-05:00"
+generated: "2022-02-19T16:12:19.692697-05:00"
