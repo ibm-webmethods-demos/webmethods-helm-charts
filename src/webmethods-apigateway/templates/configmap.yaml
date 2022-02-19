@@ -5,10 +5,14 @@ metadata:
     {{- include "webmethods-apigateway.labels" . | nindent 4 }}
   name: {{ include "webmethods-apigateway.fullname" . }}
 data:
-  {{- if .Values.config }}
+  {{- if .Values.fullConfigs }}
   full.yml: |
-    {{- toYaml .Values.config | nindent 4 }}
+    {{- toYaml .Values.fullConfigs | nindent 4 }}
   {{- else }}
+  {{- if .Values.commonConfigs }}
+  common.yml: |
+    {{- toYaml .Values.commonConfigs | nindent 4 }}
+  {{- end }}
   {{- if include "webmethods-apigateway.isClusteringIgnite" .Values.clusteringType }}
   clustering_ignite.yml: |
     apigw:

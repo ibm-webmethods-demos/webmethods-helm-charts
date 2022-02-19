@@ -49,23 +49,20 @@ containerPorts:
 ## type of clustering - possible values: none (default), terracotta, ignite
 clusteringType: none
 
+## elasticSearchType - possible value: local, external
+elasticSearchType: local
+
+## elasticSearchType - possible value: local, external
+kibanaType: local
+
 ## clustering - Terracotta url
 clusteringTerracottaUrl: ""
 
-## config templates to aid in setup (possible values: standalone, clustered_terracotta, clustered_ignite)
-configs_templates: standalone
+# external common configs
+fullConfigs: {}
 
-configs_clustered_terracotta:
-  tsaUrls: ""
-
-configs_clustered_ignite:
-  hostnames: ""
-  discoveryPort: 47100
-  communicationPort: 47500
-  portRange: 5
-
-# external configs
-configs: {}
+# external common configs
+commonConfigs: {}
 
 #### common blocks to help with config building
 configs_default_elasticsearch:
