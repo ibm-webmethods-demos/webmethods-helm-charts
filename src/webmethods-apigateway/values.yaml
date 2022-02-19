@@ -46,6 +46,12 @@ containerPorts:
     name: gwuissl
     protocol: TCP
 
+## type of clustering - possible values: none (default), terracotta, ignite
+clusteringType: none
+
+## clustering - Terracotta url
+clusteringTerracottaUrl: ""
+
 ## config templates to aid in setup (possible values: standalone, clustered_terracotta, clustered_ignite)
 configs_templates: standalone
 

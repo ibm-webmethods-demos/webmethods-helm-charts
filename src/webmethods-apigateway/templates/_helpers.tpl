@@ -104,3 +104,21 @@ the name of the gw runtime service
 {{- $uname := (include "webmethods-apigateway.fullname" .) }}
 {{- printf "%s-%s" $uname "gwruntime" }}
 {{- end }}
+
+{{/*
+Is Clustering Ignite
+*/}}
+{{- define "webmethods-apigateway.isClusteringIgnite" }}
+  {{- if eq (lower .) "ignite" }}
+true
+  {{- end }}
+{{- end }}
+
+{{/*
+Is Clustering Terracotta
+*/}}
+{{- define "webmethods-apigateway.isClusteringTerracotta" }}
+  {{- if eq (lower .) "terracotta" }}
+true
+  {{- end }}
+{{- end }}

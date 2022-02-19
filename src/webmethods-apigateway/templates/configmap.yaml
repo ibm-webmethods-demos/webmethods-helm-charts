@@ -6,6 +6,33 @@ metadata:
   name: {{ include "webmethods-apigateway.fullname" . }}
 data:
   {{- if .Values.config }}
-  common_settings.yml: |
+  full.yml: |
     {{- toYaml .Values.config | nindent 4 }}
+  {{- else }}
+  {{- if include "webmethods-apigateway.isClusteringIgnite" .Values.clusteringType }}
+  clustering_ignite.yml: |
+    apigw:
+      cluster:
+        aware: true
+        name: APIGatewayCluster
+        sessTimeout: 60
+        actionOnStartupError: shutdown
+        ignite:
+          discoveryPort: 47100
+          communicationPort: 47500
+          portRange: 5
+          k8sServiceName: {{ include "webmethods-apigateway.gwruntimeFullname" . }}
+          k8sNamespace: {{ .Release.Namespace }}
+  {{- else }}
+  {{- if include "webmethods-apigateway.isClusteringTerracotta" .Values.clusteringType }}
+  clustering_terracotta.yml: |
+    apigw:
+      cluster:
+        aware: true
+        name: APIGatewayCluster
+        sessTimeout: 60
+        actionOnStartupError: shutdown
+        tsaUrls: {{ .Value.clusteringTerracottaUrl }}
+  {{- end }}
+  {{- end }}
   {{- end }}
