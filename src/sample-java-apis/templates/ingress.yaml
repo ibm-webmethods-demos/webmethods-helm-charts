@@ -1,5 +1,5 @@
 {{- if .Values.ingress.enabled -}}
-{{- $fullName := include "webmethods-devportal.fullname" . -}}
+{{- $fullName := include "webmethods-sample-apis.fullname" . -}}
 {{- $svcPort := .Values.developersPortal.service.port -}}
 {{- if semverCompare ">=1.19-0" .Capabilities.KubeVersion.GitVersion -}}
 apiVersion: networking.k8s.io/v1
@@ -7,7 +7,7 @@ kind: Ingress
 metadata:
   name: {{ $fullName }}
   labels:
-    {{- include "webmethods-apigateway.labels" . | nindent 4 }}
+    {{- include "webmethods-sample-apis.labels" . | nindent 4 }}
   {{- with .Values.ingress.annotations }}
   annotations:
     {{- toYaml . | nindent 4 }}
@@ -48,7 +48,7 @@ kind: Ingress
 metadata:
   name: {{ $fullName }}
   labels:
-    {{- include "webmethods-devportal.labels" . | nindent 4 }}
+    {{- include "webmethods-sample-apis.labels" . | nindent 4 }}
   {{- with .Values.ingress.annotations }}
   annotations:
     {{- toYaml . | nindent 4 }}

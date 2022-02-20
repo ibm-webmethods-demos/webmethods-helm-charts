@@ -61,15 +61,15 @@ spec:
           env:
             {{- if .Values.appPort }}
             - name: app_port
-              value: {{ .Values.appPort }}
+              value: {{ .Values.appPort | quote }}
             {{- end }} 
             {{- if .Values.appContextPath }}
             - name: app_context_path
-              value: {{ .Values.appContextPath }}
+              value: {{ .Values.appContextPath | quote }}
             {{- end }} 
             {{- if .Values.appHealthCheckPath }}
             - name: app_healthcheck_path
-              value: {{ .Values.appHealthCheckPath }}
+              value: {{ .Values.appHealthCheckPath | quote }}
             {{- end }} 
             {{- with .Values.env }}
             {{- toYaml . | nindent 12 }}
