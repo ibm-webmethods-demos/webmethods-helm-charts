@@ -1,7 +1,8 @@
+{{- $uname := (include "webmethods-sample-apis.fullname" .) }}
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: {{ include "webmethods-sample-apis.fullname" . }}
+  name: {{ $uname }}
   labels:
     {{- include "webmethods-sample-apis.labels" . | nindent 4 }}
 spec:
@@ -76,11 +77,11 @@ spec:
             {{- end }}
         {{ with .Values.microgateway }}
         {{- if .enabled }}
-        - name: {{ .Chart.Name }}-mgw
+        - name: {{ $.Chart.Name }}-mgw
           {{- if .image.registry }}
-          image: {{ printf "%s/%s:%s" .image.registry .image.repository (.image.tag | default .Chart.AppVersion) }}
+          image: {{ printf "%s/%s:%s" .image.registry .image.repository (.image.tag | default $.Chart.AppVersion) }}
           {{- else }}
-          image: {{ printf "%s:%s" .image.repository (.image.tag | default .Chart.AppVersion) }}
+          image: {{ printf "%s:%s" .image.repository (.image.tag | default $.Chart.AppVersion) }}
           {{- end }} 
           imagePullPolicy: {{ .image.pullPolicy }}
           {{- with .commandArgs }}
@@ -90,12 +91,12 @@ spec:
           ports:
             {{- if .port }}
             - containerPort: {{ .port }}
-              name: runtimeport
+              name: rtport
               protocol: TCP
             {{ end }}
             {{- if .portSSL }}
             - containerPort: {{ .portSSL }}
-              name: runtimeportSSL
+              name: rtportssl
               protocol: TCP
             {{ end }}
           livenessProbe:
@@ -121,19 +122,19 @@ spec:
               - -c
               - ./files/k8s-readinesscheck.sh
           resources:
-            {{- toYaml .Values.resources | nindent 12 }}
+            {{- toYaml .resources | nindent 12 }}
           env:
             {{- if .port }}
             - name: PORT_RUNTIME
-              value: {{ .port }}
+              value: {{ .port | quote }}
             {{ end }}
             {{- if .portSSL }}
             - name: PORT_RUNTIME_SSL
-              value: {{ .portSSL }}
+              value: {{ .portSSL | quote }}
             {{ end }}
             {{- if .logLevel }}
             - name: LOGS_LEVEL
-              value: {{ .logLevel }}
+              value: {{ .logLevel | quote }}
             {{ end }}
             - name: CUSTOM_SETTINGS
               value: "/configs/microgateway.yml"
@@ -159,7 +160,7 @@ spec:
       {{- if .configs }}
       - name: mgw-configs-volume
         configMap:
-          name: {{ include "webmethods-sample-apis.fullname" . }}-mgw
+          name: {{ $uname }}-mgw
       {{- end }}
       {{- with .licenseSecret }}
       - name: mgw-license

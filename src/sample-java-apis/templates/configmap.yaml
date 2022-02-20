@@ -1,7 +1,4 @@
 ---
-{{ with .Values.microgateway }}
-{{- if .enabled }}
-{{- if .configs }}
 apiVersion: v1
 kind: ConfigMap
 metadata:
@@ -9,6 +6,9 @@ metadata:
     {{- include "webmethods-sample-apis.labels" . | nindent 4 }}
   name: {{ include "webmethods-sample-apis.fullname" . }}-mgw
 data:
+{{ with .Values.microgateway }}
+{{- if .enabled }}
+{{- if .configs }}
   microgateway.yml: |
     {{- toYaml .configs | nindent 4 }}
 {{- end }}
