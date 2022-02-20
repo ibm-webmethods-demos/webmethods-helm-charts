@@ -74,6 +74,60 @@ spec:
             {{- with .Values.env }}
             {{- toYaml . | nindent 12 }}
             {{- end }}
+        {{ with .Values.microgateway }}
+        {{- if .enabled }}
+        - name: {{ .Chart.Name }}-mgw
+          {{- if .image.registry }}
+          image: {{ printf "%s/%s:%s" .image.registry .image.repository (.image.tag | default .Chart.AppVersion) }}
+          {{- else }}
+          image: {{ printf "%s:%s" .image.repository (.image.tag | default .Chart.AppVersion) }}
+          {{- end }} 
+          imagePullPolicy: {{ .image.pullPolicy }}
+          {{- with .commandArgs }}
+          args:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+          ports:
+            - containerPort: {{ .Values.service.port }}
+              name: runtimeport
+              protocol: TCP
+          livenessProbe:
+            failureThreshold: 3
+            initialDelaySeconds: 10
+            periodSeconds: 10
+            successThreshold: 1
+            timeoutSeconds: 5
+            exec:
+              command:
+              - /bin/sh
+              - -c
+              - ./files/k8s-lifenesscheck.sh
+          readinessProbe:
+            failureThreshold: 3
+            initialDelaySeconds: 10
+            periodSeconds: 10
+            successThreshold: 1
+            timeoutSeconds: 5
+            exec:
+              command:
+              - /bin/sh
+              - -c
+              - ./files/k8s-readinesscheck.sh
+          resources:
+            {{- toYaml .Values.resources | nindent 12 }}
+          env:
+            {{- toYaml .Values.env | nindent 12 }}
+          volumeMounts:
+            - name: configs-volume
+              mountPath: /configs
+            {{- if .Values.microgwLicenseSecret }}
+            - name: microgateway-license
+              mountPath: /opt/softwareag/config/license.xml
+              subPath: license.xml
+              readOnly: false
+            {{- end }}
+        {{- end }}
+        {{- end }}
       {{- with .Values.nodeSelector }}
       nodeSelector:
         {{- toYaml . | nindent 8 }}
