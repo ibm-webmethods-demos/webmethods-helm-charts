@@ -1,8 +1,7 @@
-{{- $uname := (include "webmethods-sample-apis.fullname" .) }}
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: {{ $uname }}
+  name: {{ include "webmethods-sample-apis.fullname" . }}
   labels:
     {{- include "webmethods-sample-apis.labels" . | nindent 4 }}
 spec:
@@ -155,6 +154,7 @@ spec:
         {{- end }}
         {{- end }}
       volumes:
+      {{- $uname := (include "webmethods-sample-apis.fullname" .) }}
       {{ with .Values.microgateway }}
       {{- if .enabled }}
       {{- if .configs }}
