@@ -1,6 +1,7 @@
 ---
 {{ with .Values.microgateway }}
 {{- if .enabled }}
+{{- if .configs }}
 apiVersion: v1
 kind: ConfigMap
 metadata:
@@ -10,5 +11,6 @@ metadata:
 data:
   microgateway.yml: |
     {{- toYaml .configs | nindent 4 }}
+{{- end }}
 {{- end }}
 {{- end }}

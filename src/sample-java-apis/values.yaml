@@ -42,9 +42,16 @@ microgateway:
     pullPolicy: IfNotPresent
     tag: "dev-10.11-latest"
   commandArgs: {}
-  envConfigs: {}
-  envSecretConfigs: {}
+  port: 9090
+  portSSL: 9091
+  logLevel: WARN
+  # the licensing needed for the microgateway
+  licenseSecret: {}
+    # name: ""
+    # key: ""
+    # path: ""
   configs: {}
+  env: {}
 
 serviceAccount:
   # Specifies whether a service account should be created

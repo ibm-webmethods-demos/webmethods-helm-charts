@@ -88,9 +88,16 @@ spec:
             {{- toYaml . | nindent 12 }}
           {{- end }}
           ports:
-            - containerPort: {{ .Values.service.port }}
+            {{- if .port }}
+            - containerPort: {{ .port }}
               name: runtimeport
               protocol: TCP
+            {{ end }}
+            {{- if .portSSL }}
+            - containerPort: {{ .portSSL }}
+              name: runtimeportSSL
+              protocol: TCP
+            {{ end }}
           livenessProbe:
             failureThreshold: 3
             initialDelaySeconds: 10
@@ -116,18 +123,54 @@ spec:
           resources:
             {{- toYaml .Values.resources | nindent 12 }}
           env:
-            {{- toYaml .Values.env | nindent 12 }}
+            {{- if .port }}
+            - name: PORT_RUNTIME
+              value: {{ .port }}
+            {{ end }}
+            {{- if .portSSL }}
+            - name: PORT_RUNTIME_SSL
+              value: {{ .portSSL }}
+            {{ end }}
+            {{- if .logLevel }}
+            - name: LOGS_LEVEL
+              value: {{ .logLevel }}
+            {{ end }}
+            - name: CUSTOM_SETTINGS
+              value: "/configs/microgateway.yml"
+            {{- with .env }}
+            {{- toYaml . | nindent 12 }}
+            {{- end }}
           volumeMounts:
-            - name: configs-volume
+            {{- if .configs }}
+            - name: mgw-configs-volume
               mountPath: /configs
-            {{- if .Values.microgwLicenseSecret }}
-            - name: microgateway-license
+            {{- end }}
+            {{- with .licenseSecret }}
+            - name: mgw-license
               mountPath: /opt/softwareag/config/license.xml
-              subPath: license.xml
+              subPath: {{ .path }}
               readOnly: false
             {{- end }}
         {{- end }}
         {{- end }}
+      volumes:
+      {{ with .Values.microgateway }}
+      {{- if .enabled }}
+      {{- if .configs }}
+      - name: mgw-configs-volume
+        configMap:
+          name: {{ include "webmethods-sample-apis.fullname" . }}-mgw
+      {{- end }}
+      {{- with .licenseSecret }}
+      - name: mgw-license
+        secret:
+          secretName: {{ .name }}
+          items:
+          - key: {{ .key }}
+            path: {{ .path }}
+      {{- end }}
+      {{- end }}
+      {{- end }}
       {{- with .Values.nodeSelector }}
       nodeSelector:
         {{- toYaml . | nindent 8 }}
