@@ -42,7 +42,7 @@ spec:
           livenessProbe:
             httpGet:
               path: {{ printf "%s/%s" .Values.appContextPath .Values.appHealthCheckPath }}
-              port: {{ .Values.service.port }}
+              port: {{ .Values.appPort }}
               {{- with .Values.appHealthCheckHeaders }}
               httpHeaders:
                 {{- toYaml . | nindent 16 }}
@@ -120,8 +120,10 @@ spec:
               - /bin/sh
               - -c
               - ./files/k8s-readinesscheck.sh
+          {{- with .resources }}
           resources:
-            {{- toYaml .resources | nindent 12 }}
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
           env:
             {{- if .port }}
             - name: PORT_RUNTIME
@@ -151,6 +153,10 @@ spec:
               subPath: {{ .path }}
               readOnly: false
             {{- end }}
+            {{- if .archivesConfigMap }}
+            - name: mgw-archives
+              mountPath: /opt/softwareag/archives
+            {{- end }}
         {{- end }}
         {{- end }}
       volumes:
@@ -169,6 +175,11 @@ spec:
           items:
           - key: {{ .key }}
             path: {{ .path }}
+      {{- end }}
+      {{- if .archivesConfigMap }}
+      - name: mgw-archives
+        configMap:
+          name: {{ .archivesConfigMap }}
       {{- end }}
       {{- end }}
       {{- end }}

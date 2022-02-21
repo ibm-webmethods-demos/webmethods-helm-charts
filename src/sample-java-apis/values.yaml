@@ -31,10 +31,10 @@ appHealthCheckHeaders: []
 
 livenessProbe:
   successThreshold: 1
-  failureThreshold: 2
+  failureThreshold: 3
   periodSeconds: 10
   timeoutSeconds: 3
-  initialDelaySeconds: 20
+  initialDelaySeconds: 30
 
 microgateway:
   enabled: false
@@ -44,6 +44,7 @@ microgateway:
     pullPolicy: IfNotPresent
     tag: "dev-10.11-latest"
   commandArgs: {}
+  archivesConfigMap: ""
   port: 9090
   portSSL: 9091
   logLevel: WARN
@@ -54,6 +55,7 @@ microgateway:
     # path: ""
   configs: {}
   env: {}
+  resources: {}
 
 serviceAccount:
   # Specifies whether a service account should be created
