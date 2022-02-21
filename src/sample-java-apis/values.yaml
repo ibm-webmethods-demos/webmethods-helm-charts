@@ -21,7 +21,8 @@ service:
   type: ClusterIP
   port: 7071
 
-env: {}
+# app env vars
+env: []
 
 # app specifics
 appPort: 7071
@@ -43,7 +44,7 @@ microgateway:
     repository: webmethods-microgateway
     pullPolicy: IfNotPresent
     tag: "dev-10.11-latest"
-  commandArgs: {}
+  commandArgs: []
   archivesConfigMap: ""
   port: 9090
   portSSL: 9091
@@ -54,7 +55,7 @@ microgateway:
     # key: ""
     # path: ""
   configs: {}
-  env: {}
+  env: []
   resources: {}
 
 serviceAccount:
