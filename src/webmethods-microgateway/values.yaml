@@ -26,12 +26,13 @@ licenseSecret: {}
   # path: ""
 
 # the microgateway-specific settings
-commandArgs: []
-archivesConfigMap: ""
-port: 9090
-portSSL: 9091
-logLevel: WARN
-configs: {}
+microgateway:
+  commandArgs: []
+  archivesConfigMap: ""
+  port: 9090
+  portSSL: 9091
+  logLevel: WARN
+  configs: {}
 
 # env vars
 env: []

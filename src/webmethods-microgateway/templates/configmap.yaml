@@ -6,7 +6,7 @@ metadata:
     {{- include "webmethods-microgateway.labels" . | nindent 4 }}
   name: {{ include "webmethods-microgateway.fullname" . }}
 data:
-{{ with .Values.configs }}
+{{ with .Values.microgateway.configs }}
   microgateway.yml: |
     {{- toYaml . | nindent 4 }}
 {{- end }}

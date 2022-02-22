@@ -39,18 +39,18 @@ spec:
           image: {{ printf "%s:%s" .Values.image.repository (.Values.image.tag | default $.Chart.AppVersion) }}
           {{- end }} 
           imagePullPolicy: {{ .Values.image.pullPolicy }}
-          {{- with .Values.commandArgs }}
+          {{- with .Values.microgateway.commandArgs }}
           args:
             {{- toYaml . | nindent 12 }}
           {{- end }}
           ports:
-            {{- if .Values.port }}
-            - containerPort: {{ .Values.port }}
+            {{- if .Values.microgateway.port }}
+            - containerPort: {{ .Values.microgateway.port }}
               name: rtport
               protocol: TCP
             {{ end }}
-            {{- if .Values.portSSL }}
-            - containerPort: {{ .Values.portSSL }}
+            {{- if .Values.microgateway.portSSL }}
+            - containerPort: {{ .Values.microgateway.portSSL }}
               name: rtportssl
               protocol: TCP
             {{ end }}
@@ -81,15 +81,15 @@ spec:
             {{- toYaml . | nindent 12 }}
           {{- end }}
           env:
-            {{- if .Values.port }}
+            {{- if .Values.microgateway.port }}
             - name: PORT_RUNTIME
               value: {{ .port | quote }}
             {{ end }}
-            {{- if .Values.portSSL }}
+            {{- if .Values.microgateway.portSSL }}
             - name: PORT_RUNTIME_SSL
               value: {{ .portSSL | quote }}
             {{ end }}
-            {{- if .Values.logLevel }}
+            {{- if .Values.microgateway.logLevel }}
             - name: LOGS_LEVEL
               value: {{ .logLevel | quote }}
             {{ end }}
@@ -99,7 +99,7 @@ spec:
             {{- toYaml . | nindent 12 }}
             {{- end }}
           volumeMounts:
-            {{- if .Values.configs }}
+            {{- if .Values.microgateway.configs }}
             - name: mgw-configs-volume
               mountPath: /configs
             {{- end }}
@@ -109,12 +109,12 @@ spec:
               subPath: {{ .path }}
               readOnly: false
             {{- end }}
-            {{- if .Values.archivesConfigMap }}
+            {{- if .Values.microgateway.archivesConfigMap }}
             - name: mgw-archives
               mountPath: /opt/softwareag/archives
             {{- end }}
       volumes:
-      {{- if .Values.configs }}
+      {{- if .Values.microgateway.configs }}
       - name: mgw-configs-volume
         configMap:
           name: {{ include "webmethods-microgateway.fullname" . }}
@@ -127,10 +127,10 @@ spec:
           - key: {{ .key }}
             path: {{ .path }}
       {{- end }}
-      {{- if .Values.archivesConfigMap }}
+      {{- if .Values.microgateway.archivesConfigMap }}
       - name: mgw-archives
         configMap:
-          name: {{ .Values.archivesConfigMap }}
+          name: {{ .Values.microgateway.archivesConfigMap }}
       {{- end }}
       {{- with .Values.nodeSelector }}
       nodeSelector:
