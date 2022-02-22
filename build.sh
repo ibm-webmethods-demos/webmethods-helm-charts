@@ -35,15 +35,19 @@ build "src/samplejavaapis-sidecar-microgateway"
 ## check if anything was added to the build folder, and index if yes
 built_packages=$(ls build/*.tgz)
 if [ $? -eq 0 ]; then
+    echo "Packages found in build folder...will update the helm repo index now!!"
+
     ## create new index with only the new modified charts
     helm repo index --merge docs/index.yaml build/
 
     ## copy new index ot the final repo location
+    echo "Copying new index and updated packages to the final repo location"
     cp -f build/index.yaml docs/
     cp -f build/*.tgz docs/
-
-    ## clean up
-    rm -Rf build/
 else
     echo "No package was build in the build folder...nothing to change"
 fi
+
+## clean up
+rm -Rf build/
+echo "Done!!"
