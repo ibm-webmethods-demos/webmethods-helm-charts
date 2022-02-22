@@ -6,10 +6,9 @@ replicaCount: 1
 
 image:
   registry: ghcr.io/softwareag-government-solutions
-  repository: nginx
+  repository: webmethods-sample-apis-bookstore
   pullPolicy: IfNotPresent
-  # Overrides the image tag whose default is the chart appVersion.
-  tag: ""
+  tag: dev-0.0.4
 
 ## image pull secrets
 imagePullSecrets: []
@@ -37,6 +36,7 @@ livenessProbe:
   timeoutSeconds: 3
   initialDelaySeconds: 30
 
+## sidecar microgateway specifics
 microgateway:
   enabled: false
   image:
