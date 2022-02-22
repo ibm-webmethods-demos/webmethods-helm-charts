@@ -1,0 +1,12 @@
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  labels:
+    {{- include "webmethods-microgateway.labels" . | nindent 4 }}
+  name: {{ include "webmethods-microgateway.fullname" . }}
+data:
+{{ with .Values.configs }}
+  microgateway.yml: |
+    {{- toYaml . | nindent 4 }}
+{{- end }}

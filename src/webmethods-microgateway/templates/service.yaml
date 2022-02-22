@@ -1,0 +1,13 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "webmethods-microgateway.fullname" . }}
+  labels:
+    {{- include "webmethods-microgateway.labels" . | nindent 4 }}
+spec:
+  type: {{ .Values.service.type }}
+  ports:
+    - name: runtimeport
+      port: {{ .Values.service.port }}
+  selector:
+    {{- include "webmethods-microgateway.selectorLabels" . | nindent 4 }}

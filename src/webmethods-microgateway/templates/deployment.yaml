@@ -1,0 +1,146 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "webmethods-microgateway.fullname" . }}
+  labels:
+    {{- include "webmethods-microgateway.labels" . | nindent 4 }}
+spec:
+  {{- if not .Values.autoscaling.enabled }}
+  replicas: {{ .Values.replicaCount }}
+  {{- end }}
+  selector:
+    matchLabels:
+      {{- include "webmethods-microgateway.selectorLabels" . | nindent 6 }}
+  template:
+    metadata:
+      {{- with .Values.podAnnotations }}
+      annotations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      labels:
+        {{- include "webmethods-microgateway.selectorLabels" . | nindent 8 }}
+    spec:
+      {{- with .Values.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      serviceAccountName: {{ include "webmethods-microgateway.serviceAccountName" . }}
+      securityContext:
+        {{- toYaml .Values.podSecurityContext | nindent 8 }}
+      {{- if .Values.initContainers }}
+      initContainers:
+        {{ toYaml .Values.initContainers | nindent 8 }}
+      {{- end }}
+      containers:
+        - name: {{ .Chart.Name }}
+          {{- if .Values.image.registry }}
+          image: {{ printf "%s/%s:%s" .Values.image.registry .Values.image.repository (.Values.image.tag | default $.Chart.AppVersion) }}
+          {{- else }}
+          image: {{ printf "%s:%s" .Values.image.repository (.Values.image.tag | default $.Chart.AppVersion) }}
+          {{- end }} 
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          {{- with .Values.commandArgs }}
+          args:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+          ports:
+            {{- if .Values.port }}
+            - containerPort: {{ .Values.port }}
+              name: rtport
+              protocol: TCP
+            {{ end }}
+            {{- if .Values.portSSL }}
+            - containerPort: {{ .Values.portSSL }}
+              name: rtportssl
+              protocol: TCP
+            {{ end }}
+          livenessProbe:
+            failureThreshold: 3
+            initialDelaySeconds: 10
+            periodSeconds: 10
+            successThreshold: 1
+            timeoutSeconds: 5
+            exec:
+              command:
+              - /bin/sh
+              - -c
+              - ./files/k8s-lifenesscheck.sh
+          readinessProbe:
+            failureThreshold: 3
+            initialDelaySeconds: 10
+            periodSeconds: 10
+            successThreshold: 1
+            timeoutSeconds: 5
+            exec:
+              command:
+              - /bin/sh
+              - -c
+              - ./files/k8s-readinesscheck.sh
+          {{- with .Values.resources }}
+          resources:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+          env:
+            {{- if .Values.port }}
+            - name: PORT_RUNTIME
+              value: {{ .port | quote }}
+            {{ end }}
+            {{- if .Values.portSSL }}
+            - name: PORT_RUNTIME_SSL
+              value: {{ .portSSL | quote }}
+            {{ end }}
+            {{- if .Values.logLevel }}
+            - name: LOGS_LEVEL
+              value: {{ .logLevel | quote }}
+            {{ end }}
+            - name: CUSTOM_SETTINGS
+              value: "/configs/microgateway.yml"
+            {{- with .Values.env }}
+            {{- toYaml . | nindent 12 }}
+            {{- end }}
+          volumeMounts:
+            {{- if .Values.configs }}
+            - name: mgw-configs-volume
+              mountPath: /configs
+            {{- end }}
+            {{- with .Values.licenseSecret }}
+            - name: mgw-license
+              mountPath: /opt/softwareag/config/license.xml
+              subPath: {{ .path }}
+              readOnly: false
+            {{- end }}
+            {{- if .Values.archivesConfigMap }}
+            - name: mgw-archives
+              mountPath: /opt/softwareag/archives
+            {{- end }}
+      volumes:
+      {{- if .Values.configs }}
+      - name: mgw-configs-volume
+        configMap:
+          name: {{ include "webmethods-microgateway.fullname" . }}
+      {{- end }}
+      {{- with .Values.licenseSecret }}
+      - name: mgw-license
+        secret:
+          secretName: {{ .name }}
+          items:
+          - key: {{ .key }}
+            path: {{ .path }}
+      {{- end }}
+      {{- if .Values.archivesConfigMap }}
+      - name: mgw-archives
+        configMap:
+          name: {{ .Values.archivesConfigMap }}
+      {{- end }}
+      {{- with .Values.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
