@@ -1,26 +1,5 @@
 apiVersion: v1
 entries:
-  sample-java-apis:
-  - apiVersion: v2
-    appVersion: 1.0.0
-    created: "2022-02-20T09:21:55.130399-05:00"
-    description: A Helm chart for sample java apis
-    digest: c7b264623a924e2d1bb126a1f5ce7158d2d70f6ba94dcec0729a2ae8f4d74df1
-    name: sample-java-apis
-    type: application
-    urls:
-    - sample-java-apis-0.0.2.tgz
-    version: 0.0.2
-  - apiVersion: v2
-    appVersion: 1.0.0
-    created: "2022-02-10T23:51:14.753036-05:00"
-    description: A Helm chart for sample java apis
-    digest: 3adfa9f13349ce0f09369d4ba8320f9b0909e334b9d29f067d7db8e3cd0940c3
-    name: sample-java-apis
-    type: application
-    urls:
-    - sample-java-apis-0.0.1.tgz
-    version: 0.0.1
   webmethods-apigateway:
   - apiVersion: v2
     appVersion: 10.x.x
