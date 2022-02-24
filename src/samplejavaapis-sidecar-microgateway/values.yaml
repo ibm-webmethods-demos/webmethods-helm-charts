@@ -49,6 +49,11 @@ microgateway:
   port: 9090
   portSSL: 9091
   logLevel: WARN
+  customEndpointAccess:
+    enabled: true
+    protocol: http
+    host: ""
+    port: ""
   # the licensing needed for the microgateway
   licenseSecret: {}
     # name: ""
