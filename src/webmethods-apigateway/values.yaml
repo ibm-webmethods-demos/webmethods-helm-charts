@@ -71,7 +71,7 @@ waitforelastic:
   username: ""
   passwordSecret: {}
     # name: ""
-    # key: ""  
+    # key: ""
   image:
     registry: registry.access.redhat.com
     repository: ubi8/ubi-minimal
