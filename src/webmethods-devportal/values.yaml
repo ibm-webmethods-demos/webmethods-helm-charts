@@ -34,7 +34,6 @@ licenseSecret: {}
   # key: ""
   # path: ""
 
-
 # wait for elastic search availability via init container
 waitforelastic:
   enabled: false
@@ -65,13 +64,6 @@ settings:
     passwordSecret: {}
       # name: ""
       # key: ""
-  waitforelastic:
-    enabled: true
-    image:
-      registry: 
-      repository: alpine/curl:3.14
-      pullPolicy: IfNotPresent
-      tag: latest
 
 startupProbe:
   enabled: true

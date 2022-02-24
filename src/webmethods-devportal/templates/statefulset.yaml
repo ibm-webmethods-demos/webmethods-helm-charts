@@ -42,29 +42,29 @@ spec:
       securityContext:
         {{- toYaml .Values.podSecurityContext | nindent 8 }}
       initContainers:
-        {{- if .Values.settings.waitforelastic.enabled }}
+        {{- if .Values.waitforelastic.enabled }}
         - name: wait-for-es
-          {{- if .Values.settings.waitforelastic.image.registry }}
-          image: {{ printf "%s/%s:%s" .Values.settings.waitforelastic.image.registry .Values.settings.waitforelastic.image.repository (.Values.settings.waitforelastic.image.tag | default .Chart.AppVersion) }}
+          {{- if .Values.waitforelastic.image.registry }}
+          image: {{ printf "%s/%s:%s" .Values.waitforelastic.image.registry .Values.waitforelastic.image.repository (.Values.waitforelastic.image.tag | default .Chart.AppVersion) }}
           {{- else }}
-          image: {{ printf "%s:%s" .Values.settings.waitforelastic.image.repository (.Values.settings.waitforelastic.image.tag | default .Chart.AppVersion) }}
+          image: {{ printf "%s:%s" .Values.waitforelastic.image.repository (.Values.waitforelastic.image.tag | default .Chart.AppVersion) }}
           {{- end }}
-          imagePullPolicy: {{ .Values.settings.waitforelastic.image.pullPolicy }}
+          imagePullPolicy: {{ .Values.waitforelastic.image.pullPolicy }}
           env:
-            {{- if .Values.settings.elastic.uris }}
+            {{- if .Values.waitforelastic.uri }}
             - name: ELASTIC_URI
-              value: "{{ .Values.settings.elastic.uris }}"
+              value: "{{ .Values.waitforelastic.uri }}"
             {{- end }}
-            {{- if .Values.settings.elastic.username }}
+            {{- if .Values.waitforelastic.username }}
             - name: ELASTIC_USERNAME
-              value: "{{ .Values.settings.elastic.username }}"
+              value: "{{ .Values.waitforelastic.username }}"
             {{- end }}
-            {{- if .Values.settings.elastic.passwordSecret.name }}
+            {{- if .Values.waitforelastic.passwordSecret.name }}
             - name: ELASTIC_PASSWORD
               valueFrom:
                 secretKeyRef:
-                  name: "{{ .Values.settings.elastic.passwordSecret.name }}"
-                  key: "{{ .Values.settings.elastic.passwordSecret.key }}"
+                  name: "{{ .Values.waitforelastic.passwordSecret.name }}"
+                  key: "{{ .Values.waitforelastic.passwordSecret.key }}"
             {{- end }}
           command:
             - sh

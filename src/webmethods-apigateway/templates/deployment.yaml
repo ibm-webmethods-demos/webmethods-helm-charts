@@ -38,9 +38,9 @@ spec:
           {{- end }}
           imagePullPolicy: {{ .Values.waitforelastic.image.pullPolicy }}
           env:
-            {{- if .Values.waitforelastic.uris }}
+            {{- if .Values.waitforelastic.uri }}
             - name: ELASTIC_URI
-              value: "{{ .Values.waitforelastic.uris }}"
+              value: "{{ .Values.waitforelastic.uri }}"
             {{- end }}
             {{- if .Values.waitforelastic.username }}
             - name: ELASTIC_USERNAME
