@@ -8,7 +8,6 @@ image:
   registry: ghcr.io/softwareag-government-solutions
   repository: webmethods-apigateway
   pullPolicy: IfNotPresent
-  # Overrides the image tag whose default is the chart appVersion.
   tag: dev-10.11-latest
 
 ## image pull secrets
@@ -73,10 +72,10 @@ waitforelastic:
     # name: ""
     # key: ""
   image:
-    registry: registry.access.redhat.com
-    repository: ubi8/ubi-minimal
+    registry: 
+    repository: alpine/curl
+    tag: "3.14"
     pullPolicy: IfNotPresent
-    tag: latest
 
 #### common blocks to help with config building
 configs_default_elasticsearch:
