@@ -64,6 +64,20 @@ fullConfigs: {}
 # external common configs
 commonConfigs: {}
 
+# wait for elastic search availability via init container
+waitforelastic:
+  enabled: false
+  uri: elasticserver:9200
+  username: ""
+  passwordSecret: {}
+    # name: ""
+    # key: ""  
+  image:
+    registry: registry.access.redhat.com
+    repository: ubi8/ubi-minimal
+    pullPolicy: IfNotPresent
+    tag: latest
+
 #### common blocks to help with config building
 configs_default_elasticsearch:
   apigw:

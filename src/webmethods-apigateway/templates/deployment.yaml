@@ -28,10 +28,57 @@ spec:
       serviceAccountName: {{ include "webmethods-apigateway.serviceAccountName" . }}
       securityContext:
         {{- toYaml .Values.podSecurityContext | nindent 8 }}
-      {{- if .Values.initContainers }}
       initContainers:
-        {{ toYaml .Values.initContainers | nindent 8 }}
-      {{- end }}
+        {{- if .Values.waitforelastic.enabled }}
+        - name: wait-for-es
+          {{- if .Values.waitforelastic.image.registry }}
+          image: {{ printf "%s/%s:%s" .Values.waitforelastic.image.registry .Values.waitforelastic.image.repository (.Values.waitforelastic.image.tag | default .Chart.AppVersion) }}
+          {{- else }}
+          image: {{ printf "%s:%s" .Values.waitforelastic.image.repository (.Values.waitforelastic.image.tag | default .Chart.AppVersion) }}
+          {{- end }}
+          imagePullPolicy: {{ .Values.waitforelastic.image.pullPolicy }}
+          env:
+            {{- if .Values.waitforelastic.uris }}
+            - name: ELASTIC_URI
+              value: "{{ .Values.waitforelastic.uris }}"
+            {{- end }}
+            {{- if .Values.waitforelastic.username }}
+            - name: ELASTIC_USERNAME
+              value: "{{ .Values.waitforelastic.username }}"
+            {{- end }}
+            {{- if .Values.waitforelastic.passwordSecret.name }}
+            - name: ELASTIC_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: "{{ .Values.waitforelastic.passwordSecret.name }}"
+                  key: "{{ .Values.waitforelastic.passwordSecret.key }}"
+            {{- end }}
+          command:
+            - sh
+            - -c
+            - |
+              #!/bin/sh -e
+              http () {
+                  local path="${1}"
+                  if [ -n "${ELASTIC_USERNAME}" ] && [ -n "${ELASTIC_PASSWORD}" ]; then
+                    BASIC_AUTH="-u ${ELASTIC_USERNAME}:${ELASTIC_PASSWORD}"
+                  else
+                    BASIC_AUTH=''
+                  fi
+                  curl -XGET -s -k --fail ${BASIC_AUTH} ${ELASTIC_URI}${path}
+              }
+
+              until http "/_cluster/health?wait_for_status=green&timeout=1s"; do
+                  echo "waiting for Elasticsearch..."
+                  sleep 10;
+              done
+              echo ""
+              echo "Elasticsearch available!"
+              exit 0;
+        {{- end }}
+        {{- with .Values.initContainers }}
+        {{- toYaml . | nindent 8 }}
+        {{- end }}
       containers:
         - name: {{ .Chart.Name }}
           securityContext:
