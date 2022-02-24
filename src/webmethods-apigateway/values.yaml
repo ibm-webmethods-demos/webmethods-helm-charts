@@ -67,7 +67,7 @@ commonConfigs: {}
 # wait for elastic search availability via init container
 waitforelastic:
   enabled: false
-  uri: elasticserver:9200
+  uri: http://elasticserver:9200
   username: ""
   passwordSecret: {}
     # name: ""

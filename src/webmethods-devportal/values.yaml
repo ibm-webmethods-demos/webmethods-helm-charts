@@ -35,6 +35,21 @@ licenseSecret: {}
   # key: ""
   # path: ""
 
+
+# wait for elastic search availability via init container
+waitforelastic:
+  enabled: false
+  uri: "http://es:9200"
+  username: ""
+  passwordSecret: {}
+    # name: ""
+    # key: ""
+  image:
+    registry: registry.access.redhat.com
+    repository: ubi8/ubi-minimal
+    pullPolicy: IfNotPresent
+    tag: latest
+
 settings:
   tenant: default
   loadbalancerUrl:
@@ -47,7 +62,7 @@ settings:
     enabled: true
   elastic:
     uris: "http://es:9200"
-    username: elastic
+    username: ""
     passwordSecret: {}
       # name: ""
       # key: ""
