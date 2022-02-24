@@ -93,6 +93,8 @@ spec:
             - name: LOGS_LEVEL
               value: {{ .logLevel | quote }}
             {{ end }}
+            - name: mcgw_api_endpoint_access_url   # specify the accessible microgateway address
+              value: http://{{ include "webmethods-microgateway.fullname" . }}:{{ .Values.service.port }}
             - name: CUSTOM_SETTINGS
               value: "/configs/microgateway.yml"
             {{- with .Values.env }}
