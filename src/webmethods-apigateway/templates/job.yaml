@@ -17,9 +17,18 @@ spec:
   template:
     spec:
       restartPolicy: Never
+      {{- with .Values.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
       containers:
       - name: "{{ .Chart.Name }}-configurator"
-        image: "{{ .Values.configurator.image.repository }}:{{ .Values.configurator.image.tag | default .Chart.AppVersion }}"
+        {{- if .Values.configurator.image.registry }}
+        image: {{ printf "%s/%s:%s" .Values.configurator.image.registry .Values.configurator.image.repository (.Values.configurator.image.tag | default .Chart.AppVersion) }}
+        {{- else }}
+        image: {{ printf "%s:%s" .Values.configurator.image.repository (.Values.configurator.image.tag | default .Chart.AppVersion) }}
+        {{- end }}
+        imagePullPolicy: {{ .Values.configurator.image.pullPolicy }}
         {{- if .Values.configurator.verbose }}
         args: ["-vvv","apply_configs.yaml"]
         {{- else }}

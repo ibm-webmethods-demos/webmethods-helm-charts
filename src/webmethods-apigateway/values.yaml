@@ -8,7 +8,7 @@ image:
   registry: ghcr.io/softwareag-government-solutions
   repository: webmethods-apigateway
   pullPolicy: IfNotPresent
-  tag: dev-10.11-latest
+  tag: 10.11-latest
 
 ## image pull secrets
 imagePullSecrets: []
@@ -151,6 +151,11 @@ configurator:
   verbose: false
   envConfigs: {}
   envSecretConfigs: {}
+  image:
+    registry: ghcr.io/softwareag-government-solutions
+    repository: webmethods-apigateway-configurator
+    pullPolicy: IfNotPresent
+    tag: 10.11-latest
 
 ingress:
   gwruntime:

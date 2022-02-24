@@ -8,7 +8,7 @@ image:
   registry: ghcr.io/softwareag-government-solutions
   repository: webmethods-devportal
   pullPolicy: IfNotPresent
-  tag: dev-10.11-latest
+  tag: 10.11-latest
 
 ## image pull secrets
 imagePullSecrets: []
@@ -90,16 +90,13 @@ livenessProbe:
 configurator:
   enabled: false
   verbose: false
-  sampleData: false
   image:
-    repository: ""
+    registry: ghcr.io/softwareag-government-solutions
+    repository: webmethods-devportal-configurator
     pullPolicy: IfNotPresent
-    tag: ""
-    imagePullSecrets: []
+    tag: 10.11-latest
   envConfigs: {}
   envSecretConfigs: {}
-  envSampleDataConfigs: {}
-  envSampleDataSecretConfigs: {}
 
 serviceAccount:
   # Specifies whether a service account should be created

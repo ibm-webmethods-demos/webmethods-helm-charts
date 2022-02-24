@@ -8,7 +8,7 @@ image:
   registry: ghcr.io/softwareag-government-solutions
   repository: webmethods-terracotta
   pullPolicy: IfNotPresent
-  tag: dev-4.3-latest
+  tag: 10.11-latest
 
 ## image pull secrets
 imagePullSecrets: []
