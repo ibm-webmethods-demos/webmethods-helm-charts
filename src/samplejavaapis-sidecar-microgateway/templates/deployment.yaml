@@ -74,6 +74,8 @@ spec:
             {{- with .Values.env }}
             {{- toYaml . | nindent 12 }}
             {{- end }}
+        {{- $svcName := include "webmethods-sample-apis.fullname" . -}}
+        {{- $svcPort := .Values.service.port -}}
         {{ with .Values.microgateway }}
         {{- if .enabled }}
         - name: {{ $.Chart.Name }}-mgw
@@ -138,7 +140,7 @@ spec:
               value: {{ .logLevel | quote }}
             {{ end }}
             - name: mcgw_api_endpoint_access_url   # specify the accessible microgateway address
-              value: http://{{ include "webmethods-sample-apis.fullname" . }}:{{ .Values.service.port }}
+              value: http://{{ $svcName }}:{{ $svcPort }}
             - name: CUSTOM_SETTINGS
               value: "/configs/microgateway.yml"
             {{- with .env }}
