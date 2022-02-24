@@ -141,7 +141,7 @@ spec:
             {{ end }}
             {{- if .customEndpointAccess.enabled }}
             - name: mcgw_api_endpoint_access_url   # specify the accessible microgateway address
-              value: "{{ .customEndpointAccess.protocol }}://{{ .customEndpointAccess.host | default $svcName }}:{{ .customEndpointAccess.port | $svcPort }}"
+              value: "{{ .customEndpointAccess.protocol }}://{{ .customEndpointAccess.host | default $svcName }}:{{ .customEndpointAccess.port | default $svcPort }}"
             {{ end }}
             - name: CUSTOM_SETTINGS
               value: "/configs/microgateway.yml"

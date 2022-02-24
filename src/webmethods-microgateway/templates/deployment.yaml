@@ -97,7 +97,7 @@ spec:
             {{ end }}
             {{- if .Values.microgateway.customEndpointAccess.enabled }}
             - name: mcgw_api_endpoint_access_url   # specify the accessible microgateway address
-              value: "{{ .Values.microgateway.customEndpointAccess.protocol }}://{{ .Values.microgateway.customEndpointAccess.host | default $svcName }}:{{ .Values.microgateway.customEndpointAccess.port | $svcPort }}"
+              value: "{{ .Values.microgateway.customEndpointAccess.protocol }}://{{ .Values.microgateway.customEndpointAccess.host | default $svcName }}:{{ .Values.microgateway.customEndpointAccess.port | default $svcPort }}"
             {{ end }}
             - name: CUSTOM_SETTINGS
               value: "/configs/microgateway.yml"
