@@ -35,6 +35,31 @@ spec:
         args: ["apply_configs.yaml"]
         {{- end }}
         env:
+          - name: env_devportal_configure_default_ignore_errors
+            value: "false"
+          - name: env_devportal_protocol
+            value: "{{ .restProtocol | default "http" }}"
+          - name: env_devportal_host
+            value: {{ .restHost | default (include "webmethods-devportal.fullname" .) }}
+          - name: env_devportal_port
+            value: "{{ .restPort | default .Values.service.gwruntime.port }}"
+          {{- with .Values.configurator.settings }}
+          {{- if .restUsername }}
+          - name: env_devportal_rest_user
+            value: "{{ .restUsername }}"
+          {{- end }}
+          {{- if .restPasswordSecret }}
+          - name: env_devportal_rest_password
+            valueFrom:
+              secretKeyRef:
+                name: "{{ .restPasswordSecret.name }}"
+                key: "{{ .restPasswordSecret.key }}"
+          {{- end }}
+          {{- if .restPasswordOld }}
+          - name: env_devportal_rest_password_old
+            value: "{{ .restPasswordOld }}"
+          {{- end }}
+          {{- end }}
           {{- with .Values.configurator.envConfigs }}
           {{- include "webmethods-devportal.dictToEnvs" . | indent 10 }}
           {{- end }}

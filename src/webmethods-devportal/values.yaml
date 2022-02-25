@@ -98,11 +98,14 @@ configurator:
   envConfigs: {}
   envSecretConfigs: {}
   settings:
+    restProtocol:
+    restHost:
+    restPort:
     restUsername: Administrator
-    restUserPasswordSecret: {}
+    restPasswordSecret: {}
       # name: ""
       # key: ""
-    restUserPasswordPasswordOld: "manage"
+    restPasswordOld: "manage"
 
 serviceAccount:
   # Specifies whether a service account should be created
