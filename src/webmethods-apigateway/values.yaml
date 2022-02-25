@@ -157,22 +157,36 @@ configurator:
   envConfigs: {}
   envSecretConfigs: {}
   settings:
+    restProtocol:
+    restHost:
+    restPort:
     restUsername: Administrator
     restPasswordSecret: {}
       # name: ""
       # key: ""
     restPasswordOld: "manage"
+    extendedSettings: []
     loadBalancer:
-      http: ""
-      https: ""
-      websocket: ""
-      webapp: ""
-    portalUrl:
-    portalTenant:
-    portalUsername:
-    portalPasswordSecret: {}
-      # name: ""
-      # key: ""
+      http:
+      https:
+      websocket:
+      webapp:
+    portal:
+      apigateway:
+        protocol:
+        host:
+        port:
+        username:
+        passwordSecret: {}
+          # name: ""
+          # key: ""       
+      url:
+      tenant:
+      stage:
+      username:
+      passwordSecret: {}
+        # name: ""
+        # key: ""
 
 ingress:
   gwruntime:

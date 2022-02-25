@@ -1,4 +1,4 @@
-{{- $svcName := include "webmethods-sample-apis.fullname" . -}}
+{{- $svcName := include "webmethods-microgateway.fullname" . -}}
 {{- $svcPort := .Values.service.port -}}
 apiVersion: apps/v1
 kind: Deployment

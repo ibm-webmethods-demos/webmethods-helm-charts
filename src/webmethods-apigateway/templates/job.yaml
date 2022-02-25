@@ -35,6 +35,93 @@ spec:
         args: ["apply_configs.yaml"]
         {{- end }}
         env:
+          - name: env_apigateway_configure_default_ignore_errors
+            value: "false"
+          - name: env_apigateway_protocol
+            value: "{{ .restProtocol | default "http" }}"
+          - name: env_apigateway_host
+            value: {{ .restHost | default (include "webmethods-apigateway.gwruntimeFullname" .) }}
+          - name: env_apigateway_port
+            value: "{{ .restPort | default .Values.service.gwruntime.port }}"
+          {{- with .Values.configurator.settings }}
+          {{- if .restUsername }}
+          - name: env_apigateway_rest_user
+            value: "{{ .restUsername }}"
+          {{- end }}
+          {{- if .restPasswordSecret }}
+          - name: env_apigateway_rest_password
+            valueFrom:
+              secretKeyRef:
+                name: "{{ .restPasswordSecret.name }}"
+                key: "{{ .restPasswordSecret.key }}"
+          {{- end }}
+          {{- if .restPasswordOld }}
+          - name: env_apigateway_rest_password_old
+            value: "{{ .restPasswordOld }}"
+          {{- end }}
+          {{- with .loadBalancer }}
+          - name: env_apigateway_configure_lb
+            value: true
+          {{- if .http }}
+          - name: env_apigateway_lb_http_url
+            value: "{{ .http }}"
+          {{- end }}
+          {{- if .https }}
+          - name: env_apigateway_lb_https_url
+            value: "{{ .https }}"
+          {{- end }}
+          {{- if .websocket }}
+          - name: env_apigateway_lb_websocket_url
+            value: "{{ .websocket }}"
+          {{- end }}
+          {{- if .webapp }}
+          - name: env_apigateway_lb_webapp_url
+            value: "{{ .webapp }}"
+          {{- end }}
+          {{- end }}
+          {{- with .portal }}
+          - name: env_apigateway_configure_portalgateway
+            value: "true"
+          - name: env_apigateway_configure_portalgateway_ignore_errors
+            value: "true"
+          - name: env_apigateway_portalgateway_gateway_url
+            value: "{{ .portal.apigateway.protocol | default "http" }}://{{ .portal.apigateway.host | default (include "webmethods-apigateway.gwruntimeFullname" .) }}:{{ .portal.apigateway.port | default .Values.service.gwruntime.port }}"
+          - name: env_apigateway_portalgateway_gateway_username
+            value: "{{ .portal.apigateway.username }}"          
+          - name: env_apigateway_portalgateway_gateway_password
+            valueFrom:
+              secretKeyRef:
+                name: "{{ .portal.apigateway.passwordSecret.name }}"
+                key: "{{ .portal.apigateway.passwordSecret.key }}"
+          {{- if .url }}
+          - name: env_apigateway_portalgateway_devportal_url
+            value: "{{ .url }}"
+          {{- end }}
+          {{- if .tenant }}
+          - name: env_apigateway_portalgateway_devportal_tenant
+            value: "{{ .tenant }}"
+          {{- end }}
+          {{- if .stage }}
+          - name: env_apigateway_portalgateway_devportal_stage
+            value: "{{ .stage }}"
+          {{- end }}
+          {{- if .username }}
+          - name: env_apigateway_portalgateway_devportal_username
+            value: "{{ .username }}"
+          {{- end }}
+          {{- if .passwordSecret }}
+          - name: env_apigateway_portalgateway_devportal_password
+            valueFrom:
+              secretKeyRef:
+                name: "{{ .restPasswordSecret.name }}"
+                key: "{{ .restPasswordSecret.key }}"
+          {{- end }}
+          {{- end }}
+          {{- if .extendedSettings }}
+          - name: env_apigateway_configure_extended_settings
+            value: "true"
+          {{- end }}
+          {{- end }}
           {{- with .Values.configurator.envConfigs }}
           {{- include "webmethods-apigateway.dictToEnvs" . | indent 10 }}
           {{- end }}
@@ -44,4 +131,5 @@ spec:
           {{- with .Values.configurator.env }}
           {{- toYaml . | nindent 10 }}
           {{- end }}
+        
 {{- end }}
