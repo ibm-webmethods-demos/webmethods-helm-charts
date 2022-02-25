@@ -149,13 +149,30 @@ licenseTerracottaSecret: {}
 configurator:
   enabled: false
   verbose: false
-  envConfigs: {}
-  envSecretConfigs: {}
   image:
     registry: ghcr.io/softwareag-government-solutions
     repository: webmethods-apigateway-configurator
     pullPolicy: IfNotPresent
     tag: 10.11-latest
+  envConfigs: {}
+  envSecretConfigs: {}
+  settings:
+    restUsername: Administrator
+    restPasswordSecret: {}
+      # name: ""
+      # key: ""
+    restPasswordOld: "manage"
+    loadBalancer:
+      http: ""
+      https: ""
+      websocket: ""
+      webapp: ""
+    portalUrl:
+    portalTenant:
+    portalUsername:
+    portalPasswordSecret: {}
+      # name: ""
+      # key: ""
 
 ingress:
   gwruntime:

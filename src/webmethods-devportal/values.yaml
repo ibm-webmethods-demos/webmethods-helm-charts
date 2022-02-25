@@ -97,6 +97,12 @@ configurator:
     tag: 10.11-latest
   envConfigs: {}
   envSecretConfigs: {}
+  settings:
+    restUsername: Administrator
+    restUserPasswordSecret: {}
+      # name: ""
+      # key: ""
+    restUserPasswordPasswordOld: "manage"
 
 serviceAccount:
   # Specifies whether a service account should be created
