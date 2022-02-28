@@ -44,7 +44,7 @@ spec:
           - name: env_devportal_host
             value: {{ .restHost | default (include "webmethods-devportal.fullname" .) }}
           - name: env_devportal_port
-            value: "{{ .restPort | default .Values.service.gwruntime.port }}"
+            value: "{{ .restPort | default .Values.service.port }}"
           {{- with .Values.configurator.settings }}
           {{- if .restUsername }}
           - name: env_devportal_rest_user

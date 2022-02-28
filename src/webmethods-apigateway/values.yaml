@@ -174,7 +174,7 @@ configurator:
       https:
       websocket:
       webapp:
-    portal:
+    portalConnect:
       apigateway:
         protocol:
         host:
@@ -183,6 +183,7 @@ configurator:
         passwordSecret: {}
           # name: ""
           # key: ""       
+      portalType: devportal
       url:
       tenant:
       stage:

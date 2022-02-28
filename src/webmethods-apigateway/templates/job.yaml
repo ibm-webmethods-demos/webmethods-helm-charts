@@ -1,4 +1,6 @@
 {{- if .Values.configurator.enabled }}
+{{- $svcGwruntimeName := (include "webmethods-apigateway.gwruntimeFullname" .) }}
+{{- $svcGwruntimePort := .Values.service.gwruntime.port }}
 apiVersion: batch/v1
 kind: Job
 metadata:
@@ -42,9 +44,9 @@ spec:
           - name: env_apigateway_protocol
             value: "{{ .restProtocol | default "http" }}"
           - name: env_apigateway_host
-            value: {{ .restHost | default (include "webmethods-apigateway.gwruntimeFullname" .) }}
+            value: "{{ .restHost | default $svcGwruntimeName }}"
           - name: env_apigateway_port
-            value: "{{ .restPort | default .Values.service.gwruntime.port }}"
+            value: "{{ .restPort | default $svcGwruntimePort }}"
           {{- with .Values.configurator.settings }}
           {{- if .restUsername }}
           - name: env_apigateway_rest_user
@@ -66,7 +68,7 @@ spec:
           {{- end }}
           {{- with .loadBalancer }}
           - name: env_apigateway_configure_lb
-            value: true
+            value: "true"
           {{- if .http }}
           - name: env_apigateway_lb_http_url
             value: "{{ .http }}"
@@ -84,20 +86,24 @@ spec:
             value: "{{ .webapp }}"
           {{- end }}
           {{- end }}
-          {{- with .portal }}
+          {{- with .portalConnect }}
           - name: env_apigateway_configure_portalgateway
             value: "true"
           - name: env_apigateway_configure_portalgateway_ignore_errors
             value: "true"
           - name: env_apigateway_portalgateway_gateway_url
-            value: "{{ .portal.apigateway.protocol | default "http" }}://{{ .portal.apigateway.host | default (include "webmethods-apigateway.gwruntimeFullname" .) }}:{{ .portal.apigateway.port | default .Values.service.gwruntime.port }}"
+            value: "{{ .apigateway.protocol | default "http" }}://{{ .apigateway.host | default $svcGwruntimeName }}:{{ .apigateway.port | default $svcGwruntimePort }}"
           - name: env_apigateway_portalgateway_gateway_username
-            value: "{{ .portal.apigateway.username }}"          
+            value: "{{ .apigateway.username }}"          
           - name: env_apigateway_portalgateway_gateway_password
             valueFrom:
               secretKeyRef:
-                name: "{{ .portal.apigateway.passwordSecret.name }}"
-                key: "{{ .portal.apigateway.passwordSecret.key }}"
+                name: "{{ .apigateway.passwordSecret.name }}"
+                key: "{{ .apigateway.passwordSecret.key }}"
+          {{- if .portalType }}
+          {{- if eq (lower .portalType) "devportal" }}
+          - name: env_apigateway_portalgateway_portaltype
+            value: "devportal"
           {{- if .url }}
           - name: env_apigateway_portalgateway_devportal_url
             value: "{{ .url }}"
@@ -118,8 +124,37 @@ spec:
           - name: env_apigateway_portalgateway_devportal_password
             valueFrom:
               secretKeyRef:
-                name: "{{ .restPasswordSecret.name }}"
-                key: "{{ .restPasswordSecret.key }}"
+                name: "{{ .passwordSecret.name }}"
+                key: "{{ .passwordSecret.key }}"
+          {{- end }}
+          {{- end }}
+          {{- if eq (lower .portalType) "apiportal" }}
+          - name: env_apigateway_portalgateway_portaltype
+            value: "apiportal"
+          {{- if .url }}
+          - name: env_apigateway_portalgateway_apiportal_url
+            value: "{{ .url }}"
+          {{- end }}
+          {{- if .tenant }}
+          - name: env_apigateway_portalgateway_apiportal_tenant
+            value: "{{ .tenant }}"
+          {{- end }}
+          {{- if .stage }}
+          - name: env_apigateway_portalgateway_apiportal_stage
+            value: "{{ .stage }}"
+          {{- end }}
+          {{- if .username }}
+          - name: env_apigateway_portalgateway_apiportal_username
+            value: "{{ .username }}"
+          {{- end }}
+          {{- if .passwordSecret }}
+          - name: env_apigateway_portalgateway_apiportal_password
+            valueFrom:
+              secretKeyRef:
+                name: "{{ .passwordSecret.name }}"
+                key: "{{ .passwordSecret.key }}"
+          {{- end }}
+          {{- end }}
           {{- end }}
           {{- end }}
           {{- if .extendedSettings }}
