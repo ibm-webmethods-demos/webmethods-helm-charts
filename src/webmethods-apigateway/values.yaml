@@ -148,6 +148,7 @@ licenseTerracottaSecret: {}
 
 configurator:
   enabled: false
+  enableHooks: false
   verbose: false
   image:
     registry: ghcr.io/softwareag-government-solutions
