@@ -169,6 +169,7 @@ configurator:
       # name: ""
       # key: ""
     extendedSettings: []
+    stage: testenv
     loadBalancer:
       http:
       https:
@@ -186,7 +187,6 @@ configurator:
       portalType: devportal
       url:
       tenant:
-      stage:
       username:
       passwordSecret: {}
         # name: ""

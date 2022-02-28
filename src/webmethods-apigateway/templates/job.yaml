@@ -66,6 +66,10 @@ spec:
                 name: "{{ .restPasswordOldSecret.name }}"
                 key: "{{ .restPasswordOldSecret.key }}"
           {{- end }}
+          {{- if .stage }}
+          - name: env_apigateway_stage
+            value: "{{ .stage }}"
+          {{- end }}
           {{- with .loadBalancer }}
           - name: env_apigateway_configure_lb
             value: "true"
