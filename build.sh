@@ -5,6 +5,7 @@
 
 helm_package() {
     local chart_path=$1
+    echo "Chart $chart_path: Packaging chart"
     helm package -u -d build/ "$chart_path"
 }
 
@@ -12,14 +13,15 @@ git_tag() {
     local chart_path=$1
     local chart_name=$(helm show chart "$chart_path" | grep "name:" | awk -F ': ' '{ print $2 }');
     local chart_version=$(helm show chart "$chart_path" | grep "version:" | awk -F ': ' '{ print $2 }');
+    echo "Chart $chart_path: Creating Git-Tag: $chart_name-$chart_version"
     git tag "$chart_name-$chart_version"
 }
 
 build() {
     local chart_path=$1
-    git_tag "$1"
+    git_tag "$chart_path"
     if [ $? -eq 0 ]; then
-        helm_package "$1"
+        helm_package "$chart_path"
     fi
 }
 
