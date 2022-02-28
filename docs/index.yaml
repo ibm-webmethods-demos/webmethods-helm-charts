@@ -3,6 +3,17 @@ entries:
   samplejavaapis-sidecar-microgateway:
   - apiVersion: v2
     appVersion: 1.0.0
+    created: "2022-02-28T16:13:06.280994-05:00"
+    description: A Helm chart to demonstrate the deployment of some sample java apis
+      with SoftwareAG Microgateway loaded as a side-car container
+    digest: 8af3b7855868e18b718b97629324b0281c9d42f4b016a4ed28c901d26d64cbb8
+    name: samplejavaapis-sidecar-microgateway
+    type: application
+    urls:
+    - samplejavaapis-sidecar-microgateway-0.1.1.tgz
+    version: 0.1.1
+  - apiVersion: v2
+    appVersion: 1.0.0
     created: "2022-02-22T12:33:16.884683-05:00"
     description: A Helm chart to demonstrate the deployment of some sample java apis
       with SoftwareAG Microgateway loaded as a side-car container
@@ -13,6 +24,16 @@ entries:
     - samplejavaapis-sidecar-microgateway-0.1.0.tgz
     version: 0.1.0
   webmethods-apigateway:
+  - apiVersion: v2
+    appVersion: 10.x.x
+    created: "2022-02-28T16:13:06.281655-05:00"
+    description: A Helm chart for SoftwareAG webMethods API Gateway in Kubernetes
+    digest: 8a4cd4b415f3ef2aa298d7412cfc6e5d12213268bbdf2e12a2711d6e0c3938f6
+    name: webmethods-apigateway
+    type: application
+    urls:
+    - webmethods-apigateway-0.1.14.tgz
+    version: 0.1.14
   - apiVersion: v2
     appVersion: 10.x.x
     created: "2022-02-22T12:33:16.885312-05:00"
@@ -56,6 +77,16 @@ entries:
   webmethods-devportal:
   - apiVersion: v2
     appVersion: 10.11.x
+    created: "2022-02-28T16:13:06.282142-05:00"
+    description: A Helm chart for SoftwareAG webMethods Developer Portal in Kubernetes
+    digest: 1f5bb98833df7710c6011dbadb4dc1d4e3c6057f078cabb6559ddf07628bebca
+    name: webmethods-devportal
+    type: application
+    urls:
+    - webmethods-devportal-0.1.0.tgz
+    version: 0.1.0
+  - apiVersion: v2
+    appVersion: 10.11.x
     created: "2022-02-22T12:33:16.885802-05:00"
     description: A Helm chart for SoftwareAG webMethods Developer Portal in Kubernetes
     digest: 2a01daa754f757f9d3f5b807cf614c91812ca60a6968ecef52bfaf3b0d043b2b
@@ -97,6 +128,16 @@ entries:
   webmethods-microgateway:
   - apiVersion: v2
     appVersion: 10.11.0
+    created: "2022-02-28T16:13:06.282464-05:00"
+    description: A Helm chart for SoftwareAG webMethods Microgateway in Kubernetes
+    digest: 9927cc54d147d93b3ab0a741ff8b36eafb21053323bafee4b118e406bcc8b56f
+    name: webmethods-microgateway
+    type: application
+    urls:
+    - webmethods-microgateway-0.1.1.tgz
+    version: 0.1.1
+  - apiVersion: v2
+    appVersion: 10.11.0
     created: "2022-02-22T12:33:16.886132-05:00"
     description: A Helm chart for SoftwareAG webMethods Microgateway in Kubernetes
     digest: d0d5e78f086152732ba6574cdc6dfb5325bcb45679440cfa152cf28277ad00ac
@@ -106,6 +147,16 @@ entries:
     - webmethods-microgateway-0.1.0.tgz
     version: 0.1.0
   webmethods-terracotta:
+  - apiVersion: v2
+    appVersion: 4.3.x
+    created: "2022-02-28T16:13:06.282823-05:00"
+    description: A Helm chart for SoftwareAG Terracotta v4 in Kubernetes
+    digest: 67f42751ea9918661d966a324f7684c58c9c3e1c52e635393390e60fecca9308
+    name: webmethods-terracotta
+    type: application
+    urls:
+    - webmethods-terracotta-0.1.13.tgz
+    version: 0.1.13
   - apiVersion: v2
     appVersion: 4.3.x
     created: "2022-02-22T12:33:16.886472-05:00"
@@ -126,4 +177,4 @@ entries:
     urls:
     - webmethods-terracotta-0.1.11.tgz
     version: 0.1.11
-generated: "2022-02-22T12:33:16.88416-05:00"
+generated: "2022-02-28T16:13:06.280496-05:00"
