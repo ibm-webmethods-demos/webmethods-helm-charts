@@ -106,7 +106,9 @@ configurator:
     restPasswordSecret: {}
       # name: ""
       # key: ""
-    restPasswordOld: "manage"
+    restPasswordOldSecret: {}
+      # name: ""
+      # key: ""
 
 serviceAccount:
   # Specifies whether a service account should be created

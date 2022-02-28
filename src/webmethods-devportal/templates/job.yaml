@@ -57,9 +57,12 @@ spec:
                 name: "{{ .restPasswordSecret.name }}"
                 key: "{{ .restPasswordSecret.key }}"
           {{- end }}
-          {{- if .restPasswordOld }}
+          {{- if .restPasswordOldSecret }}
           - name: env_devportal_rest_password_old
-            value: "{{ .restPasswordOld }}"
+            valueFrom:
+              secretKeyRef:
+                name: "{{ .restPasswordOldSecret.name }}"
+                key: "{{ .restPasswordOldSecret.key }}"
           {{- end }}
           {{- end }}
           {{- with .Values.configurator.envConfigs }}

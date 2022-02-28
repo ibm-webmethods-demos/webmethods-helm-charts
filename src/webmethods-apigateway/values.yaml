@@ -165,7 +165,9 @@ configurator:
     restPasswordSecret: {}
       # name: ""
       # key: ""
-    restPasswordOld: "manage"
+    restPasswordOldSecret: {}
+      # name: ""
+      # key: ""
     extendedSettings: []
     loadBalancer:
       http:
