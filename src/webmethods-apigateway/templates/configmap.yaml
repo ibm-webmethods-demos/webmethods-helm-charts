@@ -13,30 +13,31 @@ data:
   common.yml: |
     {{- toYaml .Values.commonConfigs | nindent 4 }}
   {{- end }}
-  {{- if include "webmethods-apigateway.isClusteringIgnite" .Values.clusteringType }}
+  {{- if include "webmethods-apigateway.isClusteringIgnite" (default "none" ((.Values.clustering).type))  }}
   clustering_ignite.yml: |
     apigw:
       cluster:
         aware: true
-        name: APIGatewayCluster
-        sessTimeout: 60
-        actionOnStartupError: shutdown
+        name: {{ default "APIGatewayCluster" ((.Values.clustering).name) }}
+        sessTimeout: {{ default "60" ((.Values.clustering).sessionTimeout) }}
+        actionOnStartupError: {{ default "shutdown" ((.Values.clustering).actionOnStartupError) }}
         ignite:
-          discoveryPort: 47100
-          communicationPort: 47500
-          portRange: 5
+          discoveryPort: {{ default "47100" (((.Values.clustering).ignite).discoveryPort) }}
+          communicationPort: {{ default "47500" (((.Values.clustering).ignite).communicationPort) }}
+          portRange: {{ default "0" (((.Values.clustering).ignite).portRange) }}
           k8sServiceName: {{ include "webmethods-apigateway.gwruntimeFullname" . }}
           k8sNamespace: {{ .Release.Namespace }}
   {{- else }}
-  {{- if include "webmethods-apigateway.isClusteringTerracotta" .Values.clusteringType }}
+  {{- if include "webmethods-apigateway.isClusteringTerracotta" (default "none" ((.Values.clustering).type)) }}
   clustering_terracotta.yml: |
     apigw:
       cluster:
         aware: true
-        name: APIGatewayCluster
-        sessTimeout: 60
-        actionOnStartupError: shutdown
-        tsaUrls: {{ .Value.clusteringTerracottaUrl }}
+        terracottaLicenseFileName: terracotta-license.key
+        name: {{ default "APIGatewayCluster" ((.Values.clustering).name) }}
+        sessTimeout: {{ default "60" ((.Values.clustering).sessionTimeout) }}
+        actionOnStartupError: {{ default "shutdown" ((.Values.clustering).actionOnStartupError) }}
+        tsaUrls: {{ ((.Values.clustering).terracotta).url }}
   {{- end }}
   {{- end }}
   {{- end }}

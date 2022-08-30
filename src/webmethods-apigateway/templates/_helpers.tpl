@@ -50,11 +50,6 @@ app.kubernetes.io/name: {{ include "webmethods-apigateway.name" . }}
 app.kubernetes.io/instance: {{ .Release.Name }}
 {{- end }}
 
-{{- define "webmethods-apigateway.loadrunner.selectorLabels" -}}
-app.kubernetes.io/name: {{ include "webmethods-apigateway.name" . }}-loadrunner
-app.kubernetes.io/instance: {{ .Release.Name }}
-{{- end }}
-
 {{/*
 Create the name of the service account to use
 */}}
@@ -103,6 +98,16 @@ the name of the gw runtime service
 {{- define "webmethods-apigateway.gwruntimeFullname" -}}
 {{- $uname := (include "webmethods-apigateway.fullname" .) }}
 {{- printf "%s-%s" $uname "gwruntime" }}
+{{- end }}
+
+{{/*
+Is Clustering enabled
+*/}}
+{{- define "webmethods-apigateway.isClusteringEnabled" }}
+  {{- $clusteringTypes := list "ignite" "terracotta" }}
+  {{- if has (lower .) $clusteringTypes }}
+    {{- true -}}
+  {{- end }}
 {{- end }}
 
 {{/*

@@ -94,7 +94,8 @@ spec:
             {{- toYaml . | nindent 12 }}
           {{- end }}
           startupProbe:
-            failureThreshold: 30
+            failureThreshold: 60
+            periodSeconds: 15
             exec:
               command:
               - /bin/bash
@@ -105,10 +106,42 @@ spec:
               command:
               - /bin/bash
               - ./healthcheck.sh
-              - "true"
+              {{- if include "webmethods-apigateway.isClusteringEnabled" (default "none" ((.Values.clustering).type)) }}
+              - {{ default "true" ((.Values.clustering).healthCheck) | quote }}
+              {{- end }}
           resources:
             {{- toYaml .Values.resources | nindent 12 }}
           env:
+            {{- if include "webmethods-apigateway.isClusteringTerracotta" (default "none" ((.Values.clustering).type)) }}
+            {{- with .Values.clustering }}
+            - name: IS_CLUSTER_AWARE
+              value: "true"
+            {{- if .name }}
+            - name: IS_CLUSTER_NAME
+              value: "{{ .name }}"
+            {{- end }}
+            {{- if .sessionTimeout }}
+            - name: IS_CLUSTER_SESSTIMEOUT
+              value: "{{ .sessionTimeout }}"
+            {{- end }}
+            {{- if .connectTimeout }}
+            - name: IS_CLUSTER_CONNECTTIMEOUT
+              value: "{{ .connectTimeout }}"
+            {{- end }}
+            {{- if .actionOnStartupError }}
+            - name: IS_CLUSTER_ACTIONONSTARTUPERROR
+              value: "{{ .actionOnStartupError }}"
+            {{- end }}
+            {{- if (.terracotta).url }}
+            - name: IS_CLUSTER_TSAURLS
+              value: "{{ (.terracotta).url }}"
+            {{- end }}
+            {{- if (.terracotta).licenseFileName }}
+            - name: IS_CLUSTER_TERRACOTTALICENSE_FILEPATH
+              value: "/opt/softwareag/common/conf/{{ (.terracotta).licenseFileName }}"
+            {{- end }}
+            {{- end }}
+            {{ end }}
             {{- with .Values.envConfigs }}
             {{- include "webmethods-apigateway.dictToEnvs" . | indent 12 }}
             {{- end }}
@@ -135,30 +168,36 @@ spec:
               mountPath: /opt/softwareag/common/conf/terracotta-license.key
               subPath: {{ .Values.licenseTerracottaSecret.path }}
               readOnly: false
+            {{- end }}            
+            {{- with .Values.extraVolumeMounts }}
+            {{- tpl . $ | nindent 12 }}
             {{- end }}
       volumes:
-      - name: configs-volume
-        configMap:
-          name: {{ include "webmethods-apigateway.fullname" . }}
-      - name: wm-derbydb-volume
-        emptyDir:
-          sizeLimit: 5Gi
-      {{- with .Values.licenseSecret }}
-      - name: apigateway-license
-        secret:
-          secretName: {{ .name }}
-          items:
-          - key: {{ .key }}
-            path: {{ .path }}
-      {{- end }}
-      {{- with .Values.licenseTerracottaSecret }}
-      - name: terracotta-license
-        secret:
-          secretName: {{ .name }}
-          items:
-          - key: {{ .key }}
-            path: {{ .path }}
-      {{- end }}
+        - name: configs-volume
+          configMap:
+            name: {{ include "webmethods-apigateway.fullname" . }}
+        - name: wm-derbydb-volume
+          emptyDir:
+            sizeLimit: 5Gi
+        {{- with .Values.licenseSecret }}
+        - name: apigateway-license
+          secret:
+            secretName: {{ .name }}
+            items:
+            - key: {{ .key }}
+              path: {{ .path }}
+        {{- end }}
+        {{- with .Values.licenseTerracottaSecret }}
+        - name: terracotta-license
+          secret:
+            secretName: {{ .name }}
+            items:
+            - key: {{ .key }}
+              path: {{ .path }}
+        {{- end }}
+        {{- with .Values.extraVolumes }}
+        {{- tpl . $ | nindent 8 }}
+        {{- end }}
       {{- with .Values.nodeSelector }}
       nodeSelector:
         {{- toYaml . | nindent 8 }}

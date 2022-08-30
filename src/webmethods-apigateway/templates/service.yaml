@@ -13,6 +13,9 @@ spec:
   type: {{ .Values.service.gwruntime.type }}
   ports:
     - port: {{ .Values.service.gwruntime.port }}
+      {{- if .Values.service.gwruntime.targetPort }}
+      targetPort: {{ .Values.service.gwruntime.targetPort }}
+      {{- end }}
       protocol: TCP
       name: gwruntime
   selector:
@@ -32,6 +35,9 @@ spec:
   type: {{ .Values.service.gwui.type }}
   ports:
     - port: {{ .Values.service.gwui.port }}
+      {{- if .Values.service.gwui.targetPort }}
+      targetPort: {{ .Values.service.gwui.targetPort }}
+      {{- end }}
       protocol: TCP
       name: gwui
   selector:
