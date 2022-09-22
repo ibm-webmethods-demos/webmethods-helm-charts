@@ -87,10 +87,10 @@ entries:
   webmethods-apigateway-configurator:
   - apiVersion: v2
     appVersion: 1.0.0
-    created: "2022-09-22T18:51:21.724129-04:00"
+    created: "2022-09-22T19:16:18.559062-04:00"
     description: Configure webmethods apigateway using simple environment variables
       - Configuration as Code for webmethods-apigateway-configurator.
-    digest: af88618070116337532aa8cc2caccabc24ae7f84778445a16717be7bf9bf3863
+    digest: efc963e984169195a06d04e43f9ac15da8df13b2763cf2637538fbf16386ecfa
     home: https://github.com/saggs-cloudops/webmethods-apigateway-configurator
     keywords:
     - webmethods-apigateway
@@ -173,10 +173,10 @@ entries:
   webmethods-devportal-configurator:
   - apiVersion: v2
     appVersion: 1.0.0
-    created: "2022-09-22T18:53:10.018827-04:00"
+    created: "2022-09-22T19:18:05.00469-04:00"
     description: Configure webmethods devportal using simple environment variables
       - Configuration as Code for webmethods-devportal-configurator.
-    digest: 9b994170439e3d81c388941e002fc86cc98f25f94e692c22069c225551b10fee
+    digest: 59f62f6f06f37d6545ac9bc72626fcf552d07941e24b93451bf49271dd6a4584
     home: https://github.com/saggs-cloudops/webmethods-devportal-configurator
     keywords:
     - webmethods-devportal
@@ -247,4 +247,4 @@ entries:
     urls:
     - webmethods-terracotta-0.1.11.tgz
     version: 0.1.11
-generated: "2022-09-22T18:53:10.018422-04:00"
+generated: "2022-09-22T19:18:05.004312-04:00"
