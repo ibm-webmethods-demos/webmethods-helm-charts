@@ -84,6 +84,31 @@ entries:
     urls:
     - webmethods-apigateway-0.1.9.tgz
     version: 0.1.9
+  webmethods-apigateway-configurator:
+  - apiVersion: v2
+    appVersion: 1.0.0
+    created: "2022-09-22T18:51:21.724129-04:00"
+    description: Configure webmethods apigateway using simple environment variables
+      - Configuration as Code for webmethods-apigateway-configurator.
+    digest: af88618070116337532aa8cc2caccabc24ae7f84778445a16717be7bf9bf3863
+    home: https://github.com/saggs-cloudops/webmethods-apigateway-configurator
+    keywords:
+    - webmethods-apigateway
+    - softwareag
+    - config
+    - configurator
+    - continuous-integration
+    - webmethods-apigateway-configurator
+    maintainers:
+    - email: fabien.sanglier@softwareaggov.com
+      name: fabien sanglier
+      url: https://github.com/fabien-sanglier-saggs
+    name: webmethods-apigateway-configurator
+    sources:
+    - https://github.com/saggs-cloudops/webmethods-apigateway-configurator
+    urls:
+    - webmethods-apigateway-configurator-1.0.0.tgz
+    version: 1.0.0
   webmethods-devportal:
   - apiVersion: v2
     appVersion: 10.11.x
@@ -145,6 +170,31 @@ entries:
     urls:
     - webmethods-devportal-0.0.1.tgz
     version: 0.0.1
+  webmethods-devportal-configurator:
+  - apiVersion: v2
+    appVersion: 1.0.0
+    created: "2022-09-22T18:53:10.018827-04:00"
+    description: Configure webmethods devportal using simple environment variables
+      - Configuration as Code for webmethods-devportal-configurator.
+    digest: 9b994170439e3d81c388941e002fc86cc98f25f94e692c22069c225551b10fee
+    home: https://github.com/saggs-cloudops/webmethods-devportal-configurator
+    keywords:
+    - webmethods-devportal
+    - softwareag
+    - config
+    - configurator
+    - continuous-integration
+    - webmethods-devportal-configurator
+    maintainers:
+    - email: fabien.sanglier@softwareaggov.com
+      name: fabien sanglier
+      url: https://github.com/fabien-sanglier-saggs
+    name: webmethods-devportal-configurator
+    sources:
+    - https://github.com/saggs-cloudops/webmethods-devportal-configurator
+    urls:
+    - webmethods-devportal-configurator-1.0.0.tgz
+    version: 1.0.0
   webmethods-microgateway:
   - apiVersion: v2
     appVersion: 10.11.0
@@ -197,4 +247,4 @@ entries:
     urls:
     - webmethods-terracotta-0.1.11.tgz
     version: 0.1.11
-generated: "2022-09-22T16:48:23.111049-04:00"
+generated: "2022-09-22T18:53:10.018422-04:00"
