@@ -51,7 +51,45 @@ containerPorts:
 fullConfigs: {}
 
 # if full configs is not defined, then it's a combination of the common configs + clustering configs per variables below
-commonConfigs: {}
+# we default this to some sensible (but generally not production ready) default values (ie. if elasticsearch is part of the image), 
+# and each items can simply be overwritten with env variables as needed following the expected env var format...
+# example of env var overwrite for an external Elastic/kibana cluster:
+      # apigw_elasticsearch_hosts: external_es:9200
+      # apigw_elasticsearch_autostart: "false"
+      # apigw_kibana_autostart: "false"
+      # apigw_kibana_dashboardInstance: http://external_kibana:5601
+
+commonConfigs:
+  apigw:
+    elasticsearch:
+      tenantId: apigateway
+      hosts: localhost:9240
+      autostart: true
+      http:
+        keepAlive: true
+        keepAliveMaxConnections: 10
+        keepAliveMaxConnectionsPerRoute: 100
+        connectionTimeout: 1000
+        socketTimeout: 10000
+        maxRetryTimeout: 100000
+      https:
+        enabled: false
+        enforceHostnameVerification: false
+        # keystoreFilepath: "{{ webmethods_apigateway_keystore_filepath }}"
+        # truststoreFilepath: "{{ webmethods_apigateway_truststore_filepath }}"
+        # keystoreAlias: "{{ webmethods_apigateway_keystore_keyalias }}"
+        # keystorePassword: "{{ webmethods_apigateway_keystore_password }}"
+        # truststorePassword: "{{ webmethods_apigateway_truststore_password }}"
+      sniff:
+        enable: false
+        timeInterval: 1000
+      outboundProxy:
+        enabled: false
+        alias: somealias
+      clientHttpResponseSize: 1001231
+    kibana:
+      dashboardInstance: http://localhost:9405
+      autostart: true
 
 ## type of clustering - possible values: none (default), terracotta, ignite
 ## if clustering.type = terracotta, Terracotta dict entry is used
@@ -83,7 +121,7 @@ waitforelastic:
     repository: curlimages/curl
     tag: "7.81.0"
     pullPolicy: IfNotPresent
-
+     
 # the licensing needed for the product
 licenseSecret: {}
   # name: ""

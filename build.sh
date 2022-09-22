@@ -3,6 +3,7 @@
 ### This simple build process is useful so the created date/time field only change for the new and updated charts (and remains the same for the old ones)
 ### We also will build only the package with new git TAGs
 
+HELMREPO_DIR="./docs"
 helm_package() {
     local chart_path=$1
     echo "Chart $chart_path: Packaging chart"
@@ -40,12 +41,12 @@ if [ $? -eq 0 ]; then
     echo "Packages found in build folder...will update the helm repo index now!!"
 
     ## create new index with only the new modified charts
-    helm repo index --merge docs/index.yaml build/
+    helm repo index --merge ${HELMREPO_DIR}/index.yaml build/
 
     ## copy new index ot the final repo location
     echo "Copying new index and updated packages to the final repo location"
-    cp -f build/index.yaml docs/
-    cp -f build/*.tgz docs/
+    cp -f build/index.yaml ${HELMREPO_DIR}/
+    cp -f build/*.tgz ${HELMREPO_DIR}/
 else
     echo "No package was build in the build folder...nothing to change"
 fi

@@ -17,15 +17,17 @@ nameOverride: ""
 fullnameOverride: ""
 service:
   type: ClusterIP
-  port: 18101
+  portName: http
+  port: 8083
+  targetPort: http
   annotations: {}
 
 containerPorts:
-  - containerPort: 18101
-    name: httpui
+  - containerPort: 8083
+    name: http
     protocol: TCP
-  - containerPort: 18102
-    name: httpsui
+  - containerPort: 8084
+    name: https
     protocol: TCP
 
 # the licensing needed for the product
@@ -87,29 +89,6 @@ livenessProbe:
   periodSeconds: 15
   timeoutSeconds: 5
 
-configurator:
-  enabled: false
-  enableHooks: false
-  verbose: false
-  image:
-    registry: ghcr.io/softwareag-government-solutions
-    repository: webmethods-devportal-configurator
-    pullPolicy: IfNotPresent
-    tag: 10.11-latest
-  envConfigs: {}
-  envSecretConfigs: {}
-  settings:
-    restProtocol:
-    restHost:
-    restPort:
-    restUsername: Administrator
-    restPasswordSecret: {}
-      # name: ""
-      # key: ""
-    restPasswordOldSecret: {}
-      # name: ""
-      # key: ""
-
 serviceAccount:
   # Specifies whether a service account should be created
   create: true
@@ -160,13 +139,6 @@ resources: {}
   # requests:
   #   cpu: 100m
   #   memory: 128Mi
-
-autoscaling:
-  enabled: false
-  minReplicas: 1
-  maxReplicas: 100
-  targetCPUUtilizationPercentage: 80
-  # targetMemoryUtilizationPercentage: 80
 
 nodeSelector: {}
 

@@ -12,7 +12,10 @@ metadata:
 spec:
   type: {{ .Values.service.type }}
   ports:
-    - name: {{ .Values.service.portname | default "http" }}
+    - name: {{ .Values.service.portName | default "http" }}
+      {{- if .Values.service.targetPort }}
+      targetPort: {{ .Values.service.targetPort }}
+      {{- end }}
       port: {{ .Values.service.port }}
       protocol: TCP
   selector:
@@ -78,4 +81,3 @@ spec:
       targetPort: 47509
   selector:
     {{- include "webmethods-devportal.selectorLabels" . | nindent 4 }}
-    role: clustercore
