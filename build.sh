@@ -12,8 +12,8 @@ helm_package() {
 
 git_tag() {
     local chart_path=$1
-    local chart_name=$(helm show chart "$chart_path" | grep "name:" | awk -F ': ' '{ print $2 }');
-    local chart_version=$(helm show chart "$chart_path" | grep "version:" | awk -F ': ' '{ print $2 }');
+    local chart_name=$(helm show chart "$chart_path" | grep "^name:" | awk -F ': ' '{ print $2 }');
+    local chart_version=$(helm show chart "$chart_path" | grep "^version:" | awk -F ': ' '{ print $2 }');
     echo "Chart $chart_path: Creating Git-Tag: $chart_name-$chart_version"
     git tag "$chart_name-$chart_version"
 }
