@@ -5,39 +5,37 @@ metadata:
     {{- include "webmethods-apigateway.labels" . | nindent 4 }}
   name: {{ include "webmethods-apigateway.fullname" . }}
 data:
+  config-sources.yml: |-
+    {{ tpl (.Files.Get "configs/config-sources.yml") . }}
+
   {{- if .Values.fullConfigs }}
   full.yml: |
     {{- toYaml .Values.fullConfigs | nindent 4 }}
   {{- else }}
+
   {{- if .Values.commonConfigs }}
   common.yml: |
     {{- toYaml .Values.commonConfigs | nindent 4 }}
   {{- end }}
+  
+  {{- if .Values.externalElastic.enabled }}
+  elasticsearch.yml: |-
+    {{ tpl (.Files.Get "configs/elasticsearch.yml") . }}
+  {{- end }}
+
+  {{- if .Values.externalKibana.enabled }}
+  kibana.yml: |-
+    {{ tpl (.Files.Get "configs/kibana.yml") . }}
+  {{- end }}
+
   {{- if include "webmethods-apigateway.isClusteringIgnite" (default "none" ((.Values.clustering).type))  }}
-  clustering_ignite.yml: |
-    apigw:
-      cluster:
-        aware: true
-        name: {{ default "APIGatewayCluster" ((.Values.clustering).name) }}
-        sessTimeout: {{ default "60" ((.Values.clustering).sessionTimeout) }}
-        actionOnStartupError: {{ default "shutdown" ((.Values.clustering).actionOnStartupError) }}
-        ignite:
-          discoveryPort: {{ default "47100" (((.Values.clustering).ignite).discoveryPort) }}
-          communicationPort: {{ default "47500" (((.Values.clustering).ignite).communicationPort) }}
-          portRange: {{ default "0" (((.Values.clustering).ignite).portRange) }}
-          k8sServiceName: {{ include "webmethods-apigateway.gwruntimeFullname" . }}
-          k8sNamespace: {{ .Release.Namespace }}
+  clustering_ignite.yml: |-
+    {{ tpl (.Files.Get "configs/clustering_ignite.yml") . }}
   {{- else }}
   {{- if include "webmethods-apigateway.isClusteringTerracotta" (default "none" ((.Values.clustering).type)) }}
-  clustering_terracotta.yml: |
-    apigw:
-      cluster:
-        aware: true
-        terracottaLicenseFileName: terracotta-license.key
-        name: {{ default "APIGatewayCluster" ((.Values.clustering).name) }}
-        sessTimeout: {{ default "60" ((.Values.clustering).sessionTimeout) }}
-        actionOnStartupError: {{ default "shutdown" ((.Values.clustering).actionOnStartupError) }}
-        tsaUrls: {{ ((.Values.clustering).terracotta).url }}
+  clustering_terracotta.yml: |-
+    {{ tpl (.Files.Get "configs/clustering_terracotta.yml") . }}
   {{- end }}
   {{- end }}
+  
   {{- end }}

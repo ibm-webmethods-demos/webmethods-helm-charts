@@ -141,7 +141,22 @@ spec:
               value: "/opt/softwareag/common/conf/{{ (.terracotta).licenseFileName }}"
             {{- end }}
             {{- end }}
-            {{ end }}
+            {{- end }}
+            
+            {{- if .Values.externalElastic.enabled }}
+            {{- if .Values.externalElastic.username }}
+            - name: apigw_elasticsearch_http_username
+              value: "{{ .Values.externalElastic.username }}"
+            {{- end }}
+            {{- if .Values.externalElastic.passwordSecret }}
+            - name: apigw_elasticsearch_http_password
+              valueFrom:
+                secretKeyRef:
+                  name: "{{ .Values.externalElastic.passwordSecret.name }}"
+                  key: "{{ .Values.externalElastic.passwordSecret.key }}"
+            {{- end }}
+            {{- end }}
+
             {{- with .Values.envConfigs }}
             {{- include "webmethods-apigateway.dictToEnvs" . | indent 12 }}
             {{- end }}

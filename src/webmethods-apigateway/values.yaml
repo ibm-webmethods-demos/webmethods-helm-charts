@@ -47,6 +47,40 @@ containerPorts:
     name: gwuissl
     protocol: TCP
 
+## tenant id for the gateway
+tenantId: apigateway
+
+## connectivity to external elastic search
+externalElastic:
+  enabled: false
+  uri: http://elasticserver:9200
+  username: ""
+  passwordSecret: {}
+    # name: ""
+    # key: ""
+
+## connectivity to external kibana
+externalKibana:
+  enabled: false
+  uri: http://kibanaserver:5601
+
+## type of clustering - possible values: none (default), terracotta, ignite
+## if clustering.type = terracotta, Terracotta dict entry is used
+## if clustering.type = ignite, ignite dict entry is used
+clustering:
+  type: none
+  name: APIGatewayCluster
+  sessionTimeout: 60
+  actionOnStartupError: shutdown
+  connectTimeout: 300000
+  healthCheck: true
+  terracotta:
+    url: changeme1:9510,changeme2:9510
+  ignite:
+    discoveryPort: 47100
+    communicationPort: 47500
+    portRange: 0
+
 # complete full configs for apigateway external configurations (overrides all other)
 fullConfigs: {}
 
@@ -62,7 +96,6 @@ fullConfigs: {}
 commonConfigs:
   apigw:
     elasticsearch:
-      tenantId: apigateway
       hosts: localhost:9240
       autostart: true
       http:
@@ -91,31 +124,9 @@ commonConfigs:
       dashboardInstance: http://localhost:9405
       autostart: true
 
-## type of clustering - possible values: none (default), terracotta, ignite
-## if clustering.type = terracotta, Terracotta dict entry is used
-## if clustering.type = ignite, ignite dict entry is used
-clustering:
-  type: none
-  name: APIGatewayCluster
-  sessionTimeout: 60
-  actionOnStartupError: shutdown
-  connectTimeout: 300000
-  healthCheck: true
-  terracotta:
-    url: changeme1:9510,changeme2:9510
-  ignite:
-    discoveryPort: 47100
-    communicationPort: 47500
-    portRange: 0
-
 # wait for elastic search availability via init container
 waitforelastic:
   enabled: false
-  uri: http://elasticserver:9200
-  username: ""
-  passwordSecret: {}
-    # name: ""
-    # key: ""
   image:
     registry: 
     repository: curlimages/curl

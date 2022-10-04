@@ -1,0 +1,4 @@
+apigw:
+  kibana:
+    dashboardInstance: {{ (.Values.externalKibana).uri }}
+    autostart: false
