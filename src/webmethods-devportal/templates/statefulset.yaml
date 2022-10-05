@@ -112,7 +112,7 @@ spec:
             timeoutSeconds: {{ .timeoutSeconds }}
             httpGet:
               path: /portal/rest/v1/health
-              port: {{ int .Values.containerPorts.http }}
+              port: {{ int $.Values.containerPorts.http }}
               scheme: HTTP
           {{- end }}
           {{- end }}
@@ -125,7 +125,7 @@ spec:
             periodSeconds: {{ .periodSeconds }}
             timeoutSeconds: {{ .timeoutSeconds }}
             tcpSocket:
-              port: {{ int .Values.containerPorts.http }}
+              port: {{ int $.Values.containerPorts.http }}
           {{- end }}
           {{- end }}
           {{- with .Values.readinessProbe }}
@@ -136,7 +136,7 @@ spec:
             initialDelaySeconds: {{ .initialDelaySeconds }}
             periodSeconds: {{ .periodSeconds }}
             timeoutSeconds: {{ .timeoutSeconds }}
-            {{- if .Values.advancedHealthCheck }}
+            {{- if $.Values.advancedHealthCheck }}
             exec:
               command:
                 - /bin/bash
@@ -144,7 +144,7 @@ spec:
             {{- else }}
             httpGet:
               path: /portal/rest/v1/health
-              port: {{ int .Values.containerPorts.http }}
+              port: {{ int $.Values.containerPorts.http }}
               scheme: HTTP
             {{- end }}
           {{- end }}
