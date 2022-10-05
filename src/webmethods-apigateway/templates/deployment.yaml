@@ -46,7 +46,7 @@ spec:
             - name: ELASTIC_USERNAME
               value: "{{ .Values.waitforelastic.username }}"
             {{- end }}
-            {{- if .Values.waitforelastic.passwordSecret.name }}
+            {{- if .Values.waitforelastic.passwordSecret }}
             - name: ELASTIC_PASSWORD
               valueFrom:
                 secretKeyRef:
@@ -91,24 +91,55 @@ spec:
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           {{- with .Values.containerPorts }}
           ports:
-            {{- toYaml . | nindent 12 }}
+            - containerPort: {{ int .gwruntime }}
+              name: gwruntime
+              protocol: TCP
+            - containerPort: {{ int .gwruntimessl }}
+              name: gwruntimessl
+              protocol: TCP
+            - containerPort: {{ int .gwui }}
+              name: gwui
+              protocol: TCP
+            - containerPort: {{ int .gwuissl }}
+              name: gwuissl
+              protocol: TCP
+            - containerPort: {{ int .diag }}
+              name: diag
+              protocol: TCP
           {{- end }}
           startupProbe:
             failureThreshold: 60
             periodSeconds: 15
-            exec:
-              command:
-              - /bin/bash
-              - ./healthcheck.sh
-              - "false"
+            httpGet:
+              path: /rest/apigateway/health
+              port: {{ int .Values.containerPorts.gwruntime }}
+              scheme: HTTP
           livenessProbe:
+            tcpSocket:
+              port: {{ int .Values.containerPorts.gwruntime }}
+            failureThreshold: 3
+            periodSeconds: 10
+            successThreshold: 1
+            timeoutSeconds: 1
+          readinessProbe:
+            {{- if .Values.advancedHealthCheck }}
             exec:
               command:
               - /bin/bash
               - ./healthcheck.sh
               {{- if include "webmethods-apigateway.isClusteringEnabled" (default "none" ((.Values.clustering).type)) }}
               - {{ default "true" ((.Values.clustering).healthCheck) | quote }}
-              {{- end }}
+              {{- end }}            
+            {{- else }}
+            httpGet:
+              path: /rest/apigateway/health
+              port: {{ int .Values.containerPorts.gwruntime }}
+              scheme: HTTP
+            {{- end }}
+            failureThreshold: 3
+            periodSeconds: 30
+            successThreshold: 1
+            timeoutSeconds: 5
           resources:
             {{- toYaml .Values.resources | nindent 12 }}
           env:
@@ -141,7 +172,20 @@ spec:
               value: "/opt/softwareag/common/conf/{{ (.terracotta).licenseFileName }}"
             {{- end }}
             {{- end }}
-            {{ end }}
+            {{- end }}
+            {{- if .Values.connectElasticSearch.enabled }}
+            {{- if .Values.connectElasticSearch.username }}
+            - name: apigw_elasticsearch_http_username
+              value: "{{ .Values.connectElasticSearch.username }}"
+            {{- end }}
+            {{- if .Values.connectElasticSearch.passwordSecret }}
+            - name: apigw_elasticsearch_http_password
+              valueFrom:
+                secretKeyRef:
+                  name: "{{ .Values.connectElasticSearch.passwordSecret.name }}"
+                  key: "{{ .Values.connectElasticSearch.passwordSecret.key }}"
+            {{- end }}
+            {{- end }}
             {{- with .Values.envConfigs }}
             {{- include "webmethods-apigateway.dictToEnvs" . | indent 12 }}
             {{- end }}
@@ -153,13 +197,13 @@ spec:
             {{- end }}
           volumeMounts:
             - name: configs-volume
-              mountPath: /configs
+              mountPath: /opt/softwareag/IntegrationServer/instances/{{ .Values.integrationServerInstanceName }}/packages/WmAPIGateway/resources/configuration
             - name: wm-derbydb-volume
-              mountPath: /opt/softwareag/IntegrationServer/instances/default/db
+              mountPath: /opt/softwareag/IntegrationServer/instances/{{ .Values.integrationServerInstanceName }}/db
               subPath: wmderbydb
             {{- if .Values.licenseSecret }}
             - name: apigateway-license
-              mountPath: /opt/softwareag/IntegrationServer/instances/default/config/licenseKey.xml
+              mountPath: /opt/softwareag/IntegrationServer/instances/{{ .Values.integrationServerInstanceName }}/config/licenseKey.xml
               subPath: {{ .Values.licenseSecret.path }}
               readOnly: false
             {{- end }}

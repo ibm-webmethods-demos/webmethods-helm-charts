@@ -5,16 +5,77 @@ metadata:
     {{- include "webmethods-apigateway.labels" . | nindent 4 }}
   name: {{ include "webmethods-apigateway.fullname" . }}
 data:
+  config-sources.yml: |-
+    sources:
+      {{- if .Values.fullConfigs }}
+      - type: YAML
+        allowEdit: false
+        properties:
+          location: full.yml
+      {{- else }}
+      {{- if .Values.commonConfigs }}
+      - type: YAML
+        allowEdit: false
+        properties:
+          location: common.yml
+      {{- end }}
+      {{- if .Values.connectElasticSearch.enabled }}
+      - type: YAML
+        allowEdit: false
+        properties:
+          location: elasticsearch.yml
+      {{- end }}
+      {{- if .Values.connectKibana.enabled }}
+      - type: YAML
+        allowEdit: false
+        properties:
+          location: kibana.yml
+      {{- end }}
+      {{- if include "webmethods-apigateway.isClusteringIgnite" (default "none" ((.Values.clustering).type)) }}
+      - type: YAML
+        allowEdit: false
+        properties:
+          location: clustering_ignite.yml
+      {{- else }}
+      {{- if include "webmethods-apigateway.isClusteringTerracotta" (default "none" ((.Values.clustering).type)) }}
+      - type: YAML
+        allowEdit: false
+        properties:
+          location: clustering_terracotta.yml
+      {{- end }}
+      {{- end }}
+      {{- end }}
+
   {{- if .Values.fullConfigs }}
   full.yml: |
     {{- toYaml .Values.fullConfigs | nindent 4 }}
+  
   {{- else }}
+
   {{- if .Values.commonConfigs }}
   common.yml: |
     {{- toYaml .Values.commonConfigs | nindent 4 }}
   {{- end }}
+  
+  {{- if .Values.connectElasticSearch.enabled }}
+  elasticsearch.yml: |-
+    apigw:
+      elasticsearch:
+        tenantId: {{ .Values.tenantId }}
+        hosts: {{ (.Values.connectElasticSearch).hosts }}
+        autostart: false
+  {{- end }}
+
+  {{- if .Values.connectKibana.enabled }}
+  kibana.yml: |-
+    apigw:
+      kibana:
+        dashboardInstance: {{ (.Values.connectKibana).uri }}
+        autostart: false
+  {{- end }}
+
   {{- if include "webmethods-apigateway.isClusteringIgnite" (default "none" ((.Values.clustering).type))  }}
-  clustering_ignite.yml: |
+  clustering_ignite.yml: |-
     apigw:
       cluster:
         aware: true
@@ -29,7 +90,7 @@ data:
           k8sNamespace: {{ .Release.Namespace }}
   {{- else }}
   {{- if include "webmethods-apigateway.isClusteringTerracotta" (default "none" ((.Values.clustering).type)) }}
-  clustering_terracotta.yml: |
+  clustering_terracotta.yml: |-
     apigw:
       cluster:
         aware: true
@@ -40,4 +101,5 @@ data:
         tsaUrls: {{ ((.Values.clustering).terracotta).url }}
   {{- end }}
   {{- end }}
+  
   {{- end }}
