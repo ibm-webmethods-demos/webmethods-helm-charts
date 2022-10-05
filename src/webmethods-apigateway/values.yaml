@@ -50,6 +50,7 @@ service:
     targetPort: gwui
     annotations: {}
 
+## ports exposed by the container
 containerPorts:
   gwruntime: 5555
   gwruntimessl: 5543
