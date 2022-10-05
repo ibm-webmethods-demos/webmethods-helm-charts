@@ -15,6 +15,8 @@ imagePullSecrets: []
 
 nameOverride: ""
 fullnameOverride: ""
+
+## service
 service:
   type: ClusterIP
   portName: http
@@ -22,13 +24,10 @@ service:
   targetPort: http
   annotations: {}
 
+## ports exposed by the container
 containerPorts:
-  - containerPort: 8083
-    name: http
-    protocol: TCP
-  - containerPort: 8084
-    name: https
-    protocol: TCP
+  http: 8083
+  https: 8084
 
 # the licensing needed for the product
 licenseSecret: {}

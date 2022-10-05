@@ -97,7 +97,12 @@ spec:
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           {{- with .Values.containerPorts }}
           ports:
-            {{- toYaml . | nindent 12 }}
+            - containerPort:  {{ int .http }}
+              name: http
+              protocol: TCP
+            - containerPort:  {{ int .https }}
+              name: https
+              protocol: TCP
           {{- end }}
           {{- with .Values.startupProbe }}
           {{- if .enabled }}
@@ -105,24 +110,10 @@ spec:
             failureThreshold: {{ .failureThreshold }}
             periodSeconds: {{ .periodSeconds }}
             timeoutSeconds: {{ .timeoutSeconds }}
-            exec:
-              command:
-                - /bin/bash
-                - ./healthcheck.sh
-          {{- end }}
-          {{- end }}
-          {{- with .Values.readinessProbe }}
-          {{- if .enabled }}
-          readinessProbe:
-            successThreshold: {{ .successThreshold }}
-            failureThreshold: {{ .failureThreshold }}
-            initialDelaySeconds: {{ .initialDelaySeconds }}
-            periodSeconds: {{ .periodSeconds }}
-            timeoutSeconds: {{ .timeoutSeconds }}
-            exec:
-              command:
-                - /bin/bash
-                - ./healthcheck.sh
+            httpGet:
+              path: /portal/rest/v1/health
+              port: {{ int .Values.containerPorts.http }}
+              scheme: HTTP
           {{- end }}
           {{- end }}
           {{- with .Values.livenessProbe }}
@@ -133,10 +124,29 @@ spec:
             initialDelaySeconds: {{ .initialDelaySeconds }}
             periodSeconds: {{ .periodSeconds }}
             timeoutSeconds: {{ .timeoutSeconds }}
+            tcpSocket:
+              port: {{ int .Values.containerPorts.http }}
+          {{- end }}
+          {{- end }}
+          {{- with .Values.readinessProbe }}
+          {{- if .enabled }}
+          readinessProbe:
+            successThreshold: {{ .successThreshold }}
+            failureThreshold: {{ .failureThreshold }}
+            initialDelaySeconds: {{ .initialDelaySeconds }}
+            periodSeconds: {{ .periodSeconds }}
+            timeoutSeconds: {{ .timeoutSeconds }}
+            {{- if .Values.advancedHealthCheck }}
             exec:
               command:
                 - /bin/bash
                 - ./healthcheck.sh
+            {{- else }}
+            httpGet:
+              path: /portal/rest/v1/health
+              port: {{ int .Values.containerPorts.http }}
+              scheme: HTTP
+            {{- end }}
           {{- end }}
           {{- end }}
           {{- with .Values.resources }}
