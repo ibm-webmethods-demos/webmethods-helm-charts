@@ -1,5 +1,0 @@
-apigw:
-  elasticsearch:
-    tenantId: {{ .Values.tenantId }}
-    hosts: {{ (.Values.externalElastic).uri }}
-    autostart: false

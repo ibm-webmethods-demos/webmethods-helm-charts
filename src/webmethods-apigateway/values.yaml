@@ -2,8 +2,22 @@
 # This is a YAML-formatted file.
 # Declare variables to be passed into your templates.
 
+## tenant id for the gateway
+tenantId: apigateway
+integrationServerInstanceName: default
+
+## number of replicas if autoscaling is not enabled
 replicaCount: 1
 
+## autoscaling (disabled by default)
+autoscaling:
+  enabled: false
+  minReplicas: 1
+  maxReplicas: 100
+  targetCPUUtilizationPercentage: 80
+  # targetMemoryUtilizationPercentage: 80
+
+## SAGGS image
 image:
   registry: ghcr.io/softwareag-government-solutions
   repository: webmethods-apigateway
@@ -15,6 +29,9 @@ imagePullSecrets: []
 
 nameOverride: ""
 fullnameOverride: ""
+
+# use enhance helathcheck from the SAGGS images
+advancedHealthCheck: false
 
 # dict of envs
 envConfigs: {}
@@ -34,33 +51,23 @@ service:
     annotations: {}
 
 containerPorts:
-  - containerPort: 5555
-    name: gwruntime
-    protocol: TCP
-  - containerPort: 5543
-    name: gwruntimessl
-    protocol: TCP
-  - containerPort: 9072
-    name: gwui
-    protocol: TCP
-  - containerPort: 9073
-    name: gwuissl
-    protocol: TCP
-
-## tenant id for the gateway
-tenantId: apigateway
+  gwruntime: 5555
+  gwruntimessl: 5543
+  gwui: 9072
+  gwuissl: 9073
+  diag: 9999
 
 ## connectivity to external elastic search
-externalElastic:
+connectElasticSearch:
   enabled: false
-  uri: http://elasticserver:9200
+  hosts: elasticserver:9200
   username: ""
   passwordSecret: {}
     # name: ""
     # key: ""
 
 ## connectivity to external kibana
-externalKibana:
+connectKibana:
   enabled: false
   uri: http://kibanaserver:5601
 
@@ -96,8 +103,6 @@ fullConfigs: {}
 commonConfigs:
   apigw:
     elasticsearch:
-      hosts: localhost:9240
-      autostart: true
       http:
         keepAlive: true
         keepAliveMaxConnections: 10
@@ -120,13 +125,18 @@ commonConfigs:
         enabled: false
         alias: somealias
       clientHttpResponseSize: 1001231
-    kibana:
-      dashboardInstance: http://localhost:9405
-      autostart: true
 
 # wait for elastic search availability via init container
+# info here should probably be the same as to what's in connectElasticSearch...
+# but have to defined what happens if connectElasticSearch.hosts is a multi-value field??
+# in the meantime, let's leave the ability to specify uri and user/password here
 waitforelastic:
   enabled: false
+  # uri: http://elasticserver:9200
+  # username: ""
+  # passwordSecret: {}
+  #   # name: ""
+  #   # key: ""
   image:
     registry: 
     repository: curlimages/curl
@@ -222,13 +232,6 @@ resources: {}
   # requests:
   #   cpu: 100m
   #   memory: 128Mi
-
-autoscaling:
-  enabled: false
-  minReplicas: 1
-  maxReplicas: 100
-  targetCPUUtilizationPercentage: 80
-  # targetMemoryUtilizationPercentage: 80
 
 nodeSelector: {}
 

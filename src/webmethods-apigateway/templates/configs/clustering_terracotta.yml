@@ -1,8 +1,0 @@
-apigw:
-  cluster:
-    aware: true
-    terracottaLicenseFileName: terracotta-license.key
-    name: {{ default "APIGatewayCluster" ((.Values.clustering).name) }}
-    sessTimeout: {{ default "60" ((.Values.clustering).sessionTimeout) }}
-    actionOnStartupError: {{ default "shutdown" ((.Values.clustering).actionOnStartupError) }}
-    tsaUrls: {{ ((.Values.clustering).terracotta).url }}
