@@ -1,0 +1,105 @@
+{{- if .Values.enabled }}
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "webmethods-microservice-runtime.fullname" . }}
+  labels:
+    {{- include "webmethods-microservice-runtime.labels" . | nindent 4 }}
+spec:
+  {{- if not .Values.autoscaling.enabled }}
+  replicas: {{ .Values.replicaCount }}
+  {{- end }}
+  selector:
+    matchLabels:
+      {{- include "webmethods-microservice-runtime.selectorLabels" . | nindent 6 }}
+  template:
+    metadata:
+      {{- with .Values.podAnnotations }}
+      annotations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      labels:
+        {{- include "webmethods-microservice-runtime.selectorLabels" . | nindent 8 }}
+    spec:
+      {{- with .Values.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      serviceAccountName: {{ include "webmethods-microservice-runtime.serviceAccountName" . }}
+      securityContext:
+        {{- toYaml .Values.podSecurityContext | nindent 8 }}
+      containers:
+        - name: {{ .Chart.Name }}
+          securityContext:
+            {{- toYaml .Values.securityContext | nindent 12 }}
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          ports:
+            - containerPort: {{ .Values.service.port }}
+              name: runtimeport
+              protocol: TCP
+          startupProbe:
+            httpGet:
+              path: /invoke/wm.server/ping
+              port: {{ .Values.service.port }}
+            failureThreshold: 60
+            periodSeconds: 10
+          livenessProbe:
+            httpGet:
+              path: /invoke/wm.server/ping
+              port: {{ .Values.service.port }}
+            periodSeconds: 10
+            failureThreshold: 4
+            successThreshold: 1
+            timeoutSeconds: 5
+          resources:
+            {{- toYaml .Values.resources | nindent 12 }}
+          env:
+            {{- toYaml .Values.env | nindent 12 }}
+          {{- if or .Values.msrLicenseSecret .Values.terracottaLicenseSecret }}
+          volumeMounts:
+          {{- end }}
+            {{- if .Values.msrLicenseSecret }}
+            - name: msr-license
+              mountPath: /opt/softwareag/IntegrationServer/config/licenseKey.xml
+              subPath: licenseKey.xml
+              readOnly: false
+            {{- end }}
+            {{- if .Values.terracottaLicenseSecret }}
+            - name: terracotta-license
+              mountPath: /opt/softwareag/common/conf/terracotta-license.key
+              subPath: terracotta-license.key
+              readOnly: false
+            {{- end }}
+      {{- if or .Values.msrLicenseSecret .Values.terracottaLicenseSecret }}
+      volumes:
+      {{- end }}
+      {{- if .Values.msrLicenseSecret }}
+      - name: msr-license
+        secret:
+          secretName: {{ .Values.msrLicenseSecret }}
+          items:
+          - key: msr-license
+            path: licenseKey.xml
+      {{- end }}
+      {{- if .Values.terracottaLicenseSecret }}
+      - name: terracotta-license
+        secret:
+          secretName: {{ .Values.terracottaLicenseSecret }}
+          items:
+          - key: terracotta-license
+            path: terracotta-license.key
+      {{- end }}
+      {{- with .Values.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+{{- end }}
