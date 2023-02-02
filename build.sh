@@ -33,6 +33,7 @@ build "src/webmethods-apigateway"
 build "src/webmethods-devportal"
 build "src/webmethods-microgateway"
 build "src/webmethods-terracotta"
+build "src/webmethods-microservicesruntime"
 build "src/samplejavaapis-sidecar-microgateway"
 
 ## check if anything was added to the build folder, and index if yes
