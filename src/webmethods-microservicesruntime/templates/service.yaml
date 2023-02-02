@@ -2,14 +2,14 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: {{ include "webmethods-microservice-runtime.fullname" . }}
+  name: {{ include "webmethods-microservicesruntime.fullname" . }}
   labels:
-    {{- include "webmethods-microservice-runtime.labels" . | nindent 4 }}
+    {{- include "webmethods-microservicesruntime.labels" . | nindent 4 }}
 spec:
   type: {{ .Values.service.type }}
   ports:
     - name: runtimeport
       port: {{ .Values.service.port }}
   selector:
-    {{- include "webmethods-microservice-runtime.selectorLabels" . | nindent 4 }}
+    {{- include "webmethods-microservicesruntime.selectorLabels" . | nindent 4 }}
 {{- end }}
