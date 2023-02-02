@@ -12,6 +12,7 @@ helm repo add saggov-helm-charts https://softwareag-government-solutions.github.
 
 ### Charts for Software AG API Management
 
+- saggov-helm-charts/webmethods-microservicesruntime
 - saggov-helm-charts/webmethods-apigateway
 - saggov-helm-charts/webmethods-microgateway
 - saggov-helm-charts/webmethods-devportal
