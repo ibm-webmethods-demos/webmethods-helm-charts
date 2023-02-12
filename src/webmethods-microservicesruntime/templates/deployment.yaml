@@ -77,8 +77,8 @@ spec:
             {{- end }}
       volumes:
         - name: wm-derbydb-volume
-            emptyDir:
-              sizeLimit: 1Gi
+          emptyDir:
+            sizeLimit: 1Gi
         {{- if .Values.msrLicenseSecret }}
         - name: msr-license
           secret:
