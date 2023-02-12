@@ -56,9 +56,10 @@ spec:
             {{- toYaml .Values.resources | nindent 12 }}
           env:
             {{- toYaml .Values.env | nindent 12 }}
-          {{- if or .Values.msrLicenseSecret .Values.terracottaLicenseSecret }}
           volumeMounts:
-          {{- end }}
+            - name: wm-derbydb-volume
+              mountPath: /opt/softwareag/IntegrationServer/db
+              subPath: wmderbydb
             {{- if .Values.msrLicenseSecret }}
             - name: msr-license
               mountPath: /opt/softwareag/IntegrationServer/config/licenseKey.xml
@@ -70,26 +71,33 @@ spec:
               mountPath: /opt/softwareag/common/conf/terracotta-license.key
               subPath: terracotta-license.key
               readOnly: false
+            {{- end }}           
+            {{- with .Values.extraVolumeMounts }}
+            {{- tpl . $ | nindent 12 }}
             {{- end }}
-      {{- if or .Values.msrLicenseSecret .Values.terracottaLicenseSecret }}
       volumes:
-      {{- end }}
-      {{- if .Values.msrLicenseSecret }}
-      - name: msr-license
-        secret:
-          secretName: {{ .Values.msrLicenseSecret }}
-          items:
-          - key: msr-license
-            path: licenseKey.xml
-      {{- end }}
-      {{- if .Values.terracottaLicenseSecret }}
-      - name: terracotta-license
-        secret:
-          secretName: {{ .Values.terracottaLicenseSecret }}
-          items:
-          - key: terracotta-license
-            path: terracotta-license.key
-      {{- end }}
+        - name: wm-derbydb-volume
+            emptyDir:
+              sizeLimit: 1Gi
+        {{- if .Values.msrLicenseSecret }}
+        - name: msr-license
+          secret:
+            secretName: {{ .Values.msrLicenseSecret }}
+            items:
+            - key: msr-license
+              path: licenseKey.xml
+        {{- end }}
+        {{- if .Values.terracottaLicenseSecret }}
+        - name: terracotta-license
+          secret:
+            secretName: {{ .Values.terracottaLicenseSecret }}
+            items:
+            - key: terracotta-license
+              path: terracotta-license.key
+        {{- end }}
+        {{- with .Values.extraVolumes }}
+        {{- tpl . $ | nindent 8 }}
+        {{- end }}
       {{- with .Values.nodeSelector }}
       nodeSelector:
         {{- toYaml . | nindent 8 }}
