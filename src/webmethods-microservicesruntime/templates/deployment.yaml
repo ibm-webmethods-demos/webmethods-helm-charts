@@ -79,7 +79,13 @@ spec:
               mountPath: /opt/softwareag/common/conf/terracotta-license.key
               subPath: terracotta-license.key
               readOnly: false
-            {{- end }}           
+            {{- end }} 
+            {{- if .Values.configs.fileAccessControl }}
+            - name: msr-configs
+              mountPath: /opt/softwareag/IntegrationServer/packages/WmPublic/config/fileAccessControl.cnf
+              subPath: fileAccessControl.cnf
+              readOnly: true
+            {{- end }}        
             {{- with .Values.extraVolumeMounts }}
             {{- tpl . $ | nindent 12 }}
             {{- end }}
@@ -112,6 +118,11 @@ spec:
             items:
             - key: terracotta-license
               path: terracotta-license.key
+        {{- end }}
+        {{- if .Values.configs.fileAccessControl }}
+        - name: msr-configs
+          configMap:
+            name: {{ include "webmethods-microservicesruntime.fullname" . }}
         {{- end }}
         {{- with .Values.extraVolumes }}
         {{- tpl . $ | nindent 8 }}

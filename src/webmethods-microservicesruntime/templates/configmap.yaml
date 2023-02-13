@@ -1,0 +1,13 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  labels:
+    {{- include "webmethods-microservicesruntime.labels" . | nindent 4 }}
+  name: {{ include "webmethods-microservicesruntime.fullname" . }}
+data:
+  {{- with .Values.configs.fileAccessControl }}
+  fileAccessControl.cnf: |-
+    allowedWritePaths={{ .allowedWritePaths | default "" }};
+    allowedReadPaths={{ .allowedReadPaths | default "" }};
+    allowedDeletePaths={{ .allowedDeletePaths | default "" }};
+  {{- end }}

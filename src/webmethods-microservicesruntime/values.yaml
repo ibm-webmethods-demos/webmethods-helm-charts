@@ -23,6 +23,12 @@ fullnameOverride: ""
 msrLicenseSecret: ""
 terracottaLicenseSecret: ""
 
+configs:
+  fileAccessControl: 
+    allowedWritePaths: ""
+    allowedReadPaths: ""
+    allowedDeletePaths: ""
+
 persistence:
   logs:
     enabled: false
