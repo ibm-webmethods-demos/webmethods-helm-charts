@@ -23,6 +23,19 @@ fullnameOverride: ""
 msrLicenseSecret: ""
 terracottaLicenseSecret: ""
 
+persistence:
+  logs:
+    enabled: false
+    size: 5Gi
+    storageClassName: "gp2"
+    accessMode: "ReadWriteOnce"
+  customdata:
+    enabled: false
+    size: 10Gi
+    storageClassName: "gp2"
+    accessMode: "ReadWriteOnce"
+    mountPath: "/data"
+
 serviceAccount:
   # Specifies whether a service account should be created
   create: true

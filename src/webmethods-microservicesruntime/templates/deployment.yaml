@@ -60,6 +60,14 @@ spec:
             - name: wm-derbydb-volume
               mountPath: /opt/softwareag/IntegrationServer/db
               subPath: wmderbydb
+            {{- if eq .Values.persistence.logs.enabled true }}
+            - name: msr-logs
+              mountPath: /opt/softwareag/IntegrationServer/logs
+            {{- end }}
+            {{- if eq .Values.persistence.customdata.enabled true }}
+            - name: msr-customdata
+              mountPath: {{ .Values.persistence.customdata.mountPath | default "/data" }}
+            {{- end }}
             {{- if .Values.msrLicenseSecret }}
             - name: msr-license
               mountPath: /opt/softwareag/IntegrationServer/config/licenseKey.xml
@@ -79,6 +87,16 @@ spec:
         - name: wm-derbydb-volume
           emptyDir:
             sizeLimit: 1Gi
+        {{- if eq .Values.persistence.logs.enabled true }}
+        - name: msr-logs
+          persistentVolumeClaim:
+            claimName: {{ include "webmethods-microservicesruntime.fullname" . }}-logs
+        {{- end }}
+        {{- if eq .Values.persistence.customdata.enabled true }}
+        - name: msr-customdata
+          persistentVolumeClaim:
+            claimName: {{ include "webmethods-microservicesruntime.fullname" . }}-customdata
+        {{- end }}
         {{- if .Values.msrLicenseSecret }}
         - name: msr-license
           secret:

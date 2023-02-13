@@ -1,0 +1,32 @@
+---
+{{- if eq .Values.persistence.logs.enabled true }}
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: {{ include "webmethods-microservicesruntime.fullname" . }}-logs
+  labels:
+    {{- include "webmethods-microservicesruntime.labels" . | nindent 4 }}
+spec:
+  accessModes:
+    - {{ .Values.persistence.logs.accessMode }}
+  resources:
+    requests:
+      storage: {{ .Values.persistence.logs.size }}
+  storageClassName: {{ .Values.persistence.logs.storageClassName }}
+{{- end }}
+---
+{{- if eq .Values.persistence.customdata.enabled true }}
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: {{ include "webmethods-microservicesruntime.fullname" . }}-customdata
+  labels:
+    {{- include "webmethods-microservicesruntime.labels" . | nindent 4 }}
+spec:
+  accessModes:
+    - {{ .Values.persistence.customdata.accessMode }}
+  resources:
+    requests:
+      storage: {{ .Values.persistence.customdata.size }}
+  storageClassName: {{ .Values.persistence.customdata.storageClassName }}
+{{- end }}
