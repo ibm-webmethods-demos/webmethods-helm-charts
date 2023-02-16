@@ -5,9 +5,17 @@ metadata:
     {{- include "webmethods-microservicesruntime.labels" . | nindent 4 }}
   name: {{ include "webmethods-microservicesruntime.fullname" . }}
 data:
-  {{- with .Values.configs.fileAccessControl }}
+  {{- with .Values.configs }}
+  {{- if eq .fileAccessControl.enabled true }}
   fileAccessControl.cnf: |-
-    allowedWritePaths={{ .allowedWritePaths | default "" }};
-    allowedReadPaths={{ .allowedReadPaths | default "" }};
-    allowedDeletePaths={{ .allowedDeletePaths | default "" }};
+    allowedWritePaths={{ .fileAccessControl.allowedWritePaths | default "" }};
+    allowedReadPaths={{ .fileAccessControl.allowedReadPaths | default "" }};
+    allowedDeletePaths={{ .fileAccessControl.allowedDeletePaths | default "" }};
+  {{- end }}
+  {{- if eq .metering.enabled true }}
+  metering.agent.properties: |-
+    metering.server.url={{ .metering.serverUrl | default "" }}
+    metering.accumulation.period={{ .metering.accumulationPeriod | default "10" }}
+    metering.report.period={{ .metering.reportPeriod | default "30" }}
+  {{- end }}
   {{- end }}

@@ -24,10 +24,16 @@ msrLicenseSecret: ""
 terracottaLicenseSecret: ""
 
 configs:
-  fileAccessControl: 
+  fileAccessControl:
+    enabled: false
     allowedWritePaths: ""
     allowedReadPaths: ""
     allowedDeletePaths: ""
+  metering:
+    enabled: false
+    serverUrl: http://CHANGEME:8083/metering/api/measurements
+    accumulationPeriod: 10
+    reportPeriod: 30
 
 persistence:
   logs:
@@ -41,6 +47,11 @@ persistence:
     storageClassName: "gp2"
     accessMode: "ReadWriteOnce"
     mountPath: "/data"
+  metering:
+    enabled: false
+    size: 1Gi
+    storageClassName: "gp2"
+    accessMode: "ReadWriteOnce"
 
 serviceAccount:
   # Specifies whether a service account should be created

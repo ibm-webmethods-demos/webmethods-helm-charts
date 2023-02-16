@@ -30,3 +30,19 @@ spec:
       storage: {{ .Values.persistence.customdata.size }}
   storageClassName: {{ .Values.persistence.customdata.storageClassName }}
 {{- end }}
+---
+{{- if eq .Values.persistence.metering.enabled true }}
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: {{ include "webmethods-microservicesruntime.fullname" . }}-metering
+  labels:
+    {{- include "webmethods-microservicesruntime.labels" . | nindent 4 }}
+spec:
+  accessModes:
+    - {{ .Values.persistence.metering.accessMode }}
+  resources:
+    requests:
+      storage: {{ .Values.persistence.metering.size }}
+  storageClassName: {{ .Values.persistence.metering.storageClassName }}
+{{- end }}
