@@ -83,6 +83,48 @@ spec:
           {{- end }}
 {{- end }}
 ---
+{{- if .Values.ingress.isruntime.enabled -}}
+{{- $uname := (include "webmethods-apigateway.isruntimeFullname" .) }}
+{{- $port := .Values.service.isruntime.port }}
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: {{ $uname }}
+  labels:
+    {{- include "webmethods-apigateway.labels" . | nindent 4 }}
+  {{- with .Values.ingress.isruntime.annotations }}
+  annotations:
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
+spec:
+  {{- if and .Values.ingress.isruntime.className (semverCompare ">=1.18-0" .Capabilities.KubeVersion.GitVersion) }}
+  ingressClassName: {{ .Values.ingress.isruntime.className }}
+  {{- end }}
+  {{- if .Values.ingress.isruntime.tls }}
+  tls:
+    {{- range .Values.ingress.isruntime.tls }}
+    - hosts:
+        {{- range .hosts }}
+        - {{ . | quote }}
+        {{- end }}
+      secretName: {{ .secretName }}
+    {{- end }}
+  {{- end }}
+  rules:
+    - host: {{ .Values.ingress.isruntime.host | quote }}
+      http:
+        paths:
+          {{- range .Values.ingress.isruntime.paths }}
+          - path: {{ .path | quote }}
+            pathType: {{ .pathType | quote }}
+            backend:
+              service:
+                name: {{ $uname }}
+                port:
+                  number: {{ $port }}
+          {{- end }}
+{{- end }}
+---
 {{- if .Values.ingress.custom.enabled -}}
 {{- $uname := (include "webmethods-apigateway.fullname" .) }}
 apiVersion: networking.k8s.io/v1

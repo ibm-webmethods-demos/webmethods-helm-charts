@@ -42,3 +42,25 @@ spec:
       name: gwui
   selector:
     {{- include "webmethods-apigateway.selectorLabels" . | nindent 4 }}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "webmethods-apigateway.isruntimeFullname" . }}
+  labels:
+    {{- include "webmethods-apigateway.labels" . | nindent 4 }}
+  {{- with .Values.service.isruntime.annotations }}
+  annotations:
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
+spec:
+  type: {{ .Values.service.isruntime.type }}
+  ports:
+    - port: {{ .Values.service.isruntime.port }}
+      {{- if .Values.service.isruntime.targetPort }}
+      targetPort: {{ .Values.service.isruntime.targetPort }}
+      {{- end }}
+      protocol: TCP
+      name: isruntime
+  selector:
+    {{- include "webmethods-apigateway.selectorLabels" . | nindent 4 }}
