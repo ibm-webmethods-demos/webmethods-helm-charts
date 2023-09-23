@@ -110,3 +110,21 @@ Transform Secrets Dictionary into ENV array
       key: {{ $value.key | quote }}
 {{- end }}
 {{- end }}
+
+{{/*
+Adapted from Ref: https://github.com/openstack/openstack-helm-infra/blob/master/helm-toolkit/templates/utils/_joinListWithComma.tpl
+abstract: |
+  Joins a list of values into a space separated string
+values: |
+  test:
+    - foo
+    - bar
+usage: |
+  {{ include "webmethods-devportal.joinListWithSpaces" .Values.test }}
+return: |
+  foo bar
+*/}}
+{{- define "webmethods-devportal.joinListWithSpaces" -}}
+{{- $local := dict "first" true -}}
+{{- range $k, $v := . -}}{{- if not $local.first -}}{{ printf " " }}{{- end -}}{{- $v -}}{{- $_ := set $local "first" false -}}{{- end -}}
+{{- end -}}

@@ -16,7 +16,6 @@ imagePullSecrets: []
 nameOverride: ""
 fullnameOverride: ""
 
-## service
 service:
   type: ClusterIP
   portName: http
@@ -39,8 +38,11 @@ licenseSecret: {}
 waitforelastic:
   enabled: false
   uri: "http://es:9200"
-  username: ""
-  passwordSecret: {}
+  # username: ""
+  # usernameSecret:
+    # name: ""
+    # key: ""
+  # passwordSecret:
     # name: ""
     # key: ""
   image:
@@ -51,20 +53,27 @@ waitforelastic:
 
 settings:
   tenant: default
-  loadbalancerUrl:
+  # profile: dev
+  # loadbalancerUrl:
   javaMemMin: 512m
   javaMemMax: 512m
-  javaOpts:
+  # javaOpts:
   envConfigs: {}
   envSecretConfigs: {}
+  # customTrustCerts:
+  #   - "/secrets/ca.crt=somecacert"
+  #   - "/secrets/tls.crt=somecert"
   clustering:
     enabled: true
   elastic:
     uris: "http://es:9200"
-    username: ""
-    passwordSecret: {}
-      # name: ""
-      # key: ""
+    # username:
+    # usernameSecret:
+    #   name: ""
+    #   key: ""
+    # passwordSecret:
+    #   name: ""
+    #   key: ""
 
 startupProbe:
   enabled: true
@@ -96,6 +105,10 @@ serviceAccount:
   # The name of the service account to use.
   # If not set and create is true, a name is generated using the fullname template
   name: ""
+
+## these are for the custom volumes to be mounted
+extraVolumes:
+extraVolumeMounts:
 
 podAnnotations: {}
 

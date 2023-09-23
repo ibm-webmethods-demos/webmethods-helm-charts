@@ -48,11 +48,19 @@ spec:
             - name: ELASTIC_URI
               value: "{{ .Values.waitforelastic.uri }}"
             {{- end }}
+            {{- if .Values.waitforelastic.usernameSecret }}
+            - name: ELASTIC_USERNAME
+              valueFrom:
+                secretKeyRef:
+                  name: "{{ .Values.waitforelastic.usernameSecret.name }}"
+                  key: "{{ .Values.waitforelastic.usernameSecret.key }}"
+            {{- else }}
             {{- if .Values.waitforelastic.username }}
             - name: ELASTIC_USERNAME
               value: "{{ .Values.waitforelastic.username }}"
             {{- end }}
-            {{- if .Values.waitforelastic.passwordSecret.name }}
+            {{- end }}
+            {{- if .Values.waitforelastic.passwordSecret }}
             - name: ELASTIC_PASSWORD
               valueFrom:
                 secretKeyRef:
@@ -136,17 +144,10 @@ spec:
             initialDelaySeconds: {{ .initialDelaySeconds }}
             periodSeconds: {{ .periodSeconds }}
             timeoutSeconds: {{ .timeoutSeconds }}
-            {{- if $.Values.advancedHealthCheck }}
-            exec:
-              command:
-                - /bin/bash
-                - ./healthcheck.sh
-            {{- else }}
             httpGet:
               path: /portal/rest/v1/health
               port: {{ int $.Values.containerPorts.http }}
               scheme: HTTP
-            {{- end }}
           {{- end }}
           {{- end }}
           {{- with .Values.resources }}
@@ -154,6 +155,10 @@ spec:
             {{- toYaml . | nindent 12 }}
           {{- end }}
           env:
+            {{- if .Values.settings.profile }}
+            - name: SPRING_PROFILES_ACTIVE
+              value: "{{ .Values.settings.profile }}"
+            {{- end }}
             {{- if .Values.settings.javaMemMin }}
             - name: JAVA_MIN_MEM
               value: "{{ .Values.settings.javaMemMin }}"
@@ -171,15 +176,23 @@ spec:
               value: "{{ .Values.settings.tenant }}"
             {{- end }}
             {{- if .Values.settings.elastic.uris }}
-            - name: SPRING_ELASTICSEARCH_REST_URIS
+            - name: SPRING_ELASTICSEARCH_URIS
               value: "{{ .Values.settings.elastic.uris }}"
             {{- end }}
+            {{- if .Values.settings.elastic.usernameSecret }}
+            - name: SPRING_ELASTICSEARCH_USERNAME
+              valueFrom:
+                secretKeyRef:
+                  name: "{{ .Values.settings.elastic.usernameSecret.name }}"
+                  key: "{{ .Values.settings.elastic.usernameSecret.key }}"
+            {{- else }}
             {{- if .Values.settings.elastic.username }}
-            - name: SPRING_ELASTICSEARCH_REST_USERNAME
+            - name: SPRING_ELASTICSEARCH_USERNAME
               value: "{{ .Values.settings.elastic.username }}"
             {{- end }}
-            {{- if .Values.settings.elastic.passwordSecret.name }}
-            - name: SPRING_ELASTICSEARCH_REST_PASSWORD
+            {{- end }}
+            {{- if .Values.settings.elastic.passwordSecret }}
+            - name: SPRING_ELASTICSEARCH_PASSWORD
               valueFrom:
                 secretKeyRef:
                   name: "{{ .Values.settings.elastic.passwordSecret.name }}"
@@ -192,6 +205,10 @@ spec:
             {{- if .Values.licenseSecret }}
             - name: PORTAL_SERVER_CONFIG_LICENSE
               value: /opt/softwareag/licenseKey.xml
+            {{- end }}
+            {{- if .Values.settings.customTrustCerts }}
+            - name: CUSTOM_TRUST_CERTS
+              value: {{ include "webmethods-devportal.joinListWithSpaces" .Values.settings.customTrustCerts | quote }}
             {{- end }}
             {{- include "webmethods-devportal.dpo_endpoints_envs" . | indent 12 }}
             {{- with .Values.settings.envConfigs }}
@@ -210,8 +227,8 @@ spec:
               subPath: {{ .Values.licenseSecret.path }}
               readOnly: true
             {{- end }}
-            {{- with .Values.volumeMounts }}
-            {{- toYaml . | nindent 12 }}
+            {{- with .Values.extraVolumeMounts }}
+            {{- tpl . $ | nindent 12 }}
             {{- end }}
       volumes:
       {{- if .Values.licenseSecret }}
@@ -222,8 +239,8 @@ spec:
           - key: {{ .Values.licenseSecret.key }}
             path: {{ .Values.licenseSecret.path }}
       {{- end }}
-      {{- with .Values.volumes }}
-      {{- toYaml . | nindent 6 }}
+      {{- with .Values.extraVolumes }}
+      {{- tpl . $ | nindent 6 }}
       {{- end }}
       {{- with .Values.nodeSelector }}
       nodeSelector:
