@@ -3,7 +3,6 @@
 # Declare variables to be passed into your templates.
 
 ## tenant id for the gateway
-tenantId: apigateway
 integrationServerInstanceName: default
 
 ## number of replicas if autoscaling is not enabled
@@ -22,7 +21,7 @@ image:
   registry: ghcr.io/softwareag-government-solutions
   repository: webmethods-apigateway
   pullPolicy: IfNotPresent
-  tag: 10.11-latest
+  tag: 10.15-latest
 
 ## image pull secrets
 imagePullSecrets: []
@@ -49,6 +48,11 @@ service:
     port: 9072
     targetPort: gwui
     annotations: {}
+  isruntime:
+    type: ClusterIP
+    port: 6655
+    targetPort: isruntime
+    annotations: {}
 
 ## ports exposed by the container
 containerPorts:
@@ -57,20 +61,79 @@ containerPorts:
   gwui: 9072
   gwuissl: 9073
   diag: 9999
+  isruntime: 5555
 
 ## connectivity to external elastic search
 connectElasticSearch:
   enabled: false
-  hosts: elasticserver:9200
-  username: ""
-  passwordSecret: {}
-    # name: ""
-    # key: ""
+  configsExistingSecrets: []
+    # apigw_elasticsearch_http_password:
+    #   secretName:
+    #   secretKey:  
+  configs: |-
+    apigw:
+      elasticsearch:
+        tenantId: apigateway
+        hosts: elasticserver:9200
+        autostart: false
+        http:
+          username: elastic
+          keepAlive: true
+          keepAliveMaxConnections: 10
+          keepAliveMaxConnectionsPerRoute: 100
+          connectionTimeout: 1000
+          socketTimeout: 10000
+          maxRetryTimeout: 100000
+        https:
+          enabled: false
+          enforceHostnameVerification: false
+        sniff:
+          enable: false
+          timeInterval: 1000
+        outboundProxy:
+          enabled: false
+          alias: somealias
+        clientHttpResponseSize: 1001231
+
+connectAnalyticsDataStore:
+  enabled: false
+  configsExistingSecrets: []
+    # apigw_analyticsdatastore_http_password:
+    #   secretName:
+    #   secretKey:
+  configs: |-
+    apigw:
+      analyticsdatastore:
+        tenantId: apigateway
+        hosts: elasticserver:9200
+        autostart: false
+        http:
+          username: elastic
+          keepAlive: true
+          keepAliveMaxConnections: 10
+          keepAliveMaxConnectionsPerRoute: 100
+          connectionTimeout: 1000
+          socketTimeout: 10000
+          maxRetryTimeout: 100000
+        https:
+          enabled: false
+          enforceHostnameVerification: false
+        sniff:
+          enable: false
+          timeInterval: 1000
+        outboundProxy:
+          enabled: false
+          alias: somealias
+        clientHttpResponseSize: 1001231
 
 ## connectivity to external kibana
 connectKibana:
   enabled: false
-  uri: http://kibanaserver:5601
+  configs: |-
+    apigw:
+      kibana:
+        dashboardInstance: http://kibanaserver:5601
+        autostart: true
 
 ## type of clustering - possible values: none (default), terracotta, ignite
 ## if clustering.type = terracotta, Terracotta dict entry is used
@@ -92,41 +155,6 @@ clustering:
 # complete full configs for apigateway external configurations (overrides all other)
 fullConfigs: {}
 
-# if full configs is not defined, then it's a combination of the common configs + clustering configs per variables below
-# we default this to some sensible (but generally not production ready) default values (ie. if elasticsearch is part of the image), 
-# and each items can simply be overwritten with env variables as needed following the expected env var format...
-# example of env var overwrite for an external Elastic/kibana cluster:
-      # apigw_elasticsearch_hosts: external_es:9200
-      # apigw_elasticsearch_autostart: "false"
-      # apigw_kibana_autostart: "false"
-      # apigw_kibana_dashboardInstance: http://external_kibana:5601
-
-commonConfigs:
-  apigw:
-    elasticsearch:
-      http:
-        keepAlive: true
-        keepAliveMaxConnections: 10
-        keepAliveMaxConnectionsPerRoute: 100
-        connectionTimeout: 1000
-        socketTimeout: 10000
-        maxRetryTimeout: 100000
-      https:
-        enabled: false
-        enforceHostnameVerification: false
-        # keystoreFilepath: "{{ webmethods_apigateway_keystore_filepath }}"
-        # truststoreFilepath: "{{ webmethods_apigateway_truststore_filepath }}"
-        # keystoreAlias: "{{ webmethods_apigateway_keystore_keyalias }}"
-        # keystorePassword: "{{ webmethods_apigateway_keystore_password }}"
-        # truststorePassword: "{{ webmethods_apigateway_truststore_password }}"
-      sniff:
-        enable: false
-        timeInterval: 1000
-      outboundProxy:
-        enabled: false
-        alias: somealias
-      clientHttpResponseSize: 1001231
-
 # wait for elastic search availability via init container
 # info here should probably be the same as to what's in connectElasticSearch...
 # but have to defined what happens if connectElasticSearch.hosts is a multi-value field??
@@ -135,7 +163,10 @@ waitforelastic:
   enabled: false
   # uri: http://elasticserver:9200
   # username: ""
-  # passwordSecret: {}
+  # usernameSecret:
+  #   # name: ""
+  #   # key: ""
+  # passwordSecret:
   #   # name: ""
   #   # key: ""
   image:
@@ -159,24 +190,35 @@ ingress:
   gwruntime:
     enabled: false
     annotations: {}
-    host: chart-example.local
+    host: webmethods-apigateway.local
     # tls:
     #  - secretName: chart-example-tls
     #    hosts:
     #      - chart-example.local
     paths:
-      - path: /gateway
+      - path: /gateway/
         pathType: Prefix
-      - path: /rest
+      - path: /rest/
         pathType: Prefix
-      - path: /invoke
+      - path: /invoke/
         pathType: Prefix
-      - path: /WmAPIGateway
+      - path: /WmAPIGateway/
         pathType: Prefix
   gwui:
     enabled: false
     annotations: {}
-    host: chart-example.local
+    host: webmethods-apigateway.local
+    # tls:
+    #  - secretName: chart-example-tls
+    #    hosts:
+    #      - chart-example.local
+    paths:
+      - path: /apigatewayui/
+        pathType: Prefix
+  isruntime:
+    enabled: false
+    annotations: {}
+    host: webmethods-apigateway-isruntime.local
     # tls:
     #  - secretName: chart-example-tls
     #    hosts:
@@ -198,7 +240,11 @@ ingress:
     #  - secretName: chart-example-tls
     #    hosts:
     #      - chart-example.local
-  
+
+## these are for the custom volumes to be mounted
+extraVolumes:
+extraVolumeMounts:
+
 serviceAccount:
   # Specifies whether a service account should be created
   create: true

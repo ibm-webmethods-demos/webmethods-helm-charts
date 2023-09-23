@@ -13,17 +13,17 @@ data:
         properties:
           location: full.yml
       {{- else }}
-      {{- if .Values.commonConfigs }}
-      - type: YAML
-        allowEdit: false
-        properties:
-          location: common.yml
-      {{- end }}
       {{- if .Values.connectElasticSearch.enabled }}
       - type: YAML
         allowEdit: false
         properties:
           location: elasticsearch.yml
+      {{- end }}
+      {{- if .Values.connectAnalyticsDataStore.enabled }}
+      - type: YAML
+        allowEdit: false
+        properties:
+          location: analyticsDataStore.yml
       {{- end }}
       {{- if .Values.connectKibana.enabled }}
       - type: YAML
@@ -44,34 +44,38 @@ data:
           location: clustering_terracotta.yml
       {{- end }}
       {{- end }}
+      {{- if .Values.extraConfigs }}
+      - type: YAML
+        allowEdit: false
+        properties:
+          location: extras.yml
+      {{- end }}
       {{- end }}
 
   {{- if .Values.fullConfigs }}
-  full.yml: |
+  full.yml:
     {{- toYaml .Values.fullConfigs | nindent 4 }}
   
   {{- else }}
 
-  {{- if .Values.commonConfigs }}
-  common.yml: |
-    {{- toYaml .Values.commonConfigs | nindent 4 }}
+  {{- if .Values.extraConfigs }}
+  extras.yml:
+    {{- toYaml .Values.extraConfigs | nindent 4 }}
   {{- end }}
   
   {{- if .Values.connectElasticSearch.enabled }}
-  elasticsearch.yml: |-
-    apigw:
-      elasticsearch:
-        tenantId: {{ .Values.tenantId }}
-        hosts: {{ (.Values.connectElasticSearch).hosts }}
-        autostart: false
+  elasticsearch.yml:
+    {{- toYaml .Values.connectElasticSearch.configs | nindent 4 }}
+  {{- end }}
+
+  {{- if .Values.connectAnalyticsDataStore.enabled }}
+  analyticsDataStore.yml:
+    {{- toYaml .Values.connectAnalyticsDataStore.configs | nindent 4 }}
   {{- end }}
 
   {{- if .Values.connectKibana.enabled }}
-  kibana.yml: |-
-    apigw:
-      kibana:
-        dashboardInstance: {{ (.Values.connectKibana).uri }}
-        autostart: false
+  kibana.yml:
+    {{- toYaml .Values.connectKibana.configs | nindent 4 }}
   {{- end }}
 
   {{- if include "webmethods-apigateway.isClusteringIgnite" (default "none" ((.Values.clustering).type))  }}

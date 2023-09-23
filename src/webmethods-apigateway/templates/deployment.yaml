@@ -42,9 +42,17 @@ spec:
             - name: ELASTIC_URI
               value: "{{ .Values.waitforelastic.uri }}"
             {{- end }}
+            {{- if .Values.waitforelastic.usernameSecret }}
+            - name: ELASTIC_USERNAME
+              valueFrom:
+                secretKeyRef:
+                  name: "{{ .Values.waitforelastic.usernameSecret.name }}"
+                  key: "{{ .Values.waitforelastic.usernameSecret.key }}"
+            {{- else }}
             {{- if .Values.waitforelastic.username }}
             - name: ELASTIC_USERNAME
               value: "{{ .Values.waitforelastic.username }}"
+            {{- end }}
             {{- end }}
             {{- if .Values.waitforelastic.passwordSecret }}
             - name: ELASTIC_PASSWORD
@@ -105,6 +113,9 @@ spec:
               protocol: TCP
             - containerPort: {{ int .diag }}
               name: diag
+              protocol: TCP
+            - containerPort: {{ int .isruntime }}
+              name: isruntime
               protocol: TCP
           {{- end }}
           startupProbe:
@@ -174,16 +185,21 @@ spec:
             {{- end }}
             {{- end }}
             {{- if .Values.connectElasticSearch.enabled }}
-            {{- if .Values.connectElasticSearch.username }}
-            - name: apigw_elasticsearch_http_username
-              value: "{{ .Values.connectElasticSearch.username }}"
-            {{- end }}
-            {{- if .Values.connectElasticSearch.passwordSecret }}
-            - name: apigw_elasticsearch_http_password
+            {{- range $name, $value := .Values.connectElasticSearch.configsExistingSecrets }}
+            - name: {{ $name | quote }}
               valueFrom:
                 secretKeyRef:
-                  name: "{{ .Values.connectElasticSearch.passwordSecret.name }}"
-                  key: "{{ .Values.connectElasticSearch.passwordSecret.key }}"
+                  name: {{ $value.secretName | quote }}
+                  key: {{ $value.secretKey | quote }}
+            {{- end }}
+            {{- end }}
+            {{- if .Values.connectAnalyticsDataStore.enabled }}
+            {{- range $name, $value := .Values.connectAnalyticsDataStore.configsExistingSecrets }}
+            - name: {{ $name | quote }}
+              valueFrom:
+                secretKeyRef:
+                  name: {{ $value.secretName | quote }}
+                  key: {{ $value.secretKey | quote }}
             {{- end }}
             {{- end }}
             {{- with .Values.envConfigs }}
@@ -212,7 +228,7 @@ spec:
               mountPath: /opt/softwareag/common/conf/terracotta-license.key
               subPath: {{ .Values.licenseTerracottaSecret.path }}
               readOnly: false
-            {{- end }}            
+            {{- end }}
             {{- with .Values.extraVolumeMounts }}
             {{- tpl . $ | nindent 12 }}
             {{- end }}
