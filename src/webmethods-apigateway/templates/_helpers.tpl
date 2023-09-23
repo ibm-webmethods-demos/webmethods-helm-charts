@@ -101,6 +101,14 @@ the name of the gw runtime service
 {{- end }}
 
 {{/*
+the name of the IS runtime service
+*/}}
+{{- define "webmethods-apigateway.isruntimeFullname" -}}
+{{- $uname := (include "webmethods-apigateway.fullname" .) }}
+{{- printf "%s-%s" $uname "isruntime" }}
+{{- end }}
+
+{{/*
 Is Clustering enabled
 */}}
 {{- define "webmethods-apigateway.isClusteringEnabled" }}
