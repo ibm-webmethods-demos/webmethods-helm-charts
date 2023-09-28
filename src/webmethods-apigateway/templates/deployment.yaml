@@ -97,6 +97,9 @@ spec:
           image: {{ printf "%s:%s" .Values.image.repository (.Values.image.tag | default .Chart.AppVersion) }}
           {{- end }}
           imagePullPolicy: {{ .Values.image.pullPolicy }}
+          # this block allows us to load a custom script to start the container...
+          # but possibly not quite needed
+          # command: ["/bin/sh","/opt/softwareag/custom/entrypoint.sh"]
           {{- with .Values.containerPorts }}
           ports:
             - containerPort: {{ int .gwruntime }}
@@ -214,6 +217,8 @@ spec:
           volumeMounts:
             - name: configs-volume
               mountPath: /opt/softwareag/IntegrationServer/instances/{{ .Values.integrationServerInstanceName }}/packages/WmAPIGateway/resources/configuration
+            - name: custom-scripts
+              mountPath: /opt/softwareag/custom
             - name: wm-derbydb-volume
               mountPath: /opt/softwareag/IntegrationServer/instances/{{ .Values.integrationServerInstanceName }}/db
               subPath: wmderbydb
@@ -233,6 +238,9 @@ spec:
             {{- tpl . $ | nindent 12 }}
             {{- end }}
       volumes:
+        - name: custom-scripts
+          configMap:
+            name: {{ include "webmethods-apigateway.fullname" . }}-customscripts
         - name: configs-volume
           configMap:
             name: {{ include "webmethods-apigateway.fullname" . }}
