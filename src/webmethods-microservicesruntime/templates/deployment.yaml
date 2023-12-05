@@ -34,24 +34,29 @@ spec:
             {{- toYaml .Values.securityContext | nindent 12 }}
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
           imagePullPolicy: {{ .Values.image.pullPolicy }}
+          {{- with .Values.containerPorts }}
           ports:
-            - containerPort: {{ .Values.service.port }}
-              name: runtimeport
+            - containerPort: {{ int .runtime }}
+              name: runtime
+              protocol: TCP
+            - containerPort: {{ int .diag }}
+              name: diag
               protocol: TCP
           startupProbe:
             httpGet:
               path: /invoke/wm.server/ping
-              port: {{ .Values.service.port }}
+              port: {{ int .runtime }}
             failureThreshold: 60
             periodSeconds: 10
           livenessProbe:
             httpGet:
               path: /invoke/wm.server/ping
-              port: {{ .Values.service.port }}
+              port: {{ int .runtime }}
             periodSeconds: 10
             failureThreshold: 4
             successThreshold: 1
             timeoutSeconds: 5
+          {{- end }}
           resources:
             {{- toYaml .Values.resources | nindent 12 }}
           env:
@@ -102,7 +107,7 @@ spec:
       volumes:
         - name: wm-derbydb-volume
           emptyDir:
-            sizeLimit: 1Gi
+            sizeLimit: {{ .Values.derbyDBSize | default "1Gi" }}
         - name: msr-configs
           configMap:
             name: {{ include "webmethods-microservicesruntime.fullname" . }}

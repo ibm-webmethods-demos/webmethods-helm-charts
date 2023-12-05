@@ -23,6 +23,9 @@ fullnameOverride: ""
 msrLicenseSecret: ""
 terracottaLicenseSecret: ""
 
+# size of the temp dir for the MSR derbydb
+derbyDBSize: 1Gi
+
 configs:
   fileAccessControl:
     enabled: false
@@ -41,17 +44,17 @@ persistence:
     size: 5Gi
     storageClassName: "gp2"
     accessMode: "ReadWriteOnce"
+  metering:
+    enabled: false
+    size: 1Gi
+    storageClassName: "gp2"
+    accessMode: "ReadWriteOnce"
   customdata:
     enabled: false
     size: 10Gi
     storageClassName: "gp2"
     accessMode: "ReadWriteOnce"
     mountPath: "/data"
-  metering:
-    enabled: false
-    size: 1Gi
-    storageClassName: "gp2"
-    accessMode: "ReadWriteOnce"
 
 serviceAccount:
   # Specifies whether a service account should be created
@@ -75,6 +78,12 @@ securityContext: {}
   # runAsNonRoot: true
   # runAsUser: 1000
 
+## ports exposed by the container
+containerPorts:
+  runtime: 5555
+  diag: 9999
+
+## port exposed by the service
 service:
   type: ClusterIP
   port: 5555
