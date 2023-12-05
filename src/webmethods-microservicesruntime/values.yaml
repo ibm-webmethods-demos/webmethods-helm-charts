@@ -26,6 +26,11 @@ terracottaLicenseSecret: ""
 # size of the temp dir for the MSR derbydb
 derbyDBSize: 1Gi
 
+# dictionnaries for env variables passed as helm params (or you can use standard "env" list as well)
+envConfigs: {}
+envSecretConfigs: {}
+
+# config files as config maps
 configs:
   fileAccessControl:
     enabled: false

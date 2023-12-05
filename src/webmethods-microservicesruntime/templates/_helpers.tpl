@@ -60,3 +60,26 @@ Create the name of the service account to use
 {{- default "default" .Values.serviceAccount.name }}
 {{- end }}
 {{- end }}
+
+{{/*
+Transform Simple Dictionary into ENV array
+*/}}
+{{- define "webmethods-microservicesruntime.dictToEnvs" -}}
+{{- range $key, $value := . }}
+- name: {{ $key }}
+  value: {{ $value | quote }}
+{{- end }}
+{{- end }}
+
+{{/*
+Transform Secrets Dictionary into ENV array
+*/}}
+{{- define "webmethods-microservicesruntime.secretsDictToEnvs" -}}
+{{- range $key, $value := . }}
+- name: {{ $key }}
+  valueFrom:
+    secretKeyRef:
+      name: {{ $value.secretKeyRef | quote }}
+      key: {{ $value.key | quote }}
+{{- end }}
+{{- end }}

@@ -60,7 +60,27 @@ spec:
           resources:
             {{- toYaml .Values.resources | nindent 12 }}
           env:
-            {{- toYaml .Values.env | nindent 12 }}
+            {{- if .Values.settings.javaMemMin }}
+            - name: JAVA_MIN_MEM
+              value: "{{ .Values.settings.javaMemMin }}"
+            {{- end }}
+            {{- if .Values.settings.javaMemMax }}
+            - name: JAVA_MAX_MEM
+              value: "{{ .Values.settings.javaMemMax }}"
+            {{- end }}
+            {{- if .Values.settings.javaOpts }}
+            - name: JAVA_OPTS
+              value: "{{ .Values.settings.javaOpts }}"
+            {{- end }}
+            {{- with .Values.envConfigs }}
+            {{- include "webmethods-microservicesruntime.dictToEnvs" . | indent 12 }}
+            {{- end }}
+            {{- with .Values.envSecretConfigs }}
+            {{- include "webmethods-microservicesruntime.secretsDictToEnvs" . | indent 12 }}
+            {{- end }}
+            {{- with .Values.env }}
+            {{- toYaml . | nindent 12 }}
+            {{- end }}
           volumeMounts:
             - name: wm-derbydb-volume
               mountPath: /opt/softwareag/IntegrationServer/db
