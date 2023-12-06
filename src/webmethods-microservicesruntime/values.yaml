@@ -21,8 +21,14 @@ nameOverride: ""
 fullnameOverride: ""
 
 # the licensing needed for the product
-msrLicenseSecret: ""
-terracottaLicenseSecret: ""
+licenseSecret: {}
+  # name: ""
+  # key: ""
+
+# extra license needed if connecting to terracotta
+licenseTerracottaSecret: {}
+  # name: ""
+  # key: ""
 
 # size of the temp dir for the MSR derbydb
 derbyDBSize: 1Gi
