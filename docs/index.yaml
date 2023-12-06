@@ -269,6 +269,16 @@ entries:
   webmethods-microservicesruntime:
   - apiVersion: v2
     appVersion: 10.x.x
+    created: "2023-12-05T20:42:34.959402-05:00"
+    description: A Helm chart for Kubernetes
+    digest: 7e9d7c60aa0e5442db9073f72e88c191d127e208d28e3c514b1323174849d7bf
+    name: webmethods-microservicesruntime
+    type: application
+    urls:
+    - webmethods-microservicesruntime-0.2.6.tgz
+    version: 0.2.6
+  - apiVersion: v2
+    appVersion: 10.x.x
     created: "2023-12-04T20:35:38.902722-05:00"
     description: A Helm chart for Kubernetes
     digest: 85d2265cfc84147c6c70fb6400d31c5af432dea72d8d9c1c42369d8ebde2f225
@@ -368,4 +378,4 @@ entries:
     urls:
     - webmethods-terracotta-0.1.11.tgz
     version: 0.1.11
-generated: "2023-12-04T20:35:38.901127-05:00"
+generated: "2023-12-05T20:42:34.958445-05:00"
