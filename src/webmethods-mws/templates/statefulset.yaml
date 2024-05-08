@@ -1,0 +1,223 @@
+---
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: {{ include "webmethods-mws.fullname" . }}
+  labels:
+    {{- include "webmethods-mws.labels" . | nindent 4 }}
+spec:
+  serviceName: {{ include "webmethods-mws.fullname.headless" . }}
+  replicas: {{ .Values.replicaCount }}
+  updateStrategy:
+    type: RollingUpdate
+    rollingUpdate: 
+      partition: 0
+  {{- if .Values.persistence.enabled }}
+  volumeClaimTemplates:
+  - metadata:
+      name: {{ include "webmethods-mws.fullname" . }}
+      labels:
+        release: {{ .Release.Name | quote }}
+        chart: {{ .Chart.Name }}
+        app: {{ include "webmethods-mws.fullname" . }}
+    spec:
+      accessModes: ["ReadWriteOnce"]
+      {{- if .Values.persistence.storageClassName }}
+      storageClassName: {{ .Values.persistence.storageClassName }}
+      {{- end }}
+      resources:
+        requests:
+          storage: {{ .Values.persistence.storageSize }}
+  {{- end }}
+  selector:
+    matchLabels:
+      {{- include "webmethods-mws.selectorLabels" . | nindent 6 }}
+  template:
+    metadata:
+      {{- with .Values.podAnnotations }}
+      annotations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      labels:
+        {{- include "webmethods-mws.selectorLabels" . | nindent 8 }}
+    spec:
+      {{- with .Values.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      serviceAccountName: {{ include "webmethods-mws.serviceAccountName" . }}
+      securityContext:
+        {{- toYaml .Values.podSecurityContext | nindent 8 }}
+      {{- if .Values.initContainers }}
+      initContainers:
+        {{ toYaml .Values.initContainers | nindent 8 }}
+      {{- end }}
+      containers:
+        - name: {{ include "webmethods-mws.fullname" . }}
+          securityContext:
+            {{- toYaml .Values.securityContext | nindent 12 }}
+          {{- if .Values.image.registry }}
+          image: {{ printf "%s/%s:%s" .Values.image.registry .Values.image.repository (.Values.image.tag | default .Chart.AppVersion) }}
+          {{- else }}
+          image: {{ printf "%s:%s" .Values.image.repository (.Values.image.tag | default .Chart.AppVersion) }}
+          {{- end }}
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          {{- with .Values.containerPorts }}
+          ports:
+            - containerPort: {{ int .runtime }}
+              name: runtime
+              protocol: TCP
+          livenessProbe:
+            tcpSocket:
+              port: {{ int .runtime }}
+            failureThreshold: 3
+            periodSeconds: 10
+            successThreshold: 1
+            timeoutSeconds: 1
+          {{- end }}
+          startupProbe:
+            exec:
+              command:
+              - /bin/sh
+              - {{ .Values.sagHome }}/MWS/server/{{ .Values.instanceName }}/bin/container.sh
+              - healthcheck
+            failureThreshold: 90
+            periodSeconds: 30
+            successThreshold: 1
+            timeoutSeconds: 30
+          readinessProbe:
+            exec:
+              command:
+              - /bin/sh
+              - {{ .Values.sagHome }}/MWS/server/{{ .Values.instanceName }}/bin/container.sh
+              - healthcheck
+            failureThreshold: 3
+            periodSeconds: 30
+            successThreshold: 1
+            timeoutSeconds: 30
+          {{- with .Values.resources }}
+          resources:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+          env:
+            - name: NODE_NAME
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.name
+            {{- if .Values.sysadminPasswordSecret }}
+            - name: SYSADMIN_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.sysadminPasswordSecret.name }}
+                  key: {{ .Values.sysadminPasswordSecret.key }}
+            {{- end }}
+            {{- with .Values.process }}
+            {{- if .javaOpts }}
+            - name: JAVA_OPTS
+              value: {{ .javaOpts | quote }}
+            {{- end }}
+            {{- if .javaMemMin }}
+            - name: JAVA_MIN_MEM
+              value: {{ .javaMemMin | quote }}
+            {{- end }}
+            {{- if .javaMemMax }}
+            - name: JAVA_MAX_MEM
+              value: {{ .javaMemMax | quote }}
+            {{- end }}
+            {{- end }}
+            {{- if .Values.debug }}
+            - name: SCRIPTS_LOGGER_LEVEL
+              value: "1"
+            {{- end }}
+            {{- with .Values.externaldb }}
+            {{- if .type }}
+            - name: DB_TYPE
+              value: {{ .type | quote }}
+            {{- end }}
+            {{- if .url }}
+            - name: DB_URL
+              value: {{ .url | quote }}
+            {{- end }}
+            {{- if .user }}
+            - name: DB_USERNAME
+              value: {{ .user | quote }}
+            {{- end }}
+            {{- if .passwordSecret }}
+            - name: DB_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .passwordSecret.name }}
+                  key: {{ .passwordSecret.key }}
+            {{- end }}
+            {{- end }}
+            {{- with .Values.env }}
+            {{- toYaml . | nindent 12 }}
+            {{- end }}
+          volumeMounts:            
+            - name: mws-localdata
+              mountPath: {{ .Values.volumeBaseMount }}/data
+              subPathExpr: $(NODE_NAME)
+            {{- if .Values.persistence.enabled }}
+            - name: {{ include "webmethods-mws.fullname" . }}
+              mountPath: {{ .Values.volumeBaseMount }}/logs
+              subPath: logs
+            {{- end }}
+            {{- if .Values.configMaps.apps }}
+            - name: configs-apps
+              mountPath: {{ .Values.volumeBaseMount }}/apps
+              readOnly: true
+            {{- end }}
+            {{- if .Values.configMaps.configs }}
+            - name: configs-configs
+              mountPath: {{ .Values.volumeBaseMount }}/configs
+              readOnly: true
+            {{- end }}
+            {{- if .Values.configMaps.libs }}
+            - name: configs-libs
+              mountPath: {{ .Values.volumeBaseMount }}/libs
+              readOnly: true
+            {{- end }}
+            {{- if .Values.configMaps.patches }}
+            - name: configs-patches
+              mountPath: {{ .Values.volumeBaseMount }}/patches
+              readOnly: true
+            {{- end }}
+      volumes:
+        - name: mws-localdata
+          emptyDir:
+            sizeLimit: {{ .Values.localDataDirSize }}
+        {{- if .Values.configMaps.apps }}
+        - name: configs-apps
+          configMap:
+            name: {{ .Values.configMaps.apps }}
+        {{- end }}
+        {{- if .Values.configMaps.configs }}
+        - name: configs-configs
+          configMap:
+            name: {{ .Values.configMaps.configs }}
+        {{- end }}
+        {{- if .Values.configMaps.libs }}
+        - name: configs-libs
+          configMap:
+            name: {{ .Values.configMaps.libs }}
+        {{- end }}
+        {{- if .Values.configMaps.patches }}
+        - name: configs-patches
+          configMap:
+            name: {{ .Values.configMaps.patches }}
+        {{- end }}
+      {{- with .Values.volumes }}
+      {{- toYaml . | nindent 6 }}
+      {{- end }}
+      {{- with .Values.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}

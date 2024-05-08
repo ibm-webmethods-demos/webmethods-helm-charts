@@ -1,0 +1,47 @@
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "webmethods-mws.fullname" . }}
+  labels:
+    {{- include "webmethods-mws.labels" . | nindent 4 }}
+  {{- with .Values.service.annotations }}
+  annotations:
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
+spec:
+  type: {{ .Values.service.type }}
+  ports:
+    - name: {{ .Values.service.portName | default "http" }}
+      {{- if .Values.service.targetPort }}
+      targetPort: {{ .Values.service.targetPort }}
+      {{- end }}
+      port: {{ .Values.service.port }}
+      protocol: TCP
+  selector:
+    {{- include "webmethods-mws.selectorLabels" . | nindent 4 }}
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "webmethods-mws.fullname.headless" . }}
+  labels:
+    {{- include "webmethods-mws.labels" . | nindent 4 }}
+  annotations:
+    service.alpha.kubernetes.io/tolerate-unready-endpoints: "true"
+spec:
+  type: ClusterIP
+  clusterIP: None
+  sessionAffinity: None
+  # Create endpoints even if the related pod isn't ready
+  publishNotReadyAddresses: true
+  ports:
+    - name: {{ .Values.service.portName | default "http" }}
+      {{- if .Values.service.targetPort }}
+      targetPort: {{ .Values.service.targetPort }}
+      {{- end }}
+      port: {{ .Values.service.port }}
+      protocol: TCP
+  selector:
+    {{- include "webmethods-mws.selectorLabels" . | nindent 4 }}
