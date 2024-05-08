@@ -1,0 +1,19 @@
+apiVersion: v2
+name: webmethods-dbconfigurator
+description: Configure supported databases for webmethods using the webmethods dbconfigurator component / coontainer
+home: https://github.com/sag-gov-integration-unit/saggov-helm-charts/tree/main/src/webmethods-dbconfigurator
+version: "1.0.0"
+appVersion: "1.0.0"
+maintainers:
+  - name: fabien sanglier
+    email: fabien.sanglier@softwareaggov.com
+    url: https://github.com/fabien-sanglier-saggs
+keywords:
+  - webmethods
+  - softwareag
+  - config
+  - configurator
+  - dbconfigurator
+  - webmethods-dbconfigurator
+sources:
+  - https://github.com/sag-gov-integration-unit/saggov-helm-charts/tree/main/src/webmethods-dbconfigurator
