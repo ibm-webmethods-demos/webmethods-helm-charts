@@ -121,7 +121,7 @@ entries:
     description: Configure webmethods apigateway using simple environment variables
       - Configuration as Code for webmethods-apigateway-configurator.
     digest: efc963e984169195a06d04e43f9ac15da8df13b2763cf2637538fbf16386ecfa
-    home: https://github.com/saggs-cloudops/webmethods-apigateway-configurator
+    home: https://github.com/sag-gov-integration-unit/webmethods-apigateway-configurator
     keywords:
     - webmethods-apigateway
     - softwareag
@@ -135,7 +135,7 @@ entries:
       url: https://github.com/fabien-sanglier-saggs
     name: webmethods-apigateway-configurator
     sources:
-    - https://github.com/saggs-cloudops/webmethods-apigateway-configurator
+    - https://github.com/sag-gov-integration-unit/webmethods-apigateway-configurator
     urls:
     - webmethods-apigateway-configurator-1.0.0.tgz
     version: 1.0.0
@@ -227,7 +227,7 @@ entries:
     description: Configure webmethods devportal using simple environment variables
       - Configuration as Code for webmethods-devportal-configurator.
     digest: 59f62f6f06f37d6545ac9bc72626fcf552d07941e24b93451bf49271dd6a4584
-    home: https://github.com/saggs-cloudops/webmethods-devportal-configurator
+    home: https://github.com/sag-gov-integration-unit/webmethods-devportal-configurator
     keywords:
     - webmethods-devportal
     - softwareag
@@ -241,7 +241,7 @@ entries:
       url: https://github.com/fabien-sanglier-saggs
     name: webmethods-devportal-configurator
     sources:
-    - https://github.com/saggs-cloudops/webmethods-devportal-configurator
+    - https://github.com/sag-gov-integration-unit/webmethods-devportal-configurator
     urls:
     - webmethods-devportal-configurator-1.0.0.tgz
     version: 1.0.0
