@@ -43,6 +43,7 @@ spec:
   selector:
     {{- include "webmethods-apigateway.selectorLabels" . | nindent 4 }}
 ---
+{{- if .Values.service.isruntime }}
 apiVersion: v1
 kind: Service
 metadata:
@@ -64,3 +65,4 @@ spec:
       name: isruntime
   selector:
     {{- include "webmethods-apigateway.selectorLabels" . | nindent 4 }}
+{{- end }}

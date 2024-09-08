@@ -48,11 +48,13 @@ service:
     port: 9072
     targetPort: gwui
     annotations: {}
-  isruntime:
-    type: ClusterIP
-    port: 6655
-    targetPort: isruntime
-    annotations: {}
+  ## isruntime is generally the same as gwruntime
+  ## But could be useful to set if it was set to a different port from the gw api runtime
+  # isruntime:
+  #   type: ClusterIP
+  #   port: 6655
+  #   targetPort: isruntime
+  #   annotations: {}
 
 ## ports exposed by the container
 containerPorts:
@@ -61,7 +63,9 @@ containerPorts:
   gwui: 9072
   gwuissl: 9073
   diag: 9999
-  isruntime: 5555
+  ## isruntime is generally the same as gwruntime
+  ## But could be useful to set if it was set to a different port from the gw api runtime
+  # isruntime: 5555
 
 ## connectivity to external elastic search
 connectElasticSearch:
@@ -161,7 +165,7 @@ fullConfigs: {}
 # in the meantime, let's leave the ability to specify uri and user/password here
 waitforelastic:
   enabled: false
-  # uri: http://elasticserver:9200
+  uri: "http://es:9200"
   # username: ""
   # usernameSecret:
   #   # name: ""
@@ -169,12 +173,19 @@ waitforelastic:
   # passwordSecret:
   #   # name: ""
   #   # key: ""
+  securityContext:
+    readOnlyRootFilesystem: true
+    runAsNonRoot: true
+    allowPrivilegeEscalation: false
+    capabilities:
+      drop:
+      - ALL
   image:
     registry: 
     repository: curlimages/curl
     tag: "7.81.0"
     pullPolicy: IfNotPresent
-     
+
 # the licensing needed for the product
 licenseSecret: {}
   # name: ""
@@ -215,31 +226,31 @@ ingress:
     paths:
       - path: /apigatewayui/
         pathType: Prefix
-  isruntime:
-    enabled: false
-    annotations: {}
-    host: webmethods-apigateway-isruntime.local
-    # tls:
-    #  - secretName: chart-example-tls
-    #    hosts:
-    #      - chart-example.local
-    paths:
-      - path: /
-        pathType: Prefix
-  custom:
-    enabled: false
-    annotations: {}
-    hosts:
-      - host: chart-example.local
-        paths: []
-          # - path: /
-          #   pathType: Prefix
-          #   backendServiceName: someservice
-          #   backendServicePort: 5555
-    # tls:
-    #  - secretName: chart-example-tls
-    #    hosts:
-    #      - chart-example.local
+  # isruntime:
+  #   enabled: false
+  #   annotations: {}
+  #   host: webmethods-apigateway-isruntime.local
+  #   # tls:
+  #   #  - secretName: chart-example-tls
+  #   #    hosts:
+  #   #      - chart-example.local
+  #   paths:
+  #     - path: /
+  #       pathType: Prefix
+  # custom:
+  #   enabled: false
+  #   annotations: {}
+  #   hosts:
+  #     - host: chart-example.local
+  #       paths: []
+  #         # - path: /
+  #         #   pathType: Prefix
+  #         #   backendServiceName: someservice
+  #         #   backendServicePort: 5555
+  #   # tls:
+  #   #  - secretName: chart-example-tls
+  #   #    hosts:
+  #   #      - chart-example.local
 
 ## these are for the custom volumes to be mounted
 extraVolumes:
@@ -257,16 +268,18 @@ serviceAccount:
 podAnnotations: {}
 
 podSecurityContext: {}
-  # fsGroup: 2000
+  # runAsUser: 1724
+  # runAsGroup: 1724
+  # fsGroup: 1724
 
-securityContext: {}
-  # capabilities:
-  #   drop:
-  #   - ALL
+securityContext:
+  allowPrivilegeEscalation: false
+  capabilities:
+    drop:
+    - ALL
+  runAsNonRoot: true
+  # runAsUser: 1724
   # readOnlyRootFilesystem: true
-  # runAsNonRoot: true
-  # runAsUser: 1000
-
 
 resources: {}
   # We usually recommend not to specify default resources and to leave this as a conscious

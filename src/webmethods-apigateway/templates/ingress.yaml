@@ -1,4 +1,5 @@
 ---
+{{- if .Values.ingress.gwruntime -}}
 {{- if .Values.ingress.gwruntime.enabled -}}
 {{- $uname := (include "webmethods-apigateway.gwruntimeFullname" .) }}
 {{- $port := .Values.service.gwruntime.port }}
@@ -40,7 +41,9 @@ spec:
                   number: {{ $port }}
           {{- end }}
 {{- end }}
+{{- end }}
 ---
+{{- if .Values.ingress.gwui -}}
 {{- if .Values.ingress.gwui.enabled -}}
 {{- $uname := (include "webmethods-apigateway.gwuiFullname" .) }}
 {{- $port := .Values.service.gwui.port }}
@@ -82,7 +85,9 @@ spec:
                   number: {{ $port }}
           {{- end }}
 {{- end }}
+{{- end }}
 ---
+{{- if .Values.ingress.isruntime -}}
 {{- if .Values.ingress.isruntime.enabled -}}
 {{- $uname := (include "webmethods-apigateway.isruntimeFullname" .) }}
 {{- $port := .Values.service.isruntime.port }}
@@ -124,7 +129,9 @@ spec:
                   number: {{ $port }}
           {{- end }}
 {{- end }}
+{{- end }}
 ---
+{{- if .Values.ingress.custom -}}
 {{- if .Values.ingress.custom.enabled -}}
 {{- $uname := (include "webmethods-apigateway.fullname" .) }}
 apiVersion: networking.k8s.io/v1
@@ -167,3 +174,4 @@ spec:
           {{- end }}
     {{- end }}
 {{- end -}}
+{{- end }}
