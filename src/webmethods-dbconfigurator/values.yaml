@@ -9,7 +9,7 @@ nameOverride: ""
 
 # default docker hub image at https://hub.docker.com/r/saggs/webmethods-dbconfigurator
 image:
-  registry: ghcr.io/softwareag-government-solutions
+  registry: ghcr.io/sag-gov-integration-unit
   repository: webmethods-dbconfig
   pullPolicy: IfNotPresent
   tag: "10.15"

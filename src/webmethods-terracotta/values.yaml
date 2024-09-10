@@ -5,7 +5,7 @@
 replicaCount: 1
 
 image:
-  registry: ghcr.io/softwareag-government-solutions
+  registry: ghcr.io/sag-gov-integration-unit
   repository: webmethods-terracotta
   pullPolicy: IfNotPresent
   tag: 10.11-latest
