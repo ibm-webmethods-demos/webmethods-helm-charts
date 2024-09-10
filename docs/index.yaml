@@ -28,6 +28,17 @@ entries:
   samplejavaapis-sidecar-microgateway:
   - apiVersion: v2
     appVersion: 1.0.0
+    created: "2024-09-10T17:53:55.895256-04:00"
+    description: A Helm chart to demonstrate the deployment of some sample java apis
+      with SoftwareAG Microgateway loaded as a side-car container
+    digest: 9ab9f1058d15a0a9f4dd792f0186230ce55aa564de5bb8eb8b42a9ee1d506ed0
+    name: samplejavaapis-sidecar-microgateway
+    type: application
+    urls:
+    - samplejavaapis-sidecar-microgateway-0.1.2.tgz
+    version: 0.1.2
+  - apiVersion: v2
+    appVersion: 1.0.0
     created: "2022-02-28T16:13:06.280994-05:00"
     description: A Helm chart to demonstrate the deployment of some sample java apis
       with SoftwareAG Microgateway loaded as a side-car container
@@ -49,6 +60,16 @@ entries:
     - samplejavaapis-sidecar-microgateway-0.1.0.tgz
     version: 0.1.0
   webmethods-apigateway:
+  - apiVersion: v2
+    appVersion: 10.15.x
+    created: "2024-09-10T17:53:55.895636-04:00"
+    description: A Helm chart for SoftwareAG webMethods API Gateway in Kubernetes
+    digest: 7a9349693041990b4dd2aefa64277fa2b4e28d5308e80017bcb11caee854238a
+    name: webmethods-apigateway
+    type: application
+    urls:
+    - webmethods-apigateway-0.1.20.tgz
+    version: 0.1.20
   - apiVersion: v2
     appVersion: 10.15.x
     created: "2023-09-28T00:48:04.523183-04:00"
@@ -165,6 +186,16 @@ entries:
     - webmethods-apigateway-configurator-1.0.0.tgz
     version: 1.0.0
   webmethods-devportal:
+  - apiVersion: v2
+    appVersion: 10.15.x
+    created: "2024-09-10T17:53:55.895892-04:00"
+    description: A Helm chart for SoftwareAG webMethods Developer Portal in Kubernetes
+    digest: b7ff913c6626e55bbbe839179bfc97eb4bf855c56d92c80dd9619de426a8b9a0
+    name: webmethods-devportal
+    type: application
+    urls:
+    - webmethods-devportal-0.2.3.tgz
+    version: 0.2.3
   - apiVersion: v2
     appVersion: 10.15.x
     created: "2023-09-23T00:37:37.968889-04:00"
@@ -403,4 +434,4 @@ entries:
     urls:
     - webmethods-terracotta-0.1.11.tgz
     version: 0.1.11
-generated: "2024-09-10T17:51:24.60405-04:00"
+generated: "2024-09-10T17:53:55.894948-04:00"
