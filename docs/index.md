@@ -19,7 +19,7 @@ helm repo add saggov-helm-charts https://softwareag-government-solutions.github.
 - saggov-helm-charts/webmethods-terracotta
 - saggov-helm-charts/samplejavaapis-sidecar-microgateway
 
-Helm Charts sample deployments can be specifically found at: [webmethods API Management in Kubernetes](https://github.com/softwareag-government-solutions/webmethods-container-deployments/tree/main/kubernetes/api_management/)
+Helm Charts sample deployments can be specifically found at: [webmethods API Management in Kubernetes](https://github.com/sag-gov-integration-unit/webmethods-container-deployments/tree/main/kubernetes/api_management/)
 
 
 #### Verify availability in your cluster
@@ -50,7 +50,7 @@ helm install webmethods-apigateway saggov-helm-charts/webmethods-apigateway
 
 Having trouble with these charts? Please submit an issue, right here, on GitHub!
 
-Also, please refer to our blue-print sample deployments project at [webmethods-container-deployments](https://github.com/softwareag-government-solutions/webmethods-container-deployments)
+Also, please refer to our blue-print sample deployments project at [webmethods-container-deployments](https://github.com/sag-gov-integration-unit/webmethods-container-deployments)
 
 For more information on the Software AG products:
  - You can Ask a Question in the [TECHcommunity Forums](http://tech.forums.softwareag.com).
