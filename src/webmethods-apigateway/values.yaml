@@ -43,10 +43,20 @@ service:
     port: 5555
     targetPort: gwruntime
     annotations: {}
+  gwruntimessl:
+    type: ClusterIP
+    port: 5543
+    targetPort: gwruntimessl
+    annotations: {}
   gwui:
     type: ClusterIP
     port: 9072
     targetPort: gwui
+    annotations: {}
+  gwuissl:
+    type: ClusterIP
+    port: 9073
+    targetPort: gwuissl
     annotations: {}
   ## isruntime is generally the same as gwruntime
   ## But could be useful to set if it was set to a different port from the gw api runtime
