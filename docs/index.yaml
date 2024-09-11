@@ -62,6 +62,16 @@ entries:
   webmethods-apigateway:
   - apiVersion: v2
     appVersion: 10.15.x
+    created: "2024-09-10T20:40:55.328337-04:00"
+    description: A Helm chart for SoftwareAG webMethods API Gateway in Kubernetes
+    digest: c71e968c594c4224e7bc923a62a70263d3202b68bd93e2c411882fef861551f3
+    name: webmethods-apigateway
+    type: application
+    urls:
+    - webmethods-apigateway-0.1.21.tgz
+    version: 0.1.21
+  - apiVersion: v2
+    appVersion: 10.15.x
     created: "2024-09-10T17:53:55.895636-04:00"
     description: A Helm chart for SoftwareAG webMethods API Gateway in Kubernetes
     digest: 7a9349693041990b4dd2aefa64277fa2b4e28d5308e80017bcb11caee854238a
@@ -434,4 +444,4 @@ entries:
     urls:
     - webmethods-terracotta-0.1.11.tgz
     version: 0.1.11
-generated: "2024-09-10T17:53:55.894948-04:00"
+generated: "2024-09-10T20:40:55.327898-04:00"
