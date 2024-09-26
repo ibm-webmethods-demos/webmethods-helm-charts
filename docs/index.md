@@ -1,28 +1,15 @@
-## Helm Charts by Software AG Government Solutions
+# Helm Charts for webMethods
 
-This is a Helm Charts repository for the Software AG Product Container Images provided and maintained by [Software AG Government Solutions](https://www.softwareaggov.com).
+This is a public Helm charts repo to have all the webMethods product deployments charts in 1 place...
 
-For more information on these containers, go to: [Product Containers by Software AG Government Solutions](https://softwareag-government-solutions.github.io/saggov-containers/)
-
-### Install the Chart Repo
+## Install the Chart Repo
 
 ```bash
-helm repo add saggov-helm-charts https://softwareag-government-solutions.github.io/saggov-helm-charts
+helm repo add webmethods-helm-charts https://sag-gov-integration-unit.github.io/webmethods-helm-charts
+helm repo update
 ```
 
-### Charts for Software AG API Management
-
-- saggov-helm-charts/webmethods-microservicesruntime
-- saggov-helm-charts/webmethods-apigateway
-- saggov-helm-charts/webmethods-microgateway
-- saggov-helm-charts/webmethods-devportal
-- saggov-helm-charts/webmethods-terracotta
-- saggov-helm-charts/samplejavaapis-sidecar-microgateway
-
-Helm Charts sample deployments can be specifically found at: [webmethods API Management in Kubernetes](https://github.com/sag-gov-integration-unit/webmethods-container-deployments/tree/main/kubernetes/api_management/)
-
-
-#### Verify availability in your cluster
+## Verify availability in your cluster
 
 ```bash
 helm search repo <chart_name>
@@ -34,16 +21,16 @@ ie.
 helm search repo webmethods-apigateway
 ```
 
-#### Deploy the charts
+## Deploy the charts
 
 ```bash
-helm install <name> saggov-helm-charts/<chart_name>
+helm install <name> webmethods-helm-charts/<chart_name>
 ```
 
 ie.
 
 ```
-helm install webmethods-apigateway saggov-helm-charts/webmethods-apigateway
+helm install webmethods-apigateway webmethods-helm-charts/webmethods-apigateway
 ```
 
 ## Support or Contact
@@ -55,8 +42,6 @@ Also, please refer to our blue-print sample deployments project at [webmethods-c
 For more information on the Software AG products:
  - You can Ask a Question in the [TECHcommunity Forums](http://tech.forums.softwareag.com).
  - You can also find additional information in the [Software AG TECHcommunity](http://techcommunity.softwareag.com).
-
-Finally, for access and other general question, contact Software AG Government Solutions at ***info@softwareaggov.com***
 
 ______________________
 These Charts are provided as-is and without warranty or support. They do not constitute part of the Software AG product suite. Users are free to use, fork and modify them, subject to the license agreement. While Software AG Government Solutions welcomes contributions, we cannot guarantee to include every contribution in the master project.
