@@ -1,0 +1,94 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Values.applications.ingress.name }}
+  namespace: {{ default "control-plane" .Release.Namespace }}
+spec:
+  revisionHistoryLimit: 0
+  replicas: {{ .Values.applications.ingress.replicas }}
+  selector:
+    matchLabels:
+      app: {{ .Values.applications.ingress.name }}
+  strategy:
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 0
+    type: RollingUpdate
+  template:
+    metadata:
+      labels:
+        app: {{ .Values.applications.ingress.name }}
+        date: "{{ now | unixEpoch }}"
+    spec:
+      automountServiceAccountToken: false
+      volumes:
+      - name: license-file
+        configMap:
+          name: {{ .Values.applications.ingress.name }}-config
+      containers:
+      - image: {{ .Values.applications.ingress.imageName }}:{{ .Values.applications.ingress.imageTag }}
+        name: {{ .Values.applications.ingress.name }}
+        volumeMounts:
+        - name: license-file
+          mountPath: /home/license
+        envFrom:
+        - configMapRef:
+            name: {{ .Values.applications.ingress.name }}-config
+        imagePullPolicy: Always
+        securityContext:
+          runAsNonRoot: true
+          runAsUser: 1724
+        resources:
+          limits:
+            cpu: {{ .Values.applications.ingress.resources.limits.cpu }}
+            memory: {{ .Values.applications.ingress.resources.limits.memory }}
+          requests:
+            cpu: {{ .Values.applications.ingress.resources.requests.cpu }}
+            memory: {{ .Values.applications.ingress.resources.requests.memory }}
+#  should be enabled if the certificate from host system is being mounted
+#        volumeMounts:
+#          - name: hostpath-volume
+#            mountPath: /opt/softwareag/certs/softwareag_not_for_production.jks
+        ports:
+          - containerPort: 8080
+            name: http
+        readinessProbe:
+          httpGet:
+            path: /api/ingress/health/readiness
+            {{ if eq .Values.applications.ingress.sslEnabled true }}
+            port: 8443
+            scheme: HTTPS
+            {{ else }}
+            port: 8080
+            scheme: HTTP
+            {{ end }}
+          initialDelaySeconds: 100
+          periodSeconds: 20
+          successThreshold: 1
+          failureThreshold: 3
+          timeoutSeconds: 5
+        livenessProbe:
+          httpGet:
+            path: /api/ingress/health/liveness
+            {{ if eq .Values.applications.ingress.sslEnabled true }}
+            port: 8443
+            scheme: HTTPS
+            {{ else }}
+            port: 8080
+            scheme: HTTP
+            {{ end }}
+          initialDelaySeconds: 100
+          periodSeconds: 20
+          successThreshold: 1
+          failureThreshold: 3
+          timeoutSeconds: 5
+#      should be enabled if the certificate from host system is being mounted
+#      volumes:
+#        - name: hostpath-volume
+#          hostPath:
+#            path: /mnt/path/in/your/host/softwareag_test.jks
+#            type: File
+      terminationGracePeriodSeconds: 30
+      imagePullSecrets:
+        - name: {{ .Values.imagePullSecretName }}
+---

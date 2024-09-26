@@ -236,17 +236,17 @@ ingress:
     paths:
       - path: /apigatewayui/
         pathType: Prefix
-  # isruntime:
-  #   enabled: false
-  #   annotations: {}
-  #   host: webmethods-apigateway-isruntime.local
-  #   # tls:
-  #   #  - secretName: chart-example-tls
-  #   #    hosts:
-  #   #      - chart-example.local
-  #   paths:
-  #     - path: /
-  #       pathType: Prefix
+  isruntime:
+    enabled: false
+    annotations: {}
+    host: webmethods-apigateway-isruntime.local
+    # tls:
+    #  - secretName: chart-example-tls
+    #    hosts:
+    #      - chart-example.local
+    paths:
+      - path: /
+        pathType: Prefix
   # custom:
   #   enabled: false
   #   annotations: {}
@@ -308,3 +308,10 @@ nodeSelector: {}
 tolerations: []
 
 affinity: {}
+
+
+      hostAliases:
+        - ip: "127.0.0.1"
+          hostnames:
+            - "foo.local"
+            - "bar.local"
