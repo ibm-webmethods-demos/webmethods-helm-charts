@@ -4,9 +4,17 @@ metadata:
   name: {{ .Values.applications.engine.name }}-config
 data:
   APICP_ASSET_CATALOG_ENDPOINT: "http://{{ .Values.applications.assetcatalog.name }}-svc:8080"
+  {{- if not .Values.applications.external_es.enabled }}
   SERVICE_ELASTICSEARCH_HOST: {{ .Values.applications.es.name }}-lb
   SERVICE_ELASTICSEARCH_PORT: "9200"
   SERVICE_ELASTICSEARCH_CERTPATH: ""
+  {{- else }}
+  {{- with .Values.applications.external_es.connection }}
+  SERVICE_ELASTICSEARCH_HOST: {{ .host }}
+  SERVICE_ELASTICSEARCH_PORT:  {{ .port | quote }}
+  SERVICE_ELASTICSEARCH_CERTPATH:  {{ .cert_path }}
+  {{- end }}
+  {{- end }}
   OTEL_JAVAAGENT_ENABLED: "true"
   {{- if .Values.applications.jaegertracing.enabled }}
   OTEL_METRICS_EXPORTER: "none"

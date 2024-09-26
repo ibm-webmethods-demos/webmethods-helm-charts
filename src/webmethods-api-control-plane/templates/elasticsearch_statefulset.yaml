@@ -1,3 +1,4 @@
+{{- if not .Values.applications.external_es.enabled }}
 apiVersion: apps/v1
 kind: StatefulSet
 metadata:
@@ -94,3 +95,4 @@ spec:
             mountPath: /usr/share/elasticsearch/data
           - name: logs
             mountPath: /usr/share/elasticsearch/logs
+{{- end }}

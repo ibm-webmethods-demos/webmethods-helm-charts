@@ -22,8 +22,16 @@ data:
   APICP_TENANT_ID: "{{ .Values.applications.ingress.tenantId }}"
   APICP_SAG_CLOUD_URL: ""
   APICP_LICENSE_PATH: "/home/license/{{ .Values.applications.ingress.licenseFileName }}"
+  {{- if not .Values.applications.external_es.enabled }}
   SERVICE_ELASTICSEARCH_HOST: {{ .Values.applications.es.name }}-lb
   SERVICE_ELASTICSEARCH_PORT: "9200"
+  {{- else }}
+  {{- with .Values.applications.external_es.connection }}
+  SERVICE_ELASTICSEARCH_HOST: {{ .host }}
+  SERVICE_ELASTICSEARCH_PORT:  {{ .port | quote }}
+  SERVICE_ELASTICSEARCH_CERTPATH:  {{ .cert_path }}
+  {{- end }}
+  {{- end }}
   MANAGEMENT_HEALTH_ELASTICSEARCH_ENABLED: "false"
   com.softwareag.api.umc.loadbalancer.url: "http://{{ .Values.domainName }}"
   com.softwareag.api.umc.oauth.active: ""

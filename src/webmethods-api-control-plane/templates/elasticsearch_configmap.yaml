@@ -1,3 +1,4 @@
+{{- if not .Values.applications.external_es.enabled }}
 apiVersion: v1
 kind: ConfigMap
 metadata:
@@ -10,4 +11,4 @@ data:
   network.host: "0.0.0.0"
   xpack.ml.enabled: "false"
   xpack.security.enabled: "false"
----
+{{- end }}
