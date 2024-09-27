@@ -1,8 +1,33 @@
+
+imagePullSecretName: regcred
+# -- Optionally configure a ingress class to use for the kubernetes ingress (default: nginx)
+# ingressClassName: nginx
+
 # the licensing needed for the product
 licenseSecret: {}
   # name: ""
   # key: ""
   # path: ""
+
+serviceAccount:
+  # Specifies whether a service account should be created
+  create: true
+  # Annotations to add to the service account
+  annotations: {}
+  # The name of the service account to use.
+  # If not set and create is true, a name is generated using the fullname template
+  name: ""
+
+ingress:
+  enabled: false
+  domainName: my-control-plane
+  # className: "ingress-controller-class"
+  annotations: {}
+    # kubernetes.io/tls-acme: "true"
+  # tls:
+  #  - secretName: chart-example-tls
+  #    hosts:
+  #      - chart-example.local
 
 applications:
   assetcatalog:
@@ -14,6 +39,15 @@ applications:
     imageTag: "11.0"
     # -- No. of assetcatalog Replicas
     replicas: 2
+    service:
+      annotations: {}
+    podSecurityContext:
+      runAsUser: 1724
+    containerSecurityContext:           
+      allowPrivilegeEscalation: false
+      capabilities:
+        drop:
+        - ALL
     resources:
       limits:
         # -- Maximum CPU resource units(1 CPU unit is equivalent to 1 physical CPU core, or 1 virtual core)
@@ -34,6 +68,15 @@ applications:
     imageTag: "11.0"
     # -- No. of engine Replicas 
     replicas: 2
+    service:
+      annotations: {}
+    podSecurityContext:
+      runAsUser: 1724
+    containerSecurityContext:           
+      allowPrivilegeEscalation: false
+      capabilities:
+        drop:
+        - ALL
     resources:
       limits:
         # -- Maximum CPU resource units(1 CPU unit is equivalent to 1 physical CPU core, or 1 virtual core)
@@ -54,6 +97,15 @@ applications:
     imageTag: "11.0"
     # -- No. of ingress Replicas 
     replicas: 2
+    service:
+      annotations: {}
+    podSecurityContext:
+      runAsUser: 1724
+    containerSecurityContext:           
+      allowPrivilegeEscalation: false
+      capabilities:
+        drop:
+        - ALL
     # -- Tenant ID - The name of the tenant for the deployment
     tenantId: default
     sslEnabled: true
@@ -77,6 +129,15 @@ applications:
     imageTag: "11.0"
     # -- No. of ui Replicas 
     replicas: 2
+    service:
+      annotations: {}
+    podSecurityContext:
+      runAsUser: 1724
+    containerSecurityContext:           
+      allowPrivilegeEscalation: false
+      capabilities:
+        drop:
+        - ALL
     resources:
       limits:
         # -- Maximum CPU resource units(1 CPU unit is equivalent to 1 physical CPU core, or 1 virtual core)
@@ -104,6 +165,23 @@ applications:
     imageTag: "8.1.1"
     # -- Storage size for persistent volume
     replicas: 1
+    service:
+      annotations: {}
+    podSecurityContext:
+      fsGroup: 1000
+    containerSecurityContext:
+      privileged: true
+      runAsUser: 1000
+      capabilities:
+        add:
+          - IPC_LOCK
+          - SYS_RESOURCE
+          - SYS_ADMIN
+          - DAC_OVERRIDE
+          - DAC_READ_SEARCH
+    initContainerSecurityContext:
+      privileged: true
+      runAsUser: 0
     # -- Cluster master nodes in the format "<name>-0, ..., <name>-(n-1)" where n is replicas. For a single node cluster it will be "<name>-0".
     cluster:
       initial_master_nodes: elasticsearch-0
@@ -161,7 +239,4 @@ applications:
       plan: "Free"
       stage: "Staging"
       key: "AP-BCBBKBNAYWW6-2-2"
-domainName: my-control-plane
-imagePullSecretName: regcred
-# -- Optionally configure a ingress class to use for the kubernetes ingress (default: nginx)
-# ingressClassName: nginx
+

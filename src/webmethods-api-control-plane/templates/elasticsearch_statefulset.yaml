@@ -1,4 +1,4 @@
-{{- if not .Values.applications.external_es.enabled }}
+{{- if not .Values.applications.es_external.enabled }}
 apiVersion: apps/v1
 kind: StatefulSet
 metadata:
@@ -33,15 +33,15 @@ spec:
       labels:
         app: {{ .Values.applications.es.name }}
     spec:
+      serviceAccountName: {{ include "webmethods-api-control-plane.serviceAccountName" . }}
       securityContext:
-        fsGroup: 1000
+        {{- toYaml .Values.podSecurityContext | nindent 8 }}
       initContainers:
       - name: init-sysctl
         image: public.ecr.aws/docker/library/busybox:latest
         imagePullPolicy: IfNotPresent
         securityContext:
-          privileged: true
-          runAsUser: 0
+          {{- toYaml .Values.applications.es.initContainerSecurityContext | nindent 10 }}
         command: ["sysctl", "-w", "vm.max_map_count=262144"]
       volumes:
         - name: logs
@@ -56,15 +56,7 @@ spec:
             cpu: {{ .Values.applications.es.resources.requests.cpu }}
             memory: {{ .Values.applications.es.resources.requests.memory }}
         securityContext:
-          privileged: true
-          runAsUser: 1000
-          capabilities:
-            add:
-            - IPC_LOCK
-            - SYS_RESOURCE
-            - SYS_ADMIN
-            - DAC_OVERRIDE
-            - DAC_READ_SEARCH
+          {{- toYaml .Values.applications.es.containerSecurityContext | nindent 10 }}
         image: {{ .Values.applications.es.imageName }}:{{ .Values.applications.es.imageTag }}
         imagePullPolicy: "IfNotPresent"
         envFrom:

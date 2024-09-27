@@ -1,13 +1,15 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: {{ .Values.applications.ui.name }}
-  namespace: {{ default "control-plane" .Release.Namespace }}
+  name: {{ include "webmethods-api-control-plane.name-ui" . }}
+  labels:
+    {{- include "webmethods-api-control-plane.labels" . | nindent 4 }}
 spec:
   revisionHistoryLimit: 0
   replicas: {{ .Values.applications.ui.replicas }}
   selector:
     matchLabels:
+      {{- include "webmethods-api-control-plane.selectorLabels" . | nindent 6 }}
       app: {{ .Values.applications.ui.name }}
   strategy:
     rollingUpdate:
@@ -16,21 +18,28 @@ spec:
     type: RollingUpdate
   template:
     metadata:
+      {{- with .Values.applications.ui.podAnnotations }}
+      annotations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
       labels:
+        {{- include "webmethods-api-control-plane.selectorLabels" . | nindent 8 }}
         app: {{ .Values.applications.ui.name }}      
         date: "{{ now | unixEpoch }}"
     spec:
+      serviceAccountName: {{ include "webmethods-api-control-plane.serviceAccountName" . }}
+      securityContext:
+        {{- toYaml .Values.applications.ui.podSecurityContext | nindent 8 }}
       automountServiceAccountToken: false
       containers:
       - name: {{ .Values.applications.ui.name }}
         image: {{ .Values.applications.ui.imageName }}:{{ .Values.applications.ui.imageTag }}
         envFrom:
         - configMapRef:
-            name: {{ .Values.applications.ui.name }}-config
+            name: {{ include "webmethods-api-control-plane.name-ui" . }}
         imagePullPolicy: Always
         securityContext:
-          runAsNonRoot: true
-          runAsUser: 1724
+          {{- toYaml .Values.applications.ui.containerSecurityContext | nindent 10 }}
         resources:
           limits:
             cpu: {{ .Values.applications.ui.resources.limits.cpu }}

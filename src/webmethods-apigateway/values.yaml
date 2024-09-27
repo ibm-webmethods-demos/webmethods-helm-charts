@@ -277,19 +277,16 @@ serviceAccount:
 
 podAnnotations: {}
 
-podSecurityContext: {}
-  # runAsUser: 1724
-  # runAsGroup: 1724
-  # fsGroup: 1724
+podSecurityContext:
+  runAsUser: 1724
+  runAsGroup: 1724
+  fsGroup: 1724
 
 securityContext:
   allowPrivilegeEscalation: false
   capabilities:
     drop:
     - ALL
-  runAsNonRoot: true
-  # runAsUser: 1724
-  # readOnlyRootFilesystem: true
 
 resources: {}
   # We usually recommend not to specify default resources and to leave this as a conscious

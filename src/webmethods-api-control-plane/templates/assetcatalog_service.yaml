@@ -1,15 +1,20 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: {{ .Values.applications.assetcatalog.name }}-svc
-  namespace: {{ default "control-plane" .Release.Namespace }}
-spec:
+  name: {{ include "webmethods-api-control-plane.name-assetcatalog" . }}
+  labels:
+    {{- include "webmethods-api-control-plane.labels" . | nindent 4 }}
+  {{- with .Values.applications.assetcatalog.service.annotations }}
+  annotations:
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
+spec:  
   ports:
     - port: 8080
       protocol: TCP
       targetPort: 8080
       name: http
   selector:
+    {{- include "webmethods-api-control-plane.selectorLabels" . | nindent 4 }}
     app: {{ .Values.applications.assetcatalog.name }}
   type: ClusterIP
----

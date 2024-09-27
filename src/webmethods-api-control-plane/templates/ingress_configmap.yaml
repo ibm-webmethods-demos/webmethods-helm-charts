@@ -1,7 +1,9 @@
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: {{ .Values.applications.ingress.name }}-config
+  name: {{ include "webmethods-api-control-plane.name-ingress" . }}
+  labels:
+    {{- include "webmethods-api-control-plane.labels" . | nindent 4 }}
 data:
   {{ if eq .Values.applications.ingress.sslEnabled true }}
   SERVER_SSL_ENABLED: "true"
@@ -15,24 +17,24 @@ data:
   SERVER_SSL_ENABLED: "false"
   SERVER_PORT: "8080"
   {{ end }}
-  APICP_ENGINE_ENDPOINT: "http://{{ .Values.applications.engine.name }}-svc:8080"
-  APICP_ASSET_CATALOG_ENDPOINT: "http://{{ .Values.applications.assetcatalog.name }}-svc:8080"
-  APICP_UI_ENDPOINT: "http://{{ .Values.applications.ui.name }}-svc:8080"
+  APICP_ENGINE_ENDPOINT: "http://{{ include "webmethods-api-control-plane.name-engine" . }}:8080"
+  APICP_ASSET_CATALOG_ENDPOINT: "http://{{ include "webmethods-api-control-plane.name-assetcatalog" . }}:8080"
+  APICP_UI_ENDPOINT: "http://{{ include "webmethods-api-control-plane.name-ui" . }}:8080"
   APICP_TENANT_ID: "{{ .Values.applications.ingress.tenantId }}"
   APICP_SAG_CLOUD_URL: ""
   APICP_LICENSE_PATH: "/home/license/licenseKey.xml"
-  {{- if not .Values.applications.external_es.enabled }}
+  {{- if not .Values.applications.es_external.enabled }}
   SERVICE_ELASTICSEARCH_HOST: {{ .Values.applications.es.name }}-lb
   SERVICE_ELASTICSEARCH_PORT: "9200"
   {{- else }}
-  {{- with .Values.applications.external_es.connection }}
+  {{- with .Values.applications.es_external.connection }}
   SERVICE_ELASTICSEARCH_HOST: {{ .host }}
   SERVICE_ELASTICSEARCH_PORT:  {{ .port | quote }}
   SERVICE_ELASTICSEARCH_CERTPATH:  {{ .cert_path }}
   {{- end }}
   {{- end }}
   MANAGEMENT_HEALTH_ELASTICSEARCH_ENABLED: "false"
-  com.softwareag.api.umc.loadbalancer.url: "http://{{ .Values.domainName }}"
+  com.softwareag.api.umc.loadbalancer.url: "http://{{ .Values.ingress.domainName }}"
   com.softwareag.api.umc.oauth.active: ""
   com.softwareag.api.umc.oauth.providers: ""
   com.softwareag.api.umc.oauth.api.keys: ""
@@ -42,7 +44,7 @@ data:
   com.softwareag.api.umc.oauth.user.endpoint: ""
   OTEL_JAVAAGENT_ENABLED: "{{ .Values.applications.jaegertracing.enabled }}"
   {{- if .Values.applications.jaegertracing.enabled }}
-  JAVA_OPTS: "-Dotel.exporter.otlp.endpoint=http://{{ .Values.applications.jaegertracing.name }}-svc:{{ .Values.applications.jaegertracing.port }} -Dotel.resource.attributes=service.name={{ .Values.applications.ingress.name }}"
+  JAVA_OPTS: "-Dotel.exporter.otlp.endpoint=http://{{ include "webmethods-api-control-plane.name-jaegertracing" . }}:{{ .Values.applications.jaegertracing.port }} -Dotel.resource.attributes=service.name={{ .Values.applications.ingress.name }}"
   LOGGING_LEVEL_COM_SOFTWAREAG_CONTROLPLANE: "{{ .Values.applications.ingress.logLevel }}"
   OTEL_METRICS_EXPORTER: "none"
   {{- end }}

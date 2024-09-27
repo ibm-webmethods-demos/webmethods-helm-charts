@@ -1,4 +1,4 @@
-{{- if not .Values.applications.external_es.enabled }}
+{{- if not .Values.applications.es_external.enabled }}
 apiVersion: v1
 kind: ConfigMap
 metadata:

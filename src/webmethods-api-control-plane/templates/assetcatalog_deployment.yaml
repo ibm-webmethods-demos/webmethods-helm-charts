@@ -1,13 +1,15 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: {{ .Values.applications.assetcatalog.name }}
-  namespace: {{ default "control-plane" .Release.Namespace }}
+  name: {{ include "webmethods-api-control-plane.name-assetcatalog" . }}
+  labels:
+    {{- include "webmethods-api-control-plane.labels" . | nindent 4 }}
 spec:
   revisionHistoryLimit: 0
   replicas: {{ .Values.applications.assetcatalog.replicas }}
   selector:
     matchLabels:
+      {{- include "webmethods-api-control-plane.selectorLabels" . | nindent 6 }}
       app: {{ .Values.applications.assetcatalog.name }}
   strategy:
     rollingUpdate:
@@ -16,21 +18,28 @@ spec:
     type: RollingUpdate
   template:
     metadata:
+      {{- with .Values.applications.assetcatalog.podAnnotations }}
+      annotations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
       labels:
+        {{- include "webmethods-api-control-plane.selectorLabels" . | nindent 8 }}
         app: {{ .Values.applications.assetcatalog.name }}
         date: "{{ now | unixEpoch }}"
     spec:
+      serviceAccountName: {{ include "webmethods-api-control-plane.serviceAccountName" . }}
+      securityContext:
+        {{- toYaml .Values.applications.assetcatalog.podSecurityContext | nindent 8 }}
       automountServiceAccountToken: false
       containers:
-      - image: {{ .Values.applications.assetcatalog.imageName }}:{{ .Values.applications.assetcatalog.imageTag }}
-        name: {{ .Values.applications.assetcatalog.name }}
+      - name: {{ .Values.applications.assetcatalog.name }}
+        image: {{ .Values.applications.assetcatalog.imageName }}:{{ .Values.applications.assetcatalog.imageTag }}
         envFrom:
         - configMapRef:
-            name: {{ .Values.applications.assetcatalog.name }}-config
+            name: {{ include "webmethods-api-control-plane.name-assetcatalog" . }}
         imagePullPolicy: Always
         securityContext:
-          runAsNonRoot: true
-          runAsUser: 1724
+          {{- toYaml .Values.applications.assetcatalog.containerSecurityContext | nindent 10 }}
         resources:
           limits:
             cpu: {{ .Values.applications.assetcatalog.resources.limits.cpu }}

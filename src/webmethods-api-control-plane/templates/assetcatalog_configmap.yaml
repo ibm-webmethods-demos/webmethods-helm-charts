@@ -1,14 +1,16 @@
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: {{ .Values.applications.assetcatalog.name }}-config
+  name: {{ include "webmethods-api-control-plane.name-assetcatalog" . }}
+  labels:
+    {{- include "webmethods-api-control-plane.labels" . | nindent 4 }}
 data:
-  {{- if not .Values.applications.external_es.enabled }}
+  {{- if not .Values.applications.es_external.enabled }}
   SERVICE_ELASTICSEARCH_HOST: {{ .Values.applications.es.name }}-lb
   SERVICE_ELASTICSEARCH_PORT: "9200"
   SERVICE_ELASTICSEARCH_CERTPATH: ""
   {{- else }}
-  {{- with .Values.applications.external_es.connection }}
+  {{- with .Values.applications.es_external.connection }}
   SERVICE_ELASTICSEARCH_HOST: {{ .host }}
   SERVICE_ELASTICSEARCH_PORT:  {{ .port | quote }}
   SERVICE_ELASTICSEARCH_CERTPATH:  {{ .cert_path }}
@@ -17,7 +19,7 @@ data:
   OTEL_JAVAAGENT_ENABLED: "{{ .Values.applications.jaegertracing.enabled }}"
   {{- if .Values.applications.jaegertracing.enabled }}
   OTEL_METRICS_EXPORTER: "none"
-  APICP_ENGINE_ENDPOINT: "http://{{ .Values.applications.engine.name }}-svc:8080"
+  APICP_ENGINE_ENDPOINT: "http://{{ include "webmethods-api-control-plane.name-engine" . }}:8080"
   JAVA_OPTS: "-Dotel.exporter.otlp.endpoint=http://{{ .Values.applications.jaegertracing.name }}-svc:{{ .Values.applications.jaegertracing.port }} -Dotel.resource.attributes=service.name={{ .Values.applications.assetcatalog.name }}"
   LOGGING_LEVEL_COM_SOFTWAREAG_CONTROLPLANE: "{{ .Values.applications.assetcatalog.logLevel }}"
   {{- end }}
