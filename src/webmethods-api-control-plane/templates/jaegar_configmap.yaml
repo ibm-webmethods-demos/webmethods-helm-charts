@@ -2,7 +2,9 @@
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: {{ .Values.applications.jaegertracing.name }}-config
+  name: {{ include "webmethods-api-control-plane.name-jaegertracing" . }}
+  labels:
+    {{- include "webmethods-api-control-plane.labels" . | nindent 4 }}
 data:
   COLLECTOR_ZIPKIN_HOST_PORT: "9411"
   COLLECTOR_OTLP_ENABLED: "true"

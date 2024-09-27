@@ -2,8 +2,13 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: {{ .Values.applications.jaegertracing.name }}-svc
-  namespace: {{ default "control-plane" .Release.Namespace }}
+  name: {{ include "webmethods-api-control-plane.name-jaegertracing" . }}
+  labels:
+    {{- include "webmethods-api-control-plane.labels" . | nindent 4 }}
+  {{- with .Values.applications.jaegertracing.service.annotations }}
+  annotations:
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
 spec:
   ports:
     - port: {{ .Values.applications.jaegertracing.port }}
@@ -11,7 +16,7 @@ spec:
       targetPort: {{ .Values.applications.jaegertracing.port }}
       name: http
   selector:
+    {{- include "webmethods-api-control-plane.selectorLabels" . | nindent 4 }}
     app: {{ .Values.applications.jaegertracing.name }}
   type: ClusterIP
----
 {{- end }}

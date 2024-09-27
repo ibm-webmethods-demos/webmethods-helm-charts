@@ -2,48 +2,44 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: {{ .Values.applications.jaegertracing.name }}
-  namespace: {{ default "control-plane" .Release.Namespace }}
+  name: {{ include "webmethods-api-control-plane.name-jaegertracing" . }}
+  labels:
+    {{- include "webmethods-api-control-plane.labels" . | nindent 4 }}
 spec:
   replicas: {{ .Values.applications.jaegertracing.replicaCount }}
   selector:
     matchLabels:
+      {{- include "webmethods-api-control-plane.selectorLabels" . | nindent 6 }}
       app: {{ .Values.applications.jaegertracing.name }}
+  strategy:
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 0
+    type: RollingUpdate
   template:
     metadata:
-      labels:
-        app: {{ .Values.applications.jaegertracing.name }}
+      {{- with .Values.applications.jaegertracing.podAnnotations }}
       annotations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      labels:
+        {{- include "webmethods-api-control-plane.selectorLabels" . | nindent 8 }}
+        app: {{ .Values.applications.jaegertracing.name }}
+        date: "{{ now | unixEpoch }}"
     spec:
+      serviceAccountName: {{ include "webmethods-api-control-plane.serviceAccountName" . }}
+      securityContext:
+        {{- toYaml .Values.applications.jaegertracing.podSecurityContext | nindent 8 }}
       automountServiceAccountToken: false
       containers:
       - image: {{ .Values.applications.jaegertracing.imageName }}:{{ .Values.applications.jaegertracing.imageTag }}
         name: {{ .Values.applications.jaegertracing.name }}
         envFrom:
         - configMapRef:
-            name: {{ .Values.applications.jaegertracing.name }}-config
+            name: {{ include "webmethods-api-control-plane.name-jaegertracing" . }}
         imagePullPolicy: Always
-        livenessProbe:
-          httpGet:
-            path: /
-            port: http-ui
-          initialDelaySeconds: 60
-          periodSeconds: 20
-          successThreshold: 1
-          failureThreshold: 3
-          timeoutSeconds: 5
-        readinessProbe:
-          httpGet:
-            path: /
-            port: http-ui
-          initialDelaySeconds: 60
-          periodSeconds: 20
-          successThreshold: 1
-          failureThreshold: 3
-          timeoutSeconds: 5
         securityContext:
-          runAsNonRoot: true
-          runAsUser: 1724
+          {{- toYaml .Values.applications.jaegertracing.containerSecurityContext | nindent 10 }}
         resources:
           limits:
             cpu: {{ .Values.applications.jaegertracing.resources.limits.cpu }}
@@ -58,6 +54,24 @@ spec:
           - name: http-ui
             containerPort: 16686
             protocol: TCP
+        readinessProbe:
+          httpGet:
+            path: /
+            port: http-ui
+          initialDelaySeconds: 60
+          periodSeconds: 20
+          successThreshold: 1
+          failureThreshold: 3
+          timeoutSeconds: 5
+        livenessProbe:
+          httpGet:
+            path: /
+            port: http-ui
+          initialDelaySeconds: 60
+          periodSeconds: 20
+          successThreshold: 1
+          failureThreshold: 3
+          timeoutSeconds: 5
       terminationGracePeriodSeconds: 30
 ---
 {{- end }} 
