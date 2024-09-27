@@ -30,11 +30,14 @@ build() {
 mkdir -p build/
 
 build "src/webmethods-apigateway"
+build "src/webmethods-api-control-plane"
 build "src/webmethods-devportal"
 build "src/webmethods-microgateway"
 build "src/webmethods-terracotta"
 build "src/webmethods-microservicesruntime"
 build "src/samplejavaapis-sidecar-microgateway"
+build "src/webmethods-dbconfigurator"
+build "src/webmethods-mws"
 
 ## check if anything was added to the build folder, and index if yes
 built_packages=$(ls build/*.tgz)
