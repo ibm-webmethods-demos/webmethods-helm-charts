@@ -28,9 +28,6 @@ spec:
       containers:
       - image: {{ .Values.applications.ingress.imageName }}:{{ .Values.applications.ingress.imageTag }}
         name: {{ .Values.applications.ingress.name }}
-        volumeMounts:
-        - name: license-file
-          mountPath: /home/license
         envFrom:
         - configMapRef:
             name: {{ .Values.applications.ingress.name }}-config
@@ -82,6 +79,13 @@ spec:
           successThreshold: 1
           failureThreshold: 3
           timeoutSeconds: 5
+        volumeMounts:  
+          {{- if .Values.licenseSecret }}
+          - name: cp-license
+            mountPath: /home/license/licenseKey.xml
+            subPath: {{ .Values.licenseSecret.path }}
+            readOnly: false
+          {{- end }}
 #      should be enabled if the certificate from host system is being mounted
 #      volumes:
 #        - name: hostpath-volume
@@ -91,4 +95,12 @@ spec:
       terminationGracePeriodSeconds: 30
       imagePullSecrets:
         - name: {{ .Values.imagePullSecretName }}
----
+      volumes:
+        {{- with .Values.licenseSecret }}
+        - name: cp-license
+          secret:
+            secretName: {{ .name }}
+            items:
+            - key: {{ .key }}
+              path: {{ .path }}
+        {{- end }}

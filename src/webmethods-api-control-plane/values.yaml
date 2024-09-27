@@ -1,3 +1,9 @@
+# the licensing needed for the product
+licenseSecret: {}
+  # name: ""
+  # key: ""
+  # path: ""
+
 applications:
   assetcatalog:
     # -- Name of the application 
@@ -63,7 +69,6 @@ applications:
         # -- Minimum Memory resource units
         memory: 1024Mi
     logLevel: TRACE
-    licenseFileName: my_cp_license.xml
   ui:
     name: ui
     # -- Image name of ui
