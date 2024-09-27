@@ -2,15 +2,17 @@
 apiVersion: apps/v1
 kind: StatefulSet
 metadata:
-  name: {{ .Values.applications.es.name }}
+  name: {{ include "webmethods-api-control-plane.name-es" . }}
   labels:
+    {{- include "webmethods-api-control-plane.labels" . | nindent 4 }}
     app: {{ .Values.applications.es.name }}
 spec:
-  serviceName: {{ .Values.applications.es.name }}-headless
+  serviceName: {{ include "webmethods-api-control-plane.name-es" . }}-headless
   podManagementPolicy: Parallel
   replicas: {{ .Values.applications.es.replicas }}
   selector:
     matchLabels:
+      {{- include "webmethods-api-control-plane.selectorLabels" . | nindent 6 }}
       app: {{ .Values.applications.es.name }}
   updateStrategy:
     type: RollingUpdate
@@ -28,14 +30,18 @@ spec:
             storage: {{ .Values.applications.es.storage }}
   template:
     metadata:
+      {{- with .Values.applications.es.podAnnotations }}
       annotations:
-        sensor.falcon-system.crowdstrike.com/injection: disabled
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
       labels:
+        {{- include "webmethods-api-control-plane.selectorLabels" . | nindent 8 }}
         app: {{ .Values.applications.es.name }}
+        date: "{{ now | unixEpoch }}"
     spec:
       serviceAccountName: {{ include "webmethods-api-control-plane.serviceAccountName" . }}
       securityContext:
-        {{- toYaml .Values.podSecurityContext | nindent 8 }}
+        {{- toYaml .Values.applications.es.podSecurityContext | nindent 8 }}
       initContainers:
       - name: init-sysctl
         image: public.ecr.aws/docker/library/busybox:latest
@@ -61,7 +67,7 @@ spec:
         imagePullPolicy: "IfNotPresent"
         envFrom:
         - configMapRef:
-            name: {{ .Values.applications.es.name }}-config
+            name: {{ include "webmethods-api-control-plane.name-es" . }}
         env:
         - name: node.name
           valueFrom:
