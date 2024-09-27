@@ -59,6 +59,17 @@ entries:
     urls:
     - samplejavaapis-sidecar-microgateway-0.1.0.tgz
     version: 0.1.0
+  webmethods-api-control-plane:
+  - apiVersion: v2
+    appVersion: 10.15.x
+    created: "2024-09-26T22:40:17.387996-04:00"
+    description: Chart for the webMethods API Control Plane with open telemetry enabled
+    digest: 4be0f6047a04776f4ab9a41743818f87d93c7e08967d0395010bb3632b9ad4f8
+    name: webmethods-api-control-plane
+    type: application
+    urls:
+    - webmethods-api-control-plane-0.0.2.tgz
+    version: 0.0.2
   webmethods-apigateway:
   - apiVersion: v2
     appVersion: 10.15.x
@@ -195,6 +206,31 @@ entries:
     urls:
     - webmethods-apigateway-configurator-1.0.0.tgz
     version: 1.0.0
+  webmethods-dbconfigurator:
+  - apiVersion: v2
+    appVersion: 1.0.0
+    created: "2024-09-26T22:40:17.388278-04:00"
+    description: Configure supported databases for webmethods using the webmethods
+      dbconfigurator component / coontainer
+    digest: 3a9009a0d165abd5abdfa314069a9674cdd2970be8e3097298f5d604b223f639
+    home: https://github.com/sag-gov-integration-unit/saggov-helm-charts/tree/main/src/webmethods-dbconfigurator
+    keywords:
+    - webmethods
+    - softwareag
+    - config
+    - configurator
+    - dbconfigurator
+    - webmethods-dbconfigurator
+    maintainers:
+    - email: fabien.sanglier@softwareaggov.com
+      name: fabien sanglier
+      url: https://github.com/fabien-sanglier-saggs
+    name: webmethods-dbconfigurator
+    sources:
+    - https://github.com/sag-gov-integration-unit/saggov-helm-charts/tree/main/src/webmethods-dbconfigurator
+    urls:
+    - webmethods-dbconfigurator-1.0.1.tgz
+    version: 1.0.1
   webmethods-devportal:
   - apiVersion: v2
     appVersion: 10.15.x
@@ -413,6 +449,17 @@ entries:
     urls:
     - webmethods-microservicesruntime-0.1.0.tgz
     version: 0.1.0
+  webmethods-mws:
+  - apiVersion: v2
+    appVersion: 10.15.x
+    created: "2024-09-26T22:40:17.38854-04:00"
+    description: A Helm chart for webMethods "My webMethods Server" (MWS)
+    digest: c1152daaaafe1b4974d265c260adb530c1e93e7e6aa350f8301f064f062ee8af
+    name: webmethods-mws
+    type: application
+    urls:
+    - webmethods-mws-1.0.1.tgz
+    version: 1.0.1
   webmethods-terracotta:
   - apiVersion: v2
     appVersion: 4.3.x
@@ -444,4 +491,4 @@ entries:
     urls:
     - webmethods-terracotta-0.1.11.tgz
     version: 0.1.11
-generated: "2024-09-10T20:40:55.327898-04:00"
+generated: "2024-09-26T22:40:17.387469-04:00"
