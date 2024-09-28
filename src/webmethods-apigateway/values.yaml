@@ -184,9 +184,8 @@ waitforelastic:
   #   # name: ""
   #   # key: ""
   securityContext:
-    readOnlyRootFilesystem: true
-    runAsNonRoot: true
     allowPrivilegeEscalation: false
+    readOnlyRootFilesystem: true
     capabilities:
       drop:
       - ALL

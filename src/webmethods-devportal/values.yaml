@@ -46,9 +46,8 @@ waitforelastic:
     # name: ""
     # key: ""
   securityContext:
-    readOnlyRootFilesystem: true
-    runAsNonRoot: true
     allowPrivilegeEscalation: false
+    readOnlyRootFilesystem: true
     capabilities:
       drop:
       - ALL
@@ -119,19 +118,16 @@ extraVolumeMounts:
 
 podAnnotations: {}
 
-podSecurityContext: {}
-  # runAsUser: 1724
-  # runAsGroup: 1724
-  # fsGroup: 1724
+podSecurityContext:
+  runAsUser: 1724
+  runAsGroup: 1724
+  fsGroup: 1724
 
 securityContext:
   allowPrivilegeEscalation: false
   capabilities:
     drop:
     - ALL
-  runAsNonRoot: true
-  # runAsUser: 1724
-  # readOnlyRootFilesystem: true
 
 ingress:
   enabled: false
