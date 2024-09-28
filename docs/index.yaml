@@ -28,6 +28,17 @@ entries:
   samplejavaapis-sidecar-microgateway:
   - apiVersion: v2
     appVersion: 1.0.0
+    created: "2024-09-28T16:38:01.886813-04:00"
+    description: A Helm chart to demonstrate the deployment of some sample java apis
+      with SoftwareAG Microgateway loaded as a side-car container
+    digest: f8c196e105aa65626f21ec3bcbbd20cce5d50c04ffe3fb6cea7ecd291d6449e8
+    name: samplejavaapis-sidecar-microgateway
+    type: application
+    urls:
+    - samplejavaapis-sidecar-microgateway-0.1.3.tgz
+    version: 0.1.3
+  - apiVersion: v2
+    appVersion: 1.0.0
     created: "2024-09-10T17:53:55.895256-04:00"
     description: A Helm chart to demonstrate the deployment of some sample java apis
       with SoftwareAG Microgateway loaded as a side-car container
@@ -81,6 +92,16 @@ entries:
     - webmethods-api-control-plane-0.0.2.tgz
     version: 0.0.2
   webmethods-apigateway:
+  - apiVersion: v2
+    appVersion: 10.15.x
+    created: "2024-09-28T16:38:01.887353-04:00"
+    description: A Helm chart for SoftwareAG webMethods API Gateway in Kubernetes
+    digest: af2d902959b0bcb3ab5de64722962f22e9a384d54b51b98e24112aac2e4d7341
+    name: webmethods-apigateway
+    type: application
+    urls:
+    - webmethods-apigateway-0.1.22.tgz
+    version: 0.1.22
   - apiVersion: v2
     appVersion: 10.15.x
     created: "2024-09-10T20:40:55.328337-04:00"
@@ -219,6 +240,30 @@ entries:
   webmethods-dbconfigurator:
   - apiVersion: v2
     appVersion: 1.0.0
+    created: "2024-09-28T16:38:01.887635-04:00"
+    description: Configure supported databases for webmethods using the webmethods
+      dbconfigurator component / coontainer
+    digest: 91d566816a5e0026ac3673d62b63255bf7b560f81f565f5a40cd13908a9421d7
+    home: https://github.com/sag-gov-integration-unit/saggov-helm-charts/tree/main/src/webmethods-dbconfigurator
+    keywords:
+    - webmethods
+    - softwareag
+    - config
+    - configurator
+    - dbconfigurator
+    - webmethods-dbconfigurator
+    maintainers:
+    - email: fabien.sanglier@softwareaggov.com
+      name: fabien sanglier
+      url: https://github.com/fabien-sanglier-saggs
+    name: webmethods-dbconfigurator
+    sources:
+    - https://github.com/sag-gov-integration-unit/saggov-helm-charts/tree/main/src/webmethods-dbconfigurator
+    urls:
+    - webmethods-dbconfigurator-1.0.2.tgz
+    version: 1.0.2
+  - apiVersion: v2
+    appVersion: 1.0.0
     created: "2024-09-26T22:40:17.388278-04:00"
     description: Configure supported databases for webmethods using the webmethods
       dbconfigurator component / coontainer
@@ -242,6 +287,16 @@ entries:
     - webmethods-dbconfigurator-1.0.1.tgz
     version: 1.0.1
   webmethods-devportal:
+  - apiVersion: v2
+    appVersion: 10.15.x
+    created: "2024-09-28T16:38:01.887986-04:00"
+    description: A Helm chart for SoftwareAG webMethods Developer Portal in Kubernetes
+    digest: 23d955d5df8a12407753360721538e7356a21fcc9073b4a76298dda4df70b7e7
+    name: webmethods-devportal
+    type: application
+    urls:
+    - webmethods-devportal-0.2.4.tgz
+    version: 0.2.4
   - apiVersion: v2
     appVersion: 10.15.x
     created: "2024-09-10T17:53:55.895892-04:00"
@@ -360,6 +415,16 @@ entries:
   webmethods-microgateway:
   - apiVersion: v2
     appVersion: 10.11.0
+    created: "2024-09-28T16:38:01.888247-04:00"
+    description: A Helm chart for SoftwareAG webMethods Microgateway in Kubernetes
+    digest: 7fae5b0dcbdf69b426d2a6b7040cd384b9164f03560a5d6e83b597bb84bf80de
+    name: webmethods-microgateway
+    type: application
+    urls:
+    - webmethods-microgateway-0.1.2.tgz
+    version: 0.1.2
+  - apiVersion: v2
+    appVersion: 10.11.0
     created: "2022-02-28T16:13:06.282464-05:00"
     description: A Helm chart for SoftwareAG webMethods Microgateway in Kubernetes
     digest: 9927cc54d147d93b3ab0a741ff8b36eafb21053323bafee4b118e406bcc8b56f
@@ -379,6 +444,16 @@ entries:
     - webmethods-microgateway-0.1.0.tgz
     version: 0.1.0
   webmethods-microservicesruntime:
+  - apiVersion: v2
+    appVersion: 10.x.x
+    created: "2024-09-28T16:38:01.888573-04:00"
+    description: A Helm chart for Kubernetes
+    digest: 5cfe559672a5aff4857879e084951d9b03b5c0ab11155f97266d482f8fbce121
+    name: webmethods-microservicesruntime
+    type: application
+    urls:
+    - webmethods-microservicesruntime-0.2.7.tgz
+    version: 0.2.7
   - apiVersion: v2
     appVersion: 10.x.x
     created: "2024-09-10T17:51:24.604394-04:00"
@@ -462,6 +537,16 @@ entries:
   webmethods-mws:
   - apiVersion: v2
     appVersion: 10.15.x
+    created: "2024-09-28T16:38:01.888826-04:00"
+    description: A Helm chart for webMethods "My webMethods Server" (MWS)
+    digest: 14e0b9d71f20ebaa094899851c768502a3d643722f3ead150f6c95bb8375d6f8
+    name: webmethods-mws
+    type: application
+    urls:
+    - webmethods-mws-1.0.2.tgz
+    version: 1.0.2
+  - apiVersion: v2
+    appVersion: 10.15.x
     created: "2024-09-26T22:40:17.38854-04:00"
     description: A Helm chart for webMethods "My webMethods Server" (MWS)
     digest: c1152daaaafe1b4974d265c260adb530c1e93e7e6aa350f8301f064f062ee8af
@@ -471,6 +556,16 @@ entries:
     - webmethods-mws-1.0.1.tgz
     version: 1.0.1
   webmethods-terracotta:
+  - apiVersion: v2
+    appVersion: 4.3.x
+    created: "2024-09-28T16:38:01.889079-04:00"
+    description: A Helm chart for SoftwareAG Terracotta v4 in Kubernetes
+    digest: a778da1b5e959fbd68a11f0f546fac45df595a05e6e37d18ab9311c31f60fb14
+    name: webmethods-terracotta
+    type: application
+    urls:
+    - webmethods-terracotta-0.1.14.tgz
+    version: 0.1.14
   - apiVersion: v2
     appVersion: 4.3.x
     created: "2022-02-28T16:13:06.282823-05:00"
@@ -501,4 +596,4 @@ entries:
     urls:
     - webmethods-terracotta-0.1.11.tgz
     version: 0.1.11
-generated: "2024-09-27T17:09:32.424981-04:00"
+generated: "2024-09-28T16:38:01.886062-04:00"
