@@ -118,10 +118,10 @@ extraVolumeMounts:
 
 podAnnotations: {}
 
-podSecurityContext:
-  runAsUser: 1724
-  runAsGroup: 1724
-  fsGroup: 1724
+podSecurityContext: {}
+  # runAsUser: 1724
+  # runAsGroup: 1724
+  # fsGroup: 1724
 
 securityContext:
   allowPrivilegeEscalation: false
