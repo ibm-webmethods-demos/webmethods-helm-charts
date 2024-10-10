@@ -5,70 +5,83 @@
 apiVersion: batch/v1
 kind: Job
 metadata:
+  {{- with .Values.annotations }}
+  annotations:
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
   name: "{{ include "webmethods-dbconfigurator.fullname" . }}-createdb"
   labels:
     {{- include "webmethods-dbconfigurator.labels" . | nindent 4 }}
-  annotations:
-    # This is what defines this resource as a hook. Without this line, the
-    # job is considered part of the release.
-    "helm.sh/hook": pre-install
-    "helm.sh/hook-weight": "1"
-    "helm.sh/hook-delete-policy": before-hook-creation
 spec:
-  backoffLimit: 5
-  activeDeadlineSeconds: 1800
+  backoffLimit: {{ .Values.backoffLimit }}
+  activeDeadlineSeconds: {{ .Values.activeDeadlineSeconds }}
   template:
     spec:
+      {{- with .Values.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      serviceAccountName: {{ include "webmethods-dbconfigurator.serviceAccountName" . }}
+      securityContext:
+        {{- toYaml .Values.podSecurityContext | nindent 8 }}
       restartPolicy: Never
-      containers:
-      - name: "{{ include "webmethods-dbconfigurator.fullname" . }}-createdb"
-        {{- if .Values.image.registry }}
-        image: {{ printf "%s/%s:%s" .Values.image.registry .Values.image.repository (.Values.image.tag | default .Chart.AppVersion) }}
-        {{- else }}
-        image: {{ printf "%s:%s" .Values.image.repository (.Values.image.tag | default .Chart.AppVersion) }}
+      initContainers:
+        {{- with .Values.initContainers }}
+        {{- toYaml . | nindent 8 }}
         {{- end }}
-        imagePullPolicy: {{ .Values.image.pullPolicy }} 
-        env:
-          - name: DB_ACTION
-            value: create
-          - name: PRODUCT_NAMES
-            value: STR
-          - name: RUN_FINAL_INVENTORY
-            value: "true"
-          - name: WAITFOR_DB_HOST
-            value: "true"
-          - name: WAITFOR_DB_TIMEOUT_SEC
-            value: "60"
-          {{- with .Values.createDb }}
-          - name: DB_ADMIN_USER
-            value: {{ .dbAdminUser | quote }}
-          - name: DB_PASSWORD
-            valueFrom:
-              secretKeyRef:
-                name: {{ .dbAdminPasswordSecret.name }}
-                key: {{ .dbAdminPasswordSecret.key }}
+      containers:
+        - name: "{{ include "webmethods-dbconfigurator.fullname" . }}-createdb"
+          {{- if .Values.image.registry }}
+          image: {{ printf "%s/%s:%s" .Values.image.registry .Values.image.repository (.Values.image.tag | default .Chart.AppVersion) }}
+          {{- else }}
+          image: {{ printf "%s:%s" .Values.image.repository (.Values.image.tag | default .Chart.AppVersion) }}
           {{- end }}
-          {{- with .Values.externaldb }}
-          - name: DB_TYPE
-            value: {{ .type | quote }}
-          - name: DB_HOST
-            value: {{ .host | quote }}
-          - name: DB_PORT
-            value: {{ .port | quote }}
-          - name: DB_NAME
-            value: {{ .dbName | quote }}
-          - name: DB_USER
-            value: {{ .user | quote }}
-          - name: DB_PASSWORD
-            valueFrom:
-              secretKeyRef:
-                name: {{ .passwordSecret.name }}
-                key: {{ .passwordSecret.key }}
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          {{- with .Values.securityContext }}
+          securityContext:
+            {{- toYaml . | nindent 12 }}
           {{- end }}
-          {{- if .Values.debug }}
-          - name: SCRIPTS_LOGGER_LEVEL
-            value: "1"
-          {{- end }}
+          env:
+            - name: DB_ACTION
+              value: create
+            - name: PRODUCT_NAMES
+              value: STR
+            - name: RUN_FINAL_INVENTORY
+              value: "true"
+            - name: WAITFOR_DB_HOST
+              value: "true"
+            - name: WAITFOR_DB_TIMEOUT_SEC
+              value: "60"
+            {{- with .Values.createDb }}
+            - name: DB_ADMIN_USER
+              value: {{ .dbAdminUser | quote }}
+            - name: DB_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .dbAdminPasswordSecret.name }}
+                  key: {{ .dbAdminPasswordSecret.key }}
+            {{- end }}
+            {{- with .Values.externaldb }}
+            - name: DB_TYPE
+              value: {{ .type | quote }}
+            - name: DB_HOST
+              value: {{ .host | quote }}
+            - name: DB_PORT
+              value: {{ .port | quote }}
+            - name: DB_NAME
+              value: {{ .dbName | quote }}
+            - name: DB_USER
+              value: {{ .user | quote }}
+            - name: DB_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .passwordSecret.name }}
+                  key: {{ .passwordSecret.key }}
+            {{- end }}
+            {{- if .Values.debug }}
+            - name: SCRIPTS_LOGGER_LEVEL
+              value: "1"
+            {{- end }}
 {{- end }}
 
 {{- if ((.Values.createObjects).enabled) }}
@@ -76,21 +89,30 @@ spec:
 apiVersion: batch/v1
 kind: Job
 metadata:
+  {{- with .Values.annotations }}
+  annotations:
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
   name: "{{ include "webmethods-dbconfigurator.fullname" . }}-createobjects"
   labels:
     {{- include "webmethods-dbconfigurator.labels" . | nindent 4 }}
-  annotations:
-    # This is what defines this resource as a hook. Without this line, the
-    # job is considered part of the release.
-    "helm.sh/hook": pre-install
-    "helm.sh/hook-weight": "10"
-    "helm.sh/hook-delete-policy": before-hook-creation
 spec:
-  backoffLimit: 5
-  activeDeadlineSeconds: 1800
+  backoffLimit: {{ .Values.backoffLimit }}
+  activeDeadlineSeconds: {{ .Values.activeDeadlineSeconds }}
   template:
     spec:
+      {{- with .Values.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      serviceAccountName: {{ include "webmethods-dbconfigurator.serviceAccountName" . }}
+      securityContext:
+        {{- toYaml .Values.podSecurityContext | nindent 8 }}
       restartPolicy: Never
+      initContainers:
+        {{- with .Values.initContainers }}
+        {{- toYaml . | nindent 8 }}
+        {{- end }}
       containers:
         - name: "{{ include "webmethods-dbconfigurator.fullname" . }}-createobjects"
           {{- if .Values.image.registry }}
@@ -98,7 +120,11 @@ spec:
           {{- else }}
           image: {{ printf "%s:%s" .Values.image.repository (.Values.image.tag | default .Chart.AppVersion) }}
           {{- end }}
-          imagePullPolicy: {{ .Values.image.pullPolicy }} 
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          {{- with .Values.securityContext }}
+          securityContext:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
           env:
             - name: DB_ACTION
               value: create

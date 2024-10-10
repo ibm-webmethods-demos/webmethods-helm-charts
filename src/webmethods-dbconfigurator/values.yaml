@@ -50,13 +50,15 @@ createObjects:
   productVersion: ""
 
 # Count of re(!)tries. A value of 2 means 3 tries in total.
-backoffLimit: 1
+backoffLimit: 5
+
+activeDeadlineSeconds: 1800
 
 # annotations of the Job. Define helm post hook here
 annotations:
-  "helm.sh/hook": "post-install,post-upgrade,post-rollback"
-  "helm.sh/hook-delete-policy": "hook-succeeded,before-hook-creation"
-  "helm.sh/hook-weight": "5"
+  "helm.sh/hook": pre-install
+  "helm.sh/hook-weight": "1"
+  "helm.sh/hook-delete-policy": before-hook-creation
 
 labels: {}
 
@@ -108,9 +110,3 @@ podLabels: {}
 
 ## Extra Annotations to be added to pod
 podAnnotations: {}
-
-# Add volumes, e.g. for custom secrets
-volumes: ""
-
-# Add volumes mounts, e. g. for custom secrets
-volumeMounts: ""
