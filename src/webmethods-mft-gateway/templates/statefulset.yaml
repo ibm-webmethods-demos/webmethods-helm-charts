@@ -1,0 +1,409 @@
+---
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: {{ include "webmethods-mft-gateway.fullname" . }}
+  labels:
+    {{- include "webmethods-mft-gateway.labels" . | nindent 4 }}
+spec:
+  serviceName: {{ include "webmethods-mft-gateway.fullname.headless" . }}
+  replicas: {{ .Values.replicaCount }}
+  updateStrategy:
+    type: RollingUpdate
+    rollingUpdate: 
+      partition: 0
+  volumeClaimTemplates:
+    {{- if .Values.icapAntivirus.enabled }}
+    {{- if .Values.icapAntivirus.persistence.enabled }}
+    - metadata:
+        name: {{ include "webmethods-mft-gateway.fullname" . }}-icap
+      spec:
+        accessModes:
+          - "ReadWriteOnce"
+        {{- if .Values.icapAntivirus.persistence.storageClassName }}
+        storageClassName: {{ .Values.icapAntivirus.persistence.storageClassName }}
+        {{- end }}
+        resources:
+          requests:
+            storage: {{ .Values.icapAntivirus.persistence.storageSize }}
+    {{- end }}
+    {{- end }}
+    - metadata:
+        name: {{ include "webmethods-mft-gateway.fullname" . }}-runtime
+      spec:
+        accessModes:
+          - "ReadWriteOnce"
+        {{- if .Values.persistence.runtime.storageClassName }}
+        storageClassName: {{ .Values.persistence.runtime.storageClassName }}
+        {{- end }}
+        resources:
+          requests:
+            storage: {{ .Values.persistence.runtime.storageSize }}
+  selector:
+    matchLabels:
+      {{- include "webmethods-mft-gateway.selectorLabels" . | nindent 6 }}
+  template:
+    metadata:
+      {{- with .Values.podAnnotations }}
+      annotations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      labels:
+        {{- include "webmethods-mft-gateway.selectorLabels" . | nindent 8 }}
+    spec:
+      {{- with .Values.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      serviceAccountName: {{ include "webmethods-mft-gateway.serviceAccountName" . }}
+      securityContext:
+        {{- toYaml .Values.podSecurityContext | nindent 8 }}
+      initContainers:
+        - name: init-runtime-pvc-is-configs
+          securityContext:
+            {{- toYaml .Values.securityContext | nindent 12 }}
+          {{- if .Values.image.registry }}
+          image: {{ printf "%s/%s:%s" .Values.image.registry .Values.image.repository (.Values.image.tag | default .Chart.AppVersion) }}
+          {{- else }}
+          image: {{ printf "%s:%s" .Values.image.repository (.Values.image.tag | default .Chart.AppVersion) }}
+          {{- end }}
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          env:
+            - name: SOURCE_DIR
+              value: "{{ $.Values.global.sagHome }}/IntegrationServer/instances/{{ $.Values.global.integrationServerInstanceName }}/config"
+            - name: TARGET_DIR
+              value: "/wmis_configs"
+          volumeMounts:
+            - name: {{ include "webmethods-mft-gateway.fullname" . }}-runtime
+              mountPath: /wmis_configs
+              subPath: IntegrationServer/instances/{{ $.Values.global.integrationServerInstanceName }}/config
+          command:
+            - sh
+            - -c
+            - |
+              #!/bin/sh -e
+              if [ -f ${TARGET_DIR}/.marker ]; then
+                  echo "Marker file found in ${TARGET_DIR} - Files were already copied in this location. Ignoring!"
+                  exit 0;
+              fi
+              echo "Copying all the files in ${SOURCE_DIR} into ${TARGET_DIR}!"
+              cp -pdrx ${SOURCE_DIR}/* ${TARGET_DIR}/
+              echo "Setting marker file"
+              echo "Operation DONE: cp -r ${SOURCE_DIR}/* ${TARGET_DIR}/" > ${TARGET_DIR}/.marker
+              echo "DONE!"
+              exit 0;
+        - name: init-runtime-pvc-mft-configs
+          securityContext:
+            {{- toYaml .Values.securityContext | nindent 12 }}
+          {{- if .Values.image.registry }}
+          image: {{ printf "%s/%s:%s" .Values.image.registry .Values.image.repository (.Values.image.tag | default .Chart.AppVersion) }}
+          {{- else }}
+          image: {{ printf "%s:%s" .Values.image.repository (.Values.image.tag | default .Chart.AppVersion) }}
+          {{- end }}
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          env:
+            - name: SOURCE_DIR
+              value: "{{ $.Values.global.sagHome }}/IntegrationServer/instances/{{ $.Values.global.integrationServerInstanceName }}/packages/WmMFT/config"
+            - name: TARGET_DIR
+              value: "/wmmft_configs"
+          volumeMounts:
+            - name: {{ include "webmethods-mft-gateway.fullname" . }}-runtime
+              mountPath: /wmmft_configs
+              subPath: IntegrationServer/instances/{{ $.Values.global.integrationServerInstanceName }}/packages/WmMFT/config
+          command:
+            - sh
+            - -c
+            - |
+              #!/bin/sh -e
+              if [ -f ${TARGET_DIR}/.marker ]; then
+                  echo "Marker file found in ${TARGET_DIR} - Files were already copied in this location. Ignoring!"
+                  exit 0;
+              fi
+              echo "Copying all the files in ${SOURCE_DIR} into ${TARGET_DIR}!"
+              cp -pdrx ${SOURCE_DIR}/* ${TARGET_DIR}/
+              echo "Setting marker file"
+              echo "Operation DONE: cp -r ${SOURCE_DIR}/* ${TARGET_DIR}/" > ${TARGET_DIR}/.marker
+              echo "DONE!"
+              exit 0;
+        {{- with .Values.initContainers }}
+        {{- toYaml . | nindent 8 }}
+        {{- end }}
+      containers:
+        {{- if .Values.icapAntivirus.enabled }}
+        - name: {{ .Chart.Name }}-sidecar-icap-av
+          securityContext:
+            {{- toYaml .Values.icapAntivirus.securityContext | nindent 12 }}
+          {{- if .Values.icapAntivirus.image.registry }}
+          image: {{ printf "%s/%s:%s" .Values.icapAntivirus.image.registry .Values.icapAntivirus.image.repository (.Values.icapAntivirus.image.tag | default .Chart.AppVersion) }}
+          {{- else }}
+          image: {{ printf "%s:%s" .Values.icapAntivirus.image.repository (.Values.icapAntivirus.image.tag | default .Chart.AppVersion) }}
+          {{- end }}
+          imagePullPolicy: {{ .Values.icapAntivirus.image.pullPolicy }}
+          ports:
+            - containerPort: {{ .Values.icapAntivirus.port }}
+              name: icapport
+              protocol: TCP
+          startupProbe:
+            tcpSocket:
+              port: {{ .Values.icapAntivirus.port }}
+            failureThreshold: 30
+            periodSeconds: 10
+          livenessProbe:
+            tcpSocket:
+              port: {{ .Values.icapAntivirus.port }}
+            periodSeconds: 10
+            failureThreshold: 4
+            successThreshold: 1
+            timeoutSeconds: 5
+          resources:
+            {{- toYaml .Values.icapAntivirus.resources | nindent 12 }}
+          env:
+            - name: FRESHCLAM_RUN_AT_START
+              value: {{ .Values.icapAntivirus.refreshAVDefsOnStart | quote }}
+            - name: FRESHCLAM_DAILY_CHECKS
+              value: {{ .Values.icapAntivirus.checkAVDefsDailyCount | quote }}
+          volumeMounts:
+          {{- if .Values.icapAntivirus.persistence.enabled }}
+            - name: {{ include "webmethods-mft-gateway.fullname" . }}-icap
+              mountPath: /var/tmp
+          {{- end }}
+          {{- if .Values.icapAntivirus.configMaps.icap }}
+            - name: sidecar-configs-icap
+              mountPath: /configs/c-icap
+          {{- end }}          
+          {{- if .Values.icapAntivirus.configMaps.clamav }}
+            - name: sidecar-configs-clamav
+              mountPath: /configs/clamav
+          {{- end }}
+        {{- end }}
+        {{- if .Values.transferproxy.enabled }}
+        - name: {{ .Chart.Name }}-sidecar-transferproxy
+          securityContext:
+            {{- toYaml .Values.transferproxy.securityContext | nindent 12 }}
+          {{- if .Values.transferproxy.image.registry }}
+          image: {{ printf "%s/%s:%s" .Values.transferproxy.image.registry .Values.transferproxy.image.repository (.Values.transferproxy.image.tag | default .Chart.AppVersion) }}
+          {{- else }}
+          image: {{ printf "%s:%s" .Values.transferproxy.image.repository (.Values.transferproxy.image.tag | default .Chart.AppVersion) }}
+          {{- end }}
+          imagePullPolicy: {{ .Values.transferproxy.image.pullPolicy }}
+          ports:
+            - containerPort: {{ .Values.transferproxy.port }}
+              name: transferproxy
+              protocol: TCP
+            - containerPort: 8404
+              name: proxystats
+              protocol: TCP
+          livenessProbe:
+            tcpSocket:
+              port: {{ .Values.transferproxy.port }}
+            periodSeconds: 10
+            failureThreshold: 4
+            successThreshold: 1
+            timeoutSeconds: 5
+          resources:
+            {{- toYaml .Values.transferproxy.resources | nindent 12 }}
+          volumeMounts:
+            - name: sidecarproxy-config
+              mountPath: /usr/local/etc/haproxy
+        {{- end }}
+        - name: {{ .Chart.Name }}
+          securityContext:
+            {{- toYaml .Values.securityContext | nindent 12 }}
+          {{- if .Values.image.registry }}
+          image: {{ printf "%s/%s:%s" .Values.image.registry .Values.image.repository (.Values.image.tag | default .Chart.AppVersion) }}
+          {{- else }}
+          image: {{ printf "%s:%s" .Values.image.repository (.Values.image.tag | default .Chart.AppVersion) }}
+          {{- end }}
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          ports:
+            - containerPort: {{ .Values.containerPorts.isruntime }}
+              name: isruntime
+              protocol: TCP
+            - containerPort: {{ .Values.containerPorts.registrationPort }}
+              name: regport
+              protocol: TCP
+            {{- if .Values.listeners.httptransfer.enabled }}
+            - containerPort: {{ .Values.listeners.httptransfer.port }}
+              name: httplistener
+              protocol: TCP
+            {{- end }}
+            {{- if .Values.listeners.tcptransfer.ftps.enabled }}
+            - containerPort: {{ .Values.listeners.tcptransfer.ftps.port }}
+              name: ftpslistener
+              protocol: TCP
+            {{- end }}
+            {{- if .Values.listeners.tcptransfer.sftp.enabled }}
+            - containerPort: {{ .Values.listeners.tcptransfer.sftp.port }}
+              name: sftplistener
+              protocol: TCP
+            {{- end }}
+          startupProbe:
+            httpGet:
+              path: /invoke/wm.server/ping
+              port: {{ .Values.containerPorts.isruntime }}
+              scheme: {{ upper (.Values.healthcheck.scheme | default "http") }}
+            failureThreshold: 30
+            periodSeconds: 10
+          livenessProbe:
+            httpGet:
+              path: /invoke/wm.server/ping
+              port: {{ .Values.containerPorts.isruntime }}
+              scheme: {{ upper (.Values.healthcheck.scheme | default "http") }}
+            periodSeconds: 10
+            failureThreshold: 4
+            successThreshold: 1
+            timeoutSeconds: 5
+          resources:
+            {{- toYaml .Values.resources | nindent 12 }}
+          env:
+            # - name: MFT_SERVER_NAMESPACE
+            #   valueFrom:
+            #     fieldRef:
+            #       fieldPath: metadata.namespace
+            # - name: MFT_SERVER_PODNAME
+            #   valueFrom:
+            #     fieldRef:
+            #       fieldPath: metadata.name
+            # - name: MFT_SERVER_ID
+            #   value: "$(MFT_SERVER_NAMESPACE)-$(MFT_SERVER_PODNAME)"
+            {{- if .Values.adminPasswordSecret }}
+            - name: PROPS_ADMIN_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.adminPasswordSecret.name }}
+                  key: {{ .Values.adminPasswordSecret.key }}
+            {{- end }}
+            {{- if .Values.process.javaOpts }}
+            - name: JAVA_OPTS
+              value: {{ .Values.process.javaOpts | quote }}
+            {{- end }}
+            {{- if .Values.process.javaMemMin }}
+            - name: JAVA_MIN_MEM
+              value: {{ .Values.process.javaMemMin | quote }}
+            {{- end }}
+            {{- if .Values.process.javaMemMax }}
+            - name: JAVA_MAX_MEM
+              value: {{ .Values.process.javaMemMax | quote }}
+            {{- end }}
+            {{- if .Values.process.extendedSettings }}
+            - name: RUNTIME_WATT_PROPERTIES
+              value: {{ include "webmethods-mft-gateway.joinListWithSpaces" .Values.process.extendedSettings | quote }}
+            {{- end }}
+            {{- if .Values.process.mftProperties }}
+            - name: RUNTIME_MFT_PROPERTIES
+              value: {{ include "webmethods-mft-gateway.joinListWithSpaces" .Values.process.mftProperties | quote }}
+            {{- end }}
+            {{- if .Values.process.mftSecurityProperties }}
+            - name: RUNTIME_MFT_SECURITY_PROPERTIES
+              value: {{ include "webmethods-mft-gateway.joinListWithSpaces" .Values.process.mftSecurityProperties | quote }}
+            {{- end }}
+            - name: PROPS_STATS_DC_ENABLED
+              value: "true"
+            {{- if .Values.debug }}
+            - name: SCRIPTS_LOGGER_LEVEL
+              value: "1"
+            {{- end }}
+            {{- with .Values.envConfigs }}
+            {{- include "webmethods-mft-gateway.dictToEnvs" . | indent 12 }}
+            {{- end }}
+            {{- with .Values.envSecretConfigs }}
+            {{- include "webmethods-mft-gateway.secretsDictToEnvs" . | indent 12 }}
+            {{- end }}
+            {{- with .Values.env }}
+            {{- toYaml . | nindent 12 }}
+            {{- end }}
+          volumeMounts:
+            - name: {{ include "webmethods-mft-gateway.fullname" . }}-runtime
+              mountPath: {{ $.Values.global.sagHome }}/IntegrationServer/instances/{{ $.Values.global.integrationServerInstanceName }}/DocumentStore
+              subPath: IntegrationServer/instances/{{ $.Values.global.integrationServerInstanceName }}/DocumentStore
+            - name: {{ include "webmethods-mft-gateway.fullname" . }}-runtime
+              mountPath: {{ $.Values.global.sagHome }}/IntegrationServer/instances/{{ $.Values.global.integrationServerInstanceName }}/XAStore
+              subPath: IntegrationServer/instances/{{ $.Values.global.integrationServerInstanceName }}/XAStore
+            - name: {{ include "webmethods-mft-gateway.fullname" . }}-runtime
+              mountPath: {{ $.Values.global.sagHome }}/IntegrationServer/instances/{{ $.Values.global.integrationServerInstanceName }}/cacheStore
+              subPath: IntegrationServer/instances/{{ $.Values.global.integrationServerInstanceName }}/cacheStore
+            - name: {{ include "webmethods-mft-gateway.fullname" . }}-runtime
+              mountPath: {{ $.Values.global.sagHome }}/IntegrationServer/instances/{{ $.Values.global.integrationServerInstanceName }}/db
+              subPath: IntegrationServer/instances/{{ $.Values.global.integrationServerInstanceName }}/db
+            - name: {{ include "webmethods-mft-gateway.fullname" . }}-runtime
+              mountPath: {{ $.Values.global.sagHome }}/IntegrationServer/instances/{{ $.Values.global.integrationServerInstanceName }}/replicate
+              subPath: IntegrationServer/instances/{{ $.Values.global.integrationServerInstanceName }}/replicate
+            - name: {{ include "webmethods-mft-gateway.fullname" . }}-runtime
+              mountPath: {{ $.Values.global.sagHome }}/IntegrationServer/instances/{{ $.Values.global.integrationServerInstanceName }}/config
+              subPath: IntegrationServer/instances/{{ $.Values.global.integrationServerInstanceName }}/config
+            - name: {{ include "webmethods-mft-gateway.fullname" . }}-runtime
+              mountPath: {{ $.Values.global.sagHome }}/IntegrationServer/instances/{{ $.Values.global.integrationServerInstanceName }}/packages/WmMFT/config
+              subPath: IntegrationServer/instances/{{ $.Values.global.integrationServerInstanceName }}/packages/WmMFT/config
+            - name: {{ include "webmethods-mft-gateway.fullname" . }}-runtime
+              mountPath: {{ $.Values.global.sagHome }}/IntegrationServer/instances/{{ $.Values.global.integrationServerInstanceName }}/monitorRepo
+              subPath: IntegrationServer/instances/{{ $.Values.global.integrationServerInstanceName }}/monitorRepo
+            - name: {{ include "webmethods-mft-gateway.fullname" . }}-runtime
+              mountPath: {{ $.Values.global.sagHome }}/IntegrationServer/instances/{{ $.Values.global.integrationServerInstanceName }}/logs
+              subPath: IntegrationServer/instances/{{ $.Values.global.integrationServerInstanceName }}/logs
+            - name: {{ include "webmethods-mft-gateway.fullname" . }}-runtime
+              mountPath: {{ $.Values.global.sagHome }}/profiles/IS_{{ $.Values.global.integrationServerInstanceName }}/logs
+              subPath: profiles/IS_{{ $.Values.global.integrationServerInstanceName }}/logs
+            {{- with .Values.licenseIntegrationServer }}
+            - name: runtime-license-is
+              mountPath: {{ $.Values.global.sagHome }}/IntegrationServer/instances/{{ $.Values.global.integrationServerInstanceName }}/config/licenseKey.xml
+              subPath: {{ .path }}
+              readOnly: false
+            {{- end }}
+            {{- with .Values.licenseMftGateway }}
+            - name: runtime-license-mftgateway
+              mountPath: {{ $.Values.global.sagHome }}/IntegrationServer/instances/{{ $.Values.global.integrationServerInstanceName }}/packages/WmMFT/config/licenseKey.xml
+              subPath: {{ .path }}
+              readOnly: false
+            {{- end }}
+            {{- with .Values.extraVolumeMounts }}
+            {{- tpl . $ | nindent 12 }}
+            {{- end }}
+      volumes:
+        {{- with .Values.licenseIntegrationServer }}
+        - name: runtime-license-is
+          secret:
+            secretName: {{ .name }}
+            items:
+            - key: {{ .key }}
+              path: {{ .path }}
+        {{- end }}
+        {{- with .Values.licenseMftGateway }}
+        - name: runtime-license-mftgateway
+          secret:
+            secretName: {{ .name }}
+            items:
+            - key: {{ .key }}
+              path: {{ .path }}
+        {{- end }}
+        {{- if .Values.transferproxy.enabled }}
+        - name: sidecarproxy-config
+          configMap:
+            name: {{ include "webmethods-mft-gateway.fullname" . }}-sidecareproxy
+        {{- end }}
+        {{- if .Values.icapAntivirus.enabled }}
+        {{- if .Values.icapAntivirus.configMaps.icap }}
+        - name: sidecar-configs-icap
+          configMap:
+            name: {{ .Values.icapAntivirus.configMaps.icap }}
+        {{- end }}
+        {{- if .Values.icapAntivirus.configMaps.clamav }}
+        - name: sidecar-configs-clamav
+          configMap:
+            name: {{ .Values.icapAntivirus.configMaps.clamav }}
+        {{- end }}
+        {{- end }}
+        {{- with .Values.extraVolumes }}
+        {{- tpl . $ | nindent 8 }}
+        {{- end }}
+      {{- with .Values.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}

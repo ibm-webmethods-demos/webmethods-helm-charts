@@ -1,0 +1,236 @@
+# Default values for webmethods-mft-gateway.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+
+global:
+  app:                             mftgateway
+  sagHome:                         /opt/softwareag
+  integrationServerInstanceName:   default
+
+replicaCount: 1
+
+image:
+  registry: ghcr.io/sag-gov-integration-unit
+  repository: webmethods-mftgateway
+  pullPolicy: IfNotPresent
+  tag: 10.15
+
+## image pull secrets
+imagePullSecrets: []
+
+nameOverride: ""
+fullnameOverride: ""
+
+# the licensing needed for the product
+licenseIntegrationServer: {}
+  # name: ""
+  # key: ""
+  # path: ""
+
+licenseMftGateway: {}
+  # name: ""
+  # key: ""
+  # path: ""
+
+serviceAccount:
+  # Specifies whether a service account should be created
+  create: true
+  # Annotations to add to the service account
+  annotations: {}
+  # The name of the service account to use.
+  # If not set and create is true, a name is generated using the fullname template
+  name: ""
+
+podAnnotations: {}
+
+podSecurityContext: {}
+  # fsGroup: 2000
+
+securityContext: {}
+  # capabilities:
+  #   drop:
+  #   - ALL
+  # readOnlyRootFilesystem: true
+  # runAsNonRoot: true
+  # runAsUser: 1000
+
+# This proxy is needed if MFT gateway is behind another proxy like traefik 
+# (to cleanup some HTTP headers that are breaking the transferUI)
+# if this transferproxy sidecar is enabled, 
+# the listener.httptransfer service will automatically forward the traffic to this
+# in turn, this will act as a HTTP proxy, forwarding the traffic to .Values.listeners.httptransfer.port
+# see ./configs/haproxy.cfg for more details on the HAProxy config
+transferproxy:
+  enabled: false
+  image:
+    registry: registry1.dso.mil/ironbank
+    repository: opensource/haproxy/haproxy24
+    pullPolicy: IfNotPresent
+    tag: v2.4.22
+  port: 8080
+  securityContext:
+    allowPrivilegeEscalation: false
+    runAsUser: 993
+    runAsGroup: 993
+  healthcheck:
+    scheme: http
+  resources:
+    requests:
+      memory: 128Mi
+      cpu: 200m
+    limits:
+      memory: 256Mi
+      cpu: 500m
+
+# This sidecar is to add an ICAP Antivirus solution for MFT
+icapAntivirus:
+  enabled: false
+  configMaps:
+    icap: ""
+    clamav: ""
+  refreshAVDefsOnStart: true
+  checkAVDefsDailyCount: 12
+  securityContext:
+    allowPrivilegeEscalation: false
+    runAsUser: 0
+    runAsGroup: 0
+  image:
+    registry: ghcr.io/sag-gov-integration-unit
+    repository: icap-clamav
+    pullPolicy: IfNotPresent
+    tag: 1.0-latest
+  port: 1344
+  persistence:
+    enabled: false
+    storageSize: 1Gi
+    # storageClassName:
+  resources:
+    requests:
+      memory: 1Gi
+      cpu: 500m
+    limits:
+      memory: 1Gi
+      cpu: 1
+
+## these represent the dynamic ports exposed by the MFT Gateway for the dynamic endpoints
+listeners:
+  httptransfer:
+    enabled: false
+    port: 5566
+  ## FTPS worsk in 2 way. Explicit and Implicit
+  ## The default Implicit port is 990 ( after handshake it will switch automatically to 989 for data transmission
+  ## FTPS seems much more complicated, many more ports etc...
+  tcptransfer:
+    ftps:
+      enabled: false
+      port: 5521
+    sftp:
+      enabled: false
+      port: 5522
+
+# these are for the fronting services...
+# for isruntime, it's to access the underlying IS Admin UI
+# for the listeners, it's to expose the dynamic listeners
+service:
+  isruntime:
+    type: ClusterIP
+    port: 5555
+    annotations: {}
+  listeners:
+    httptransfer:
+      type: ClusterIP
+      port: 8080
+      annotations: {}
+    ## FTPS worsk in 2 way. Explicit and Implicit
+    ## The default Implicit port is 990 ( after handshake it will switch automatically to 989 for data transmission
+    ## FTPS seems much more complicated, many more ports etc...
+    tcptransfer:
+      annotations: {}
+      type: ClusterIP
+      ftps:
+        port: 990
+      sftp:
+        port: 22
+
+# these are the ports by defaults
+containerPorts:
+  isruntime: 5555
+  registrationPort: 8500
+
+adminPasswordSecret: {}
+  # name:
+  # key:
+
+debug: false
+
+process:
+  javaOpts:
+  javaMemMin:
+  javaMemMax:
+  extendedSettings: []
+  mftProperties: []
+  mftSecurityProperties: []
+
+healthcheck:
+  scheme: HTTP
+
+persistence:
+  runtime:
+    storageSize: 1Gi
+    # storageClassName:
+
+ingress:
+  isruntime:
+    enabled: false
+    annotations: {}
+    host: chart-example.local
+    # tls:
+    #  - secretName: chart-example-tls
+    #    hosts:
+    #      - chart-example.local
+    paths:
+      - path: /
+        pathType: Prefix
+  httptransfer:
+    enabled: false
+    annotations: {}
+    host: chart-example.local
+    # tls:
+    #  - secretName: chart-example-tls
+    #    hosts:
+    #      - chart-example.local
+    paths:
+      - path: /
+        pathType: Prefix
+  custom:
+    enabled: false
+    annotations: {}
+    hosts:
+      - host: chart-example.local
+        paths: []
+          # - path: /
+          #   pathType: Prefix
+          #   backendServiceName: someservice
+          #   backendServicePort: 5555
+    # tls:
+    #  - secretName: chart-example-tls
+    #    hosts:
+    #      - chart-example.local
+
+resources: {}
+  # We usually recommend not to specify default resources and to leave this as a conscious
+  # choice for the user. This also increases chances charts run on environments with little
+  # resources, such as Minikube. If you do want to specify resources, uncomment the following
+  # lines, adjust them as necessary, and remove the curly braces after 'resources:'.
+  # limits:
+  #   cpu: 100m
+  #   memory: 128Mi
+  # requests:
+  #   cpu: 100m
+  #   
+
+nodeSelector: {}
+
+tolerations: []
+
+affinity: {}

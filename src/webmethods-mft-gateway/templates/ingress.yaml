@@ -1,0 +1,127 @@
+---
+{{- if .Values.ingress.isruntime.enabled -}}
+{{- $uname := (include "webmethods-mft-gateway.isRuntimeFullname" .) }}
+{{- $port := .Values.service.isruntime.port }}
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: {{ $uname }}
+  labels:
+    {{- include "webmethods-mft-gateway.labels" . | nindent 4 }}
+  {{- with .Values.ingress.isruntime.annotations }}
+  annotations:
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
+spec:
+  {{- if and .Values.ingress.isruntime.className (semverCompare ">=1.18-0" .Capabilities.KubeVersion.GitVersion) }}
+  ingressClassName: {{ .Values.ingress.isruntime.className }}
+  {{- end }}
+  {{- if .Values.ingress.isruntime.tls }}
+  tls:
+    {{- range .Values.ingress.isruntime.tls }}
+    - hosts:
+        {{- range .hosts }}
+        - {{ . | quote }}
+        {{- end }}
+      secretName: {{ .secretName }}
+    {{- end }}
+  {{- end }}
+  rules:
+    - host: {{ .Values.ingress.isruntime.host | quote }}
+      http:
+        paths:
+          {{- range .Values.ingress.isruntime.paths }}
+          - path: {{ .path | quote }}
+            pathType: {{ .pathType | quote }}
+            backend:
+              service:
+                name: {{ $uname }}
+                port:
+                  number: {{ $port }}
+          {{- end }}
+{{- end }}
+---
+{{- if .Values.ingress.httptransfer.enabled -}}
+{{- $uname := (include "webmethods-mft-gateway.httpTransferFullname" .) }}
+{{- $port := .Values.service.listeners.httptransfer.port | default .Values.listeners.httptransfer.port }}
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: {{ $uname }}
+  labels:
+    {{- include "webmethods-mft-gateway.labels" . | nindent 4 }}
+  {{- with .Values.ingress.httptransfer.annotations }}
+  annotations:
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
+spec:
+  {{- if and .Values.ingress.httptransfer.className (semverCompare ">=1.18-0" .Capabilities.KubeVersion.GitVersion) }}
+  ingressClassName: {{ .Values.ingress.httptransfer.className }}
+  {{- end }}
+  {{- if .Values.ingress.httptransfer.tls }}
+  tls:
+    {{- range .Values.ingress.httptransfer.tls }}
+    - hosts:
+        {{- range .hosts }}
+        - {{ . | quote }}
+        {{- end }}
+      secretName: {{ .secretName }}
+    {{- end }}
+  {{- end }}
+  rules:
+    - host: {{ .Values.ingress.httptransfer.host | quote }}
+      http:
+        paths:
+          {{- range .Values.ingress.httptransfer.paths }}
+          - path: {{ .path | quote }}
+            pathType: {{ .pathType | quote }}
+            backend:
+              service:
+                name: {{ $uname }}
+                port:
+                  number: {{ $port }}
+          {{- end }}
+{{- end }}
+---
+{{- if .Values.ingress.custom.enabled -}}
+{{- $uname := (include "webmethods-mft-gateway.fullname" .) }}
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: {{ $uname }}
+  labels:
+    {{- include "webmethods-mft-gateway.labels" . | nindent 4 }}
+  {{- with .Values.ingress.custom.annotations }}
+  annotations:
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
+spec:
+  {{- if and .Values.ingress.custom.className (semverCompare ">=1.18-0" .Capabilities.KubeVersion.GitVersion) }}
+  ingressClassName: {{ .Values.ingress.custom.className }}
+  {{- end }}
+  {{- if .Values.ingress.custom.tls }}
+  tls:
+    {{- range .Values.ingress.custom.tls }}
+    - hosts:
+        {{- range .hosts }}
+        - {{ . | quote }}
+        {{- end }}
+      secretName: {{ .secretName }}
+    {{- end }}
+  {{- end }}
+  rules:
+    {{- range .Values.ingress.custom.hosts }}
+    - host: {{ .host | quote }}
+      http:
+        paths:
+          {{- range .paths }}
+          - path: {{ .path | quote }}
+            pathType: {{ .pathType | quote }}
+            backend:
+              service:
+                name: {{ .backendServiceName }}
+                port:
+                  number: {{ .backendServicePort }}
+          {{- end }}
+    {{- end }}
+{{- end -}}

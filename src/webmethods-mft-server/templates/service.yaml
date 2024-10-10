@@ -1,0 +1,80 @@
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "webmethods-mft-server.fullname.headless" . }}
+  annotations:
+    service.alpha.kubernetes.io/tolerate-unready-endpoints: "true"
+  labels:
+    {{- include "webmethods-mft-server.labels" . | nindent 4 }}
+spec:
+  # Headless Service: This is needed for statefulset hostnames like apiportal-0 to resolve
+  type: ClusterIP
+  clusterIP: None
+  # Create endpoints also if the related pod isn't ready
+  publishNotReadyAddresses: true
+  ports:
+    - name: isruntime
+      port: {{ .Values.service.isruntime.port }}
+      protocol: TCP
+  selector:
+    {{- include "webmethods-mft-server.selectorLabels" . | nindent 4 }}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "webmethods-mft-server.isRuntimeFullname" . }}
+  labels:
+    {{- include "webmethods-mft-server.labels" . | nindent 4 }}
+  {{- with .Values.service.isruntime.annotations }}
+  annotations:
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
+spec:
+  type: {{ .Values.service.isruntime.type }}
+  ports:
+    - port: {{ .Values.service.isruntime.port }}
+      protocol: TCP
+      name: isruntime
+  selector:
+    {{- include "webmethods-mft-server.selectorLabels" . | nindent 4 }}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "webmethods-mft-server.adminUIFullname" . }}
+  labels:
+    {{- include "webmethods-mft-server.labels" . | nindent 4 }}
+  {{- with .Values.service.adminui.annotations }}
+  annotations:
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
+spec:
+  type: {{ .Values.service.adminui.type }}
+  ports:
+    - port: {{ .Values.service.adminui.port }}
+      protocol: TCP
+      name: adminui
+  selector:
+    {{- include "webmethods-mft-server.selectorLabels" . | nindent 4 }}
+---
+{{- if not $.Values.mftGatewayConnect.enabled }}
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "webmethods-mft-server.httpTransferUIFullname" . }}
+  labels:
+    {{- include "webmethods-mft-server.labels" . | nindent 4 }}
+  {{- with .Values.service.httptransferui.annotations }}
+  annotations:
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
+spec:
+  type: {{ .Values.service.httptransferui.type }}
+  ports:
+    - port: {{ .Values.service.httptransferui.port }}
+      protocol: TCP
+      name: httptransferui
+  selector:
+    {{- include "webmethods-mft-server.selectorLabels" . | nindent 4 }}
+{{- end }}

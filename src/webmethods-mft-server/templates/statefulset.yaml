@@ -1,0 +1,464 @@
+---
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: {{ include "webmethods-mft-server.fullname" . }}
+  labels:
+    {{- include "webmethods-mft-server.labels" . | nindent 4 }}
+spec:
+  serviceName: {{ include "webmethods-mft-server.fullname.headless" . }}
+  replicas: 1
+  updateStrategy:
+    type: RollingUpdate
+    rollingUpdate: 
+      partition: 0
+  volumeClaimTemplates:
+    - metadata:
+        name: {{ include "webmethods-mft-server.fullname" . }}-runtime
+        labels:
+          {{- include "webmethods-mft-server.labels" . | nindent 10 }}
+      spec:
+        accessModes:
+          - "ReadWriteOnce"
+        {{- if .Values.persistence.runtime.storageClassName }}
+        storageClassName: {{ .Values.persistence.runtime.storageClassName }}
+        {{- end }}
+        resources:
+          requests:
+            storage: {{ .Values.persistence.runtime.storageSize }}
+  selector:
+    matchLabels:
+      {{- include "webmethods-mft-server.selectorLabels" . | nindent 6 }}
+  template:
+    metadata:
+      {{- with .Values.podAnnotations }}
+      annotations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      labels:
+        {{- include "webmethods-mft-server.selectorLabels" . | nindent 8 }}
+    spec:
+      {{- with .Values.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      serviceAccountName: {{ include "webmethods-mft-server.serviceAccountName" . }}
+      securityContext:
+        {{- toYaml .Values.podSecurityContext | nindent 8 }}
+      initContainers:
+        - name: init-runtime-pvc-is-configs
+          securityContext:
+            {{- toYaml .Values.securityContext | nindent 12 }}
+          {{- if .Values.image.registry }}
+          image: {{ printf "%s/%s:%s" .Values.image.registry .Values.image.repository (.Values.image.tag | default .Chart.AppVersion) }}
+          {{- else }}
+          image: {{ printf "%s:%s" .Values.image.repository (.Values.image.tag | default .Chart.AppVersion) }}
+          {{- end }}
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          env:
+            - name: SOURCE_DIR
+              value: "{{ $.Values.global.sagHome }}/IntegrationServer/instances/{{ $.Values.global.integrationServerInstanceName }}/config"
+            - name: TARGET_DIR
+              value: "/wmis_configs"
+          volumeMounts:
+            - name: {{ include "webmethods-mft-server.fullname" . }}-runtime
+              mountPath: /wmis_configs
+              subPath: IntegrationServer/instances/{{ $.Values.global.integrationServerInstanceName }}/config
+          command:
+            - sh
+            - -c
+            - |
+              #!/bin/sh -e
+              if [ -f ${TARGET_DIR}/.marker ]; then
+                  echo "Marker file found in ${TARGET_DIR} - Files were already copied in this location. Ignoring!"
+                  exit 0;
+              fi
+              echo "Copying all the files in ${SOURCE_DIR} into ${TARGET_DIR}!"
+              cp -pdrx ${SOURCE_DIR}/* ${TARGET_DIR}/
+              echo "Setting marker file"
+              echo "Operation DONE: cp -r ${SOURCE_DIR}/* ${TARGET_DIR}/" > ${TARGET_DIR}/.marker
+              echo "DONE!"
+              exit 0;
+        - name: init-runtime-pvc-mft-configs
+          securityContext:
+            {{- toYaml .Values.securityContext | nindent 12 }}
+          {{- if .Values.image.registry }}
+          image: {{ printf "%s/%s:%s" .Values.image.registry .Values.image.repository (.Values.image.tag | default .Chart.AppVersion) }}
+          {{- else }}
+          image: {{ printf "%s:%s" .Values.image.repository (.Values.image.tag | default .Chart.AppVersion) }}
+          {{- end }}
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          env:
+            - name: SOURCE_DIR
+              value: "{{ $.Values.global.sagHome }}/IntegrationServer/instances/{{ $.Values.global.integrationServerInstanceName }}/packages/WmMFT/config"
+            - name: TARGET_DIR
+              value: "/wmmft_configs"
+          volumeMounts:
+            - name: {{ include "webmethods-mft-server.fullname" . }}-runtime
+              mountPath: /wmmft_configs
+              subPath: IntegrationServer/instances/{{ $.Values.global.integrationServerInstanceName }}/packages/WmMFT/config
+          command:
+            - sh
+            - -c
+            - |
+              #!/bin/sh -e
+              if [ -f ${TARGET_DIR}/.marker ]; then
+                  echo "Marker file found in ${TARGET_DIR} - Files were already copied in this location. Ignoring!"
+                  exit 0;
+              fi
+              echo "Copying all the files in ${SOURCE_DIR} into ${TARGET_DIR}!"
+              cp -pdrx ${SOURCE_DIR}/* ${TARGET_DIR}/
+              echo "Setting marker file"
+              echo "Operation DONE: cp -r ${SOURCE_DIR}/* ${TARGET_DIR}/" > ${TARGET_DIR}/.marker
+              echo "DONE!"
+              exit 0;
+        {{- with .Values.initContainers }}
+        {{- toYaml . | nindent 8 }}
+        {{- end }}
+      containers:
+        {{- if not $.Values.mftGatewayConnect.enabled }}
+        {{- if .Values.transferproxy.enabled }}
+        - name: {{ .Chart.Name }}-sidecar-transferproxy
+          securityContext:
+            {{- toYaml .Values.transferproxy.securityContext | nindent 12 }}
+          {{- if .Values.transferproxy.image.registry }}
+          image: {{ printf "%s/%s:%s" .Values.transferproxy.image.registry .Values.transferproxy.image.repository (.Values.transferproxy.image.tag | default .Chart.AppVersion) }}
+          {{- else }}
+          image: {{ printf "%s:%s" .Values.transferproxy.image.repository (.Values.transferproxy.image.tag | default .Chart.AppVersion) }}
+          {{- end }}
+          imagePullPolicy: {{ .Values.transferproxy.image.pullPolicy }}
+          ports:
+            - containerPort: {{ .Values.transferproxy.port }}
+              name: proxytransferui
+              protocol: TCP
+            - containerPort: 8404
+              name: proxystats
+              protocol: TCP
+          livenessProbe:
+            tcpSocket:
+              port: {{ .Values.transferproxy.port }}
+            periodSeconds: 10
+            failureThreshold: 4
+            successThreshold: 1
+            timeoutSeconds: 5
+          resources:
+            {{- toYaml .Values.transferproxy.resources | nindent 12 }}
+          volumeMounts:
+            - name: sidecarproxy-config
+              mountPath: /usr/local/etc/haproxy
+        {{- end }}
+        {{- end }}
+        - name: {{ .Chart.Name }}
+          securityContext:
+            {{- toYaml .Values.securityContext | nindent 12 }}
+          {{- if .Values.image.registry }}
+          image: {{ printf "%s/%s:%s" .Values.image.registry .Values.image.repository (.Values.image.tag | default .Chart.AppVersion) }}
+          {{- else }}
+          image: {{ printf "%s:%s" .Values.image.repository (.Values.image.tag | default .Chart.AppVersion) }}
+          {{- end }}
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          {{- with .Values.containerPorts }}
+          ports:
+            - containerPort: {{ .isruntime }}
+              name: isruntime
+              protocol: TCP
+            - containerPort: {{ .adminui }}
+              name: adminui
+              protocol: TCP
+            {{- if not $.Values.mftGatewayConnect.enabled }}
+            - containerPort: {{ .httptransferui }}
+              name: httptransferui
+              protocol: TCP
+            {{- end }}
+          startupProbe:
+            httpGet:
+              path: /invoke/wm.server/ping
+              port: {{ .isruntime }}
+              scheme: {{ upper ($.Values.healthcheck.scheme | default "http") }}
+            failureThreshold: 30
+            periodSeconds: 10
+          livenessProbe:
+            httpGet:
+              path: /invoke/wm.server/ping
+              port: {{ .isruntime }}
+              scheme: {{ upper ($.Values.healthcheck.scheme | default "http") }}
+            periodSeconds: 10
+            failureThreshold: 4
+            successThreshold: 1
+            timeoutSeconds: 5
+          {{- end }}
+          resources:
+            {{- toYaml .Values.resources | nindent 12 }}
+          env:
+            # - name: MFT_SERVER_NAMESPACE
+            #   valueFrom:
+            #     fieldRef:
+            #       fieldPath: metadata.namespace
+            # - name: MFT_SERVER_PODNAME
+            #   valueFrom:
+            #     fieldRef:
+            #       fieldPath: metadata.name
+            # - name: MFT_SERVER_ID
+            #   value: "$(MFT_SERVER_NAMESPACE)-$(MFT_SERVER_PODNAME)"
+            {{- if .Values.adminPasswordSecret }}
+            - name: PROPS_ADMIN_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.adminPasswordSecret.name }}
+                  key: {{ .Values.adminPasswordSecret.key }}
+            {{- end }}
+            {{- if .Values.process.javaOpts }}
+            - name: JAVA_OPTS
+              value: {{ .Values.process.javaOpts | quote }}
+            {{- end }}
+            {{- if .Values.process.javaMemMin }}
+            - name: JAVA_MIN_MEM
+              value: {{ .Values.process.javaMemMin | quote }}
+            {{- end }}
+            {{- if .Values.process.javaMemMax }}
+            - name: JAVA_MAX_MEM
+              value: {{ .Values.process.javaMemMax | quote }}
+            {{- end }}
+            {{- if .Values.process.extendedSettings }}
+            - name: RUNTIME_WATT_PROPERTIES
+              value: {{ include "webmethods-mft-server.joinListWithSpaces" .Values.process.extendedSettings | quote }}
+            {{- end }}
+            {{- if .Values.process.mftProperties }}
+            - name: RUNTIME_MFT_PROPERTIES
+              value: {{ include "webmethods-mft-server.joinListWithSpaces" .Values.process.mftProperties | quote }}
+            {{- end }}
+            {{- if .Values.process.mftSecurityProperties }}
+            - name: RUNTIME_MFT_SECURITY_PROPERTIES
+              value: {{ include "webmethods-mft-server.joinListWithSpaces" .Values.process.mftSecurityProperties | quote }}
+            {{- end }}
+            {{- with .Values.externaldb }}
+            {{- if .mft }}
+            - name: EXTDB_MFT_ENABLED
+              value: "true"
+            - name: EXTDB_MFT_JDBC_URL
+              value: {{ .mft.url | quote }}
+            - name: EXTDB_MFT_TYPE
+              value: {{ .mft.type | quote }}
+            - name: EXTDB_MFT_HOST
+              value: {{ .mft.host | quote }}
+            - name: EXTDB_MFT_PORT
+              value: {{ .mft.port | quote }}
+            - name: EXTDB_MFT_DBNAME
+              value: {{ .mft.dbName | quote }}
+            - name: EXTDB_MFT_JDBC_ARGS
+              value: {{ .mft.args | quote }}
+            - name: EXTDB_MFT_USERID
+              value: {{ .mft.user | quote }}
+            - name: EXTDB_MFT_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: {{ (.mft.passwordSecret).name }}
+                  key: {{ (.mft.passwordSecret).key }}
+            {{- if .mft.poolConnsMin }}
+            - name: EXTDB_MFT_JDBC_POOL_CONNS_MIN
+              value: {{ .mft.poolConnsMin | quote }}
+            {{- end }}
+            {{- if .mft.poolConnsMax }}
+            - name: EXTDB_MFT_JDBC_POOL_CONNS_MAX
+              value: {{ .mft.poolConnsMax | quote }}
+            {{- end }}
+            {{- if .mft.poolConnsIdleTimeoutMs }}
+            - name: EXTDB_MFT_JDBC_POOL_CONNS_IDLETIMEOUT_MS
+              value: {{ .mft.poolConnsIdleTimeoutMs | quote }}
+            {{- end }}
+            {{- if .mft.poolConnsWarningThresholdPercent }}
+            - name: EXTDB_MFT_JDBC_POOL_CONNS_WARNING_THRESHOLD_PERCENT
+              value: {{ .mft.poolConnsWarningThresholdPercent | quote }}
+            {{- end }}
+            {{- if .mft.poolWaitingThreadsThresholdCount }}
+            - name: EXTDB_MFT_JDBC_POOL_CONNS_WAITING_THREADS_THRESHOLD_COUNT
+              value: {{ .mft.poolWaitingThreadsThresholdCount | quote }}
+            {{- end }}
+            {{- if .mft.spyEnabled }}
+            - name: EXTDB_MFT_JDBC_POOL_SPY_ENABLED
+              value: {{ .mft.spyEnabled | quote }}
+            {{- end }}
+            {{- if .mft.spyParams }}
+            - name: EXTDB_MFT_JDBC_POOL_SPY_PARAMS
+              value: {{ .mft.spyParams | quote }}
+            {{- end }}
+            {{- if .mft.snoopEnabled }}
+            - name: EXTDB_MFT_JDBC_POOL_SNOOP_ENABLED
+              value: {{ .mft.snoopEnabled | quote }}
+            {{- end }}
+            {{- if .mft.snoopParams }}
+            - name: EXTDB_MFT_JDBC_POOL_SNOOP_PARAMS
+              value: {{ .mft.snoopParams | quote }}
+            {{- end }}
+            {{- end }}
+            {{- if .usermgt }}
+            ## here, if usermgt is not defined, then it means the user tables are in the same db... 
+            ## so get the same db info for these env vars
+            - name: EXTDB_USERMGT_ENABLED
+              value: "true"
+            - name: EXTDB_USERMGT_JDBC_URL
+              value: {{ .usermgt.url | quote }}
+            - name: EXTDB_USERMGT_TYPE
+              value: {{ .usermgt.type | quote }}
+            - name: EXTDB_USERMGT_HOST
+              value: {{ .usermgt.host | quote }}
+            - name: EXTDB_USERMGT_PORT
+              value: {{ .usermgt.port | quote }}
+            - name: EXTDB_USERMGT_DBNAME
+              value: {{ .usermgt.dbName | quote }}
+            - name: EXTDB_USERMGT_JDBC_ARGS
+              value: {{ .usermgt.args | quote }}
+            - name: EXTDB_USERMGT_USERID
+              value: {{ .usermgt.user | quote }}
+            - name: EXTDB_USERMGT_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: {{ (.usermgt.passwordSecret).name }}
+                  key: {{ (.usermgt.passwordSecret).key }}
+            {{- if .usermgt.poolConnsMin }}
+            - name: EXTDB_MFT_JDBC_POOL_CONNS_MIN
+              value: {{ .usermgt.poolConnsMin | quote }}
+            {{- end }}
+            {{- if .usermgt.poolConnsMax }}
+            - name: EXTDB_MFT_JDBC_POOL_CONNS_MAX
+              value: {{ .usermgt.poolConnsMax | quote }}
+            {{- end }}
+            {{- if .usermgt.poolConnsIdleTimeoutMs }}
+            - name: EXTDB_MFT_JDBC_POOL_CONNS_IDLETIMEOUT_MS
+              value: {{ .usermgt.poolConnsIdleTimeoutMs | quote }}
+            {{- end }}
+            {{- if .usermgt.poolConnsWarningThresholdPercent }}
+            - name: EXTDB_MFT_JDBC_POOL_CONNS_WARNING_THRESHOLD_PERCENT
+              value: {{ .usermgt.poolConnsWarningThresholdPercent | quote }}
+            {{- end }}
+            {{- if .usermgt.poolWaitingThreadsThresholdCount }}
+            - name: EXTDB_MFT_JDBC_POOL_CONNS_WAITING_THREADS_THRESHOLD_COUNT
+              value: {{ .usermgt.poolWaitingThreadsThresholdCount | quote }}
+            {{- end }}
+            {{- if .usermgt.spyEnabled }}
+            - name: EXTDB_MFT_JDBC_POOL_SPY_ENABLED
+              value: {{ .usermgt.spyEnabled | quote }}
+            {{- end }}
+            {{- if .usermgt.spyParams }}
+            - name: EXTDB_MFT_JDBC_POOL_SPY_PARAMS
+              value: {{ .usermgt.spyParams | quote }}
+            {{- end }}
+            {{- if .usermgt.snoopEnabled }}
+            - name: EXTDB_MFT_JDBC_POOL_SNOOP_ENABLED
+              value: {{ .usermgt.snoopEnabled | quote }}
+            {{- end }}
+            {{- if .usermgt.snoopParams }}
+            - name: EXTDB_MFT_JDBC_POOL_SNOOP_PARAMS
+              value: {{ .usermgt.snoopParams | quote }}
+            {{- end }}
+            {{- end }}
+            {{- end }}
+            - name: PROPS_STATS_DC_ENABLED
+              value: "true"
+            {{- if .Values.debug }}
+            - name: SCRIPTS_LOGGER_LEVEL
+              value: "1"
+            {{- end }}
+            {{- with .Values.envConfigs }}
+            {{- include "webmethods-mft-server.dictToEnvs" . | indent 12 }}
+            {{- end }}
+            {{- with .Values.envSecretConfigs }}
+            {{- include "webmethods-mft-server.secretsDictToEnvs" . | indent 12 }}
+            {{- end }}
+            {{- with .Values.env }}
+            {{- toYaml . | nindent 12 }}
+            {{- end }}
+          volumeMounts:
+            {{- if .Values.persistence.sharedStore.enabled }}
+            - name: shared-store
+              mountPath: /data
+            {{- end }}
+            - name: {{ include "webmethods-mft-server.fullname" . }}-runtime
+              mountPath: {{ $.Values.global.sagHome }}/IntegrationServer/instances/{{ $.Values.global.integrationServerInstanceName }}/DocumentStore
+              subPath: IntegrationServer/instances/{{ $.Values.global.integrationServerInstanceName }}/DocumentStore
+            - name: {{ include "webmethods-mft-server.fullname" . }}-runtime
+              mountPath: {{ $.Values.global.sagHome }}/IntegrationServer/instances/{{ $.Values.global.integrationServerInstanceName }}/XAStore
+              subPath: IntegrationServer/instances/{{ $.Values.global.integrationServerInstanceName }}/XAStore
+            - name: {{ include "webmethods-mft-server.fullname" . }}-runtime
+              mountPath: {{ $.Values.global.sagHome }}/IntegrationServer/instances/{{ $.Values.global.integrationServerInstanceName }}/cacheStore
+              subPath: IntegrationServer/instances/{{ $.Values.global.integrationServerInstanceName }}/cacheStore
+            - name: {{ include "webmethods-mft-server.fullname" . }}-runtime
+              mountPath: {{ $.Values.global.sagHome }}/IntegrationServer/instances/{{ $.Values.global.integrationServerInstanceName }}/db
+              subPath: IntegrationServer/instances/{{ $.Values.global.integrationServerInstanceName }}/db
+            - name: {{ include "webmethods-mft-server.fullname" . }}-runtime
+              mountPath: {{ $.Values.global.sagHome }}/IntegrationServer/instances/{{ $.Values.global.integrationServerInstanceName }}/replicate
+              subPath: IntegrationServer/instances/{{ $.Values.global.integrationServerInstanceName }}/replicate
+            - name: {{ include "webmethods-mft-server.fullname" . }}-runtime
+              mountPath: {{ $.Values.global.sagHome }}/IntegrationServer/instances/{{ $.Values.global.integrationServerInstanceName }}/config
+              subPath: IntegrationServer/instances/{{ $.Values.global.integrationServerInstanceName }}/config
+            - name: {{ include "webmethods-mft-server.fullname" . }}-runtime
+              mountPath: {{ $.Values.global.sagHome }}/IntegrationServer/instances/{{ $.Values.global.integrationServerInstanceName }}/packages/WmMFT/config
+              subPath: IntegrationServer/instances/{{ $.Values.global.integrationServerInstanceName }}/packages/WmMFT/config
+            - name: {{ include "webmethods-mft-server.fullname" . }}-runtime
+              mountPath: {{ $.Values.global.sagHome }}/IntegrationServer/instances/{{ $.Values.global.integrationServerInstanceName }}/monitorRepo
+              subPath: IntegrationServer/instances/{{ $.Values.global.integrationServerInstanceName }}/monitorRepo
+            - name: {{ include "webmethods-mft-server.fullname" . }}-runtime
+              mountPath: {{ $.Values.global.sagHome }}/IntegrationServer/instances/{{ $.Values.global.integrationServerInstanceName }}/logs
+              subPath: IntegrationServer/instances/{{ $.Values.global.integrationServerInstanceName }}/logs
+            - name: {{ include "webmethods-mft-server.fullname" . }}-runtime
+              mountPath: {{ $.Values.global.sagHome }}/profiles/IS_{{ $.Values.global.integrationServerInstanceName }}/logs
+              subPath: profiles/IS_{{ $.Values.global.integrationServerInstanceName }}/logs
+            {{- with .Values.licenseIntegrationServer }}
+            - name: runtime-license-is
+              mountPath: {{ $.Values.global.sagHome }}/IntegrationServer/instances/{{ $.Values.global.integrationServerInstanceName }}/config/licenseKey.xml
+              subPath: {{ .path }}
+              readOnly: false
+            {{- end }}
+            {{- with .Values.licenseMftServer }}
+            - name: runtime-license-mft
+              mountPath: {{ $.Values.global.sagHome }}/IntegrationServer/instances/{{ $.Values.global.integrationServerInstanceName }}/packages/WmMFT/config/licenseKey.xml
+              subPath: {{ .path }}
+              readOnly: false
+            {{- end }}
+            {{- with .Values.extraVolumeMounts }}
+            {{- tpl . $ | nindent 12 }}
+            {{- end }}
+      volumes:
+        {{- if .Values.persistence.sharedStore.enabled }}
+        - name: shared-store
+          persistentVolumeClaim:
+            claimName: {{ include "webmethods-mft-server.fullname" . }}-sharedstore
+        {{- end }}
+        {{- with .Values.licenseIntegrationServer }}
+        - name: runtime-license-is
+          secret:
+            secretName: {{ .name }}
+            items:
+            - key: {{ .key }}
+              path: {{ .path }}
+        {{- end }}
+        {{- with .Values.licenseMftServer }}
+        - name: runtime-license-mft
+          secret:
+            secretName: {{ .name }}
+            items:
+            - key: {{ .key }}
+              path: {{ .path }}
+        {{- end }}
+        {{- if not $.Values.mftGatewayConnect.enabled }}
+        {{- if .Values.transferproxy.enabled }}
+        - name: sidecarproxy-config
+          configMap:
+            name: {{ include "webmethods-mft-server.fullname" . }}-sidecareproxy
+        {{- end }}
+        {{- end }}
+        {{- with .Values.extraVolumes }}
+        {{- tpl . $ | nindent 8 }}
+        {{- end }}
+      {{- with .Values.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}

@@ -1,0 +1,245 @@
+# Default values for webmethods-mft-server.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+
+global:
+  app:                             mftserver
+  sagHome:                         /opt/softwareag
+  integrationServerInstanceName:   default
+
+replicaCount: 1
+
+image:
+  registry: ghcr.io/sag-gov-integration-unit
+  repository: webmethods-mftserver
+  pullPolicy: IfNotPresent
+  tag: 10.15
+
+## image pull secrets
+imagePullSecrets: []
+
+nameOverride: ""
+fullnameOverride: ""
+
+# the licensing needed for the product
+licenseIntegrationServer: {}
+  # name: ""
+  # key: ""
+  # path: ""
+
+licenseMftServer: {}
+  # name: ""
+  # key: ""
+  # path: ""
+
+serviceAccount:
+  # Specifies whether a service account should be created
+  create: true
+  # Annotations to add to the service account
+  annotations: {}
+  # The name of the service account to use.
+  # If not set and create is true, a name is generated using the fullname template
+  name: ""
+
+podAnnotations: {}
+
+podSecurityContext: {}
+  # fsGroup: 2000
+
+securityContext: {}
+  # capabilities:
+  #   drop:
+  #   - ALL
+  # readOnlyRootFilesystem: true
+  # runAsNonRoot: true
+  # runAsUser: 1000
+
+mftGatewayConnect:
+  enabled: false
+  targets:
+    - host: gw1
+      port: 8500
+    - host: gw2
+      port: 8500
+
+# IF mftGatewayConnect is NOT enabled: we need a haproxy sidecar in front of the transfer site (httptransferui)
+# otherwise, IF mftGatewayConnect is enabled, no haproxy side car needed
+transferproxy:
+  enabled: false
+  image:
+    registry: registry1.dso.mil/ironbank
+    repository: opensource/haproxy/haproxy24
+    pullPolicy: IfNotPresent
+    tag: v2.4.22
+  port: 8080
+  securityContext:
+    allowPrivilegeEscalation: false
+    runAsUser: 1000
+    runAsGroup: 1000
+  healthcheck:
+    scheme: http
+  resources:
+    requests:
+      memory: 128Mi
+      cpu: 200m
+    limits:
+      memory: 256Mi
+      cpu: 500m
+
+# we have to setup 3 different services, 1 for ui and 1 for runtime 
+# IF mftGatewayConnect is NOT enabled: httptransferui is active...otherwise, it's ignored
+service:
+  isruntime:
+    type: ClusterIP
+    port: 5555
+    annotations: {}
+  adminui:
+    type: ClusterIP
+    port: 9100
+    annotations: {}
+  httptransferui:
+    type: ClusterIP
+    port: 5566
+    annotations: {}
+
+# IF mftGatewayConnect is NOT enabled: httptransferui is active...otherwise, it's ignored
+containerPorts:
+  isruntime: 5555
+  adminui: 9100
+  httptransferui: 5566
+
+adminPasswordSecret: {}
+  # name:
+  # key:
+
+debug: false
+
+process:
+  javaOpts:
+  javaMemMin:
+  javaMemMax:
+  extendedSettings: []
+  mftProperties: []
+  mftSecurityProperties: []
+
+healthcheck:
+  scheme: HTTP
+
+persistence:
+  runtime:
+    storageSize: 1Gi
+    # storageClassName: default
+# note: this sharedStore persistence is meant to be a common shared disk (ie. NFS) between all the nodes (ReadWriteMany)
+# if storage is not going to be local, no need for it    
+  sharedStore:
+    enabled: false
+    storageSize: 1Gi
+    # storageClassName: somenfsclass
+
+## external DB
+## note: if usermgt is not defined or empty, MFT will simply connect to the MFT DB even for the usermgt functions
+externaldb:
+  mft:
+    type: postgres
+    host: mft-postgres
+    port: 5432
+    dbName: mftdb
+    user: mftdbuser
+    passwordSecret: {}
+      # name:
+      # key:
+    # poolConnsMin:
+    # poolConnsMax:
+    # poolConnsIdleTimeoutMs:
+    # poolConnsWarningThresholdPercent:
+    # poolWaitingThreadsThresholdCount:
+    # spyEnabled:
+    # spyParams:
+    # snoopEnabled:
+    # snoopParams:
+  # usermgt:
+    # type: postgres
+    # host: mft-postgres
+    # port: 5432
+    # dbName: mftusermgtdb
+    # user: mftusermgtdbuser
+    # passwordSecret: {}
+    #   # name:
+    #   # key:
+    # poolConnsMin:
+    # poolConnsMax:
+    # poolConnsIdleTimeoutMs:
+    # poolConnsWarningThresholdPercent:
+    # poolWaitingThreadsThresholdCount:
+    # spyEnabled:
+    # spyParams:
+    # snoopEnabled:
+    # snoopParams:
+
+# IF mftGatewayConnect is NOT enabled: httptransferui is active...otherwise, it's ignored
+ingress:
+  isruntime:
+    enabled: false
+    annotations: {}
+    host: chart-example.local
+    # tls:
+    #  - secretName: chart-example-tls
+    #    hosts:
+    #      - chart-example.local
+    paths:
+      - path: /
+        pathType: Prefix
+  adminui:
+    enabled: false
+    annotations: {}
+    host: chart-example.local
+    # tls:
+    #  - secretName: chart-example-tls
+    #    hosts:
+    #      - chart-example.local
+    paths:
+      - path: /mft
+        pathType: Prefix
+  httptransferui:
+    enabled: false
+    annotations: {}
+    host: chart-example.local
+    # tls:
+    #  - secretName: chart-example-tls
+    #    hosts:
+    #      - chart-example.local
+    paths:
+      - path: /
+        pathType: Prefix
+  custom:
+    enabled: false
+    annotations: {}
+    hosts:
+      - host: chart-example.local
+        paths: []
+          # - path: /
+          #   pathType: Prefix
+          #   backendServiceName: someservice
+          #   backendServicePort: 5555
+    # tls:
+    #  - secretName: chart-example-tls
+    #    hosts:
+    #      - chart-example.local
+
+resources: {}
+  # We usually recommend not to specify default resources and to leave this as a conscious
+  # choice for the user. This also increases chances charts run on environments with little
+  # resources, such as Minikube. If you do want to specify resources, uncomment the following
+  # lines, adjust them as necessary, and remove the curly braces after 'resources:'.
+  # limits:
+  #   cpu: 100m
+  #   memory: 128Mi
+  # requests:
+  #   cpu: 100m
+  #   
+
+nodeSelector: {}
+
+tolerations: []
+
+affinity: {}

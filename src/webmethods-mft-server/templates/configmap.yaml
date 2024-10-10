@@ -1,0 +1,13 @@
+---
+{{- if not $.Values.mftGatewayConnect.enabled }}
+{{- if .Values.transferproxy.enabled }}
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "webmethods-mft-server.fullname" . }}-sidecareproxy
+  labels:
+    {{- include "webmethods-mft-server.labels" . | nindent 4 }}
+data:
+{{ tpl ((.Files.Glob "configs/haproxy.cfg").AsConfig) . | indent 2 }}
+{{- end }}
+{{- end }}

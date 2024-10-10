@@ -1,0 +1,104 @@
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "webmethods-mft-gateway.fullname.headless" . }}
+  annotations:
+    service.alpha.kubernetes.io/tolerate-unready-endpoints: "true"
+  labels:
+    {{- include "webmethods-mft-gateway.labels" . | nindent 4 }}
+spec:
+  # Headless Service: This is needed for statefulset hostnames like apiportal-0 to resolve
+  type: ClusterIP
+  clusterIP: None
+  sessionAffinity: None
+  # Create endpoints even if the related pod isn't ready
+  publishNotReadyAddresses: true
+  ports:
+    - name: isruntime
+      port: {{ .Values.containerPorts.isruntime }}
+      protocol: TCP
+    - port: {{ .Values.containerPorts.registrationPort }}
+      protocol: TCP
+      name: regport
+    - port: {{ add1 .Values.containerPorts.registrationPort }}
+      protocol: TCP
+      name: regport1
+  selector:
+    {{- include "webmethods-mft-gateway.selectorLabels" . | nindent 4 }}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "webmethods-mft-gateway.isRuntimeFullname" . }}
+  labels:
+    {{- include "webmethods-mft-gateway.labels" . | nindent 4 }}
+  {{- with .Values.service.isruntime.annotations }}
+  annotations:
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
+spec:
+  type: {{ .Values.service.isruntime.type }}
+  ports:
+    - port: {{ .Values.service.isruntime.port }}
+      protocol: TCP
+      name: isruntime
+      targetPort: isruntime
+  selector:
+    {{- include "webmethods-mft-gateway.selectorLabels" . | nindent 4 }}
+---
+{{- if .Values.listeners.httptransfer.enabled }}
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "webmethods-mft-gateway.httpTransferFullname" . }}
+  labels:
+    {{- include "webmethods-mft-gateway.labels" . | nindent 4 }}
+  {{- with .Values.service.listeners.httptransfer.annotations }}
+  annotations:
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
+spec:
+  type: {{ .Values.service.listeners.httptransfer.type }}
+  ports:
+    - port: {{ .Values.service.listeners.httptransfer.port | default .Values.listeners.httptransfer.port }}
+      protocol: TCP
+      name: httptransfer
+      {{- if .Values.transferproxy.enabled }}
+      targetPort: transferproxy
+      {{- else }}
+      targetPort: httplistener
+      {{- end }}
+  selector:
+    {{- include "webmethods-mft-gateway.selectorLabels" . | nindent 4 }}
+{{- end }}
+---
+{{- if or .Values.listeners.tcptransfer.ftps.enabled .Values.listeners.tcptransfer.sftp.enabled }}
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "webmethods-mft-gateway.tcpTransferFullname" . }}
+  labels:
+    {{- include "webmethods-mft-gateway.labels" . | nindent 4 }}
+  {{- with .Values.service.listeners.tcptransfer.annotations }}
+  annotations:
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
+spec:
+  type: {{ .Values.service.listeners.tcptransfer.type }}
+  ports:
+    {{- if .Values.listeners.tcptransfer.ftps.enabled }}
+    - port: {{ .Values.service.listeners.tcptransfer.ftps.port | default .Values.listeners.tcptransfer.ftps.port }}
+      protocol: TCP
+      name: ftps
+      targetPort: ftpslistener
+    {{- end }}
+    {{- if .Values.listeners.tcptransfer.sftp.enabled }}
+    - port: {{ .Values.service.listeners.tcptransfer.sftp.port | default .Values.listeners.tcptransfer.sftp.port }}
+      protocol: TCP
+      name: sftptransfer
+      targetPort: sftplistener
+    {{- end }}
+  selector:
+    {{- include "webmethods-mft-gateway.selectorLabels" . | nindent 4 }}
+{{- end }}
