@@ -74,27 +74,36 @@ spec:
             periodSeconds: 10
             successThreshold: 1
             timeoutSeconds: 1
-          {{- end }}
           startupProbe:
-            exec:
-              command:
-              - /bin/sh
-              - {{ .Values.sagHome }}/MWS/server/{{ .Values.instanceName }}/bin/container.sh
-              - healthcheck
+            tcpSocket:
+              port: {{ int .runtime }}
             failureThreshold: 90
             periodSeconds: 30
             successThreshold: 1
             timeoutSeconds: 30
-          readinessProbe:
-            exec:
-              command:
-              - /bin/sh
-              - {{ .Values.sagHome }}/MWS/server/{{ .Values.instanceName }}/bin/container.sh
-              - healthcheck
-            failureThreshold: 3
-            periodSeconds: 30
-            successThreshold: 1
-            timeoutSeconds: 30
+          {{- end }}
+          ## not sure why but the MWS script "container.sh healthcheck" returns an error even if the port is available and MWS seems to be started...
+          ## to be investigated... but in the meantime, update startup probe to use the port check instead
+          # startupProbe:
+          #   exec:
+          #     command:
+          #     - /bin/sh
+          #     - {{ .Values.sagHome }}/MWS/server/{{ .Values.instanceName }}/bin/container.sh
+          #     - healthcheck
+          #   failureThreshold: 90
+          #   periodSeconds: 30
+          #   successThreshold: 1
+          #   timeoutSeconds: 30
+          # readinessProbe:
+          #   exec:
+          #     command:
+          #     - /bin/sh
+          #     - {{ .Values.sagHome }}/MWS/server/{{ .Values.instanceName }}/bin/container.sh
+          #     - healthcheck
+          #   failureThreshold: 3
+          #   periodSeconds: 30
+          #   successThreshold: 1
+          #   timeoutSeconds: 30
           {{- with .Values.resources }}
           resources:
             {{- toYaml . | nindent 12 }}
