@@ -33,10 +33,10 @@ externaldb: {}
   #   key:
 
 # this is for the emptyDir provisionned for the local data folder at ${volumeBaseMount}/data
-localDataDirSize: 256Mi
+# localDataDirSize: 256Mi
 
+# this is the persistence volume for the data and logs
 persistence:
-  enabled: false
   # storageClassName: ""
   storageSize: 1Gi
 

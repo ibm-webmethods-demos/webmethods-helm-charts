@@ -12,7 +12,6 @@ spec:
     type: RollingUpdate
     rollingUpdate: 
       partition: 0
-  {{- if .Values.persistence.enabled }}
   volumeClaimTemplates:
   - metadata:
       name: {{ include "webmethods-mws.fullname" . }}
@@ -28,7 +27,6 @@ spec:
       resources:
         requests:
           storage: {{ .Values.persistence.storageSize }}
-  {{- end }}
   selector:
     matchLabels:
       {{- include "webmethods-mws.selectorLabels" . | nindent 6 }}
@@ -162,15 +160,16 @@ spec:
             {{- with .Values.env }}
             {{- toYaml . | nindent 12 }}
             {{- end }}
-          volumeMounts:            
-            - name: mws-localdata
+          volumeMounts:  
+            - name: {{ include "webmethods-mws.fullname" . }}
               mountPath: {{ .Values.volumeBaseMount }}/data
-              subPathExpr: $(NODE_NAME)
-            {{- if .Values.persistence.enabled }}
+              subPath: data
+            # - name: mws-localdata
+            #   mountPath: {{ .Values.volumeBaseMount }}/data
+            #   subPathExpr: $(NODE_NAME)
             - name: {{ include "webmethods-mws.fullname" . }}
               mountPath: {{ .Values.volumeBaseMount }}/logs
               subPath: logs
-            {{- end }}
             {{- if .Values.configMaps.apps }}
             - name: configs-apps
               mountPath: {{ .Values.volumeBaseMount }}/apps
@@ -192,9 +191,9 @@ spec:
               readOnly: true
             {{- end }}
       volumes:
-        - name: mws-localdata
-          emptyDir:
-            sizeLimit: {{ .Values.localDataDirSize }}
+        # - name: mws-localdata
+        #   emptyDir:
+        #     sizeLimit: {{ .Values.localDataDirSize }}
         {{- if .Values.configMaps.apps }}
         - name: configs-apps
           configMap:
