@@ -73,6 +73,16 @@ entries:
   webmethods-api-control-plane:
   - apiVersion: v2
     appVersion: 11.x
+    created: "2025-01-24T23:47:53.266119-05:00"
+    description: Chart for the webMethods API Control Plane with open telemetry enabled
+    digest: 865584865f817a8d11dc635a7b27f332f8ff0a37313687aa324d41df641cdabc
+    name: webmethods-api-control-plane
+    type: application
+    urls:
+    - webmethods-api-control-plane-0.0.4.tgz
+    version: 0.0.4
+  - apiVersion: v2
+    appVersion: 11.x
     created: "2024-09-27T17:09:32.426822-04:00"
     description: Chart for the webMethods API Control Plane with open telemetry enabled
     digest: 726ffdbb5f9fa39e956278e5bbf376aad9d74489f500bede79810dadca71ebe4
@@ -596,4 +606,4 @@ entries:
     urls:
     - webmethods-terracotta-0.1.11.tgz
     version: 0.1.11
-generated: "2024-09-30T11:31:34.572821-04:00"
+generated: "2025-01-24T23:47:53.265041-05:00"
