@@ -156,7 +156,14 @@ applications:
     connection:
       host: "external-elastic-host"
       port: "9200"
-      cert_path: ""
+      auth:
+        userName: elastic
+        passwordSecret:
+          name: ""
+          key: ""
+        certsSecret:
+          name: ""
+          key: ""
   es:
     name: elasticsearch
     # -- Elasticsearch image name

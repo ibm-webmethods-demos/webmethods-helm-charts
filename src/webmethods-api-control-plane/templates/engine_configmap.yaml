@@ -9,18 +9,22 @@ data:
   {{- if not .Values.applications.es_external.enabled }}
   SERVICE_ELASTICSEARCH_HOST: {{ .Values.applications.es.name }}-lb
   SERVICE_ELASTICSEARCH_PORT: "9200"
+  SERVICE_ELASTICSEARCH_USERNAME: ""
+  SERVICE_ELASTICSEARCH_PASSWORD: ""
   SERVICE_ELASTICSEARCH_CERTPATH: ""
   {{- else }}
   {{- with .Values.applications.es_external.connection }}
   SERVICE_ELASTICSEARCH_HOST: {{ .host }}
   SERVICE_ELASTICSEARCH_PORT:  {{ .port | quote }}
-  SERVICE_ELASTICSEARCH_CERTPATH:  {{ .cert_path }}
+  {{- if .auth.certsSecret.name }}
+  SERVICE_ELASTICSEARCH_CERTPATH: "/mnt/certs/{{ .auth.certsSecret.key }}"
   {{- end }}
   {{- end }}
-  OTEL_JAVAAGENT_ENABLED: "true"
+  {{- end }}
+  OTEL_JAVAAGENT_ENABLED: "{{ .Values.applications.jaegertracing.enabled }}"
   {{- if .Values.applications.jaegertracing.enabled }}
   OTEL_METRICS_EXPORTER: "none"
-  JAVA_OPTS: "-Dotel.exporter.otlp.endpoint=http://{{ include "webmethods-api-control-plane.fullname" . }}-{{ .Values.applications.jaegertracing.name }}:{{ .Values.applications.jaegertracing.port }} -Dotel.resource.attributes=service.name={{ .Values.applications.engine.name }}"
+  JAVA_OPTS: "-Dotel.exporter.otlp.endpoint=http://{{ include "webmethods-api-control-plane.name-jaegertracing" . }}:{{ .Values.applications.jaegertracing.port }} -Dotel.resource.attributes=service.name={{ .Values.applications.engine.name }}"
   LOGGING_LEVEL_COM_SOFTWAREAG_CONTROLPLANE: "{{ .Values.applications.engine.logLevel }}"
   {{- end }}
 ---

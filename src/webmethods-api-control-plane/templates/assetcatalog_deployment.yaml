@@ -37,6 +37,18 @@ spec:
         envFrom:
         - configMapRef:
             name: {{ include "webmethods-api-control-plane.name-assetcatalog" . }}
+        env:
+        {{- if .Values.applications.es_external.enabled }}
+        {{- with .Values.applications.es_external.connection.auth }}
+        - name: SERVICE_ELASTICSEARCH_USERNAME
+          value: {{ .userName }}
+        - name: SERVICE_ELASTICSEARCH_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: {{ .passwordSecret.name }}
+              key: {{ .passwordSecret.key }}
+        {{- end }}
+        {{- end }}
         imagePullPolicy: Always
         securityContext:
           {{- toYaml .Values.applications.assetcatalog.containerSecurityContext | nindent 10 }}
@@ -70,7 +82,22 @@ spec:
           successThreshold: 1
           failureThreshold: 3
           timeoutSeconds: 5
+        volumeMounts:
+          {{- with .Values.applications.es_external }}
+          {{- if and .enabled .connection.auth.certsSecret.name }}
+          - name: es-certs
+            mountPath: /mnt/certs
+            readOnly: true
+          {{- end }}
+          {{- end }}
+      volumes:
+        {{- with .Values.applications.es_external }}
+        {{- if and .enabled .connection.auth.certsSecret.name }}
+        - name: es-certs
+          secret:
+            secretName: {{ .connection.auth.certsSecret.name }}
+        {{- end }}
+        {{- end }}
       terminationGracePeriodSeconds: 30
       imagePullSecrets:
         - name: {{ .Values.imagePullSecretName }}
----

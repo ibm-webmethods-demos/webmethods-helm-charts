@@ -2,12 +2,12 @@
 apiVersion: apps/v1
 kind: StatefulSet
 metadata:
-  name: {{ include "webmethods-api-control-plane.name-es" . }}
+  name: {{ include "webmethods-api-control-plane.name-elastic" . }}
   labels:
     {{- include "webmethods-api-control-plane.labels" . | nindent 4 }}
     app: {{ .Values.applications.es.name }}
 spec:
-  serviceName: {{ include "webmethods-api-control-plane.name-es" . }}-headless
+  serviceName: {{ include "webmethods-api-control-plane.name-elastic" . }}-headless
   podManagementPolicy: Parallel
   replicas: {{ .Values.applications.es.replicas }}
   selector:
@@ -67,7 +67,7 @@ spec:
         imagePullPolicy: "IfNotPresent"
         envFrom:
         - configMapRef:
-            name: {{ include "webmethods-api-control-plane.name-es" . }}
+            name: {{ include "webmethods-api-control-plane.name-elastic" . }}
         env:
         - name: node.name
           valueFrom:

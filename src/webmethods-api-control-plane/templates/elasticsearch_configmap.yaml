@@ -2,7 +2,7 @@
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: {{ include "webmethods-api-control-plane.name-es" . }}
+  name: {{ include "webmethods-api-control-plane.name-elastic" . }}
   labels:
     {{- include "webmethods-api-control-plane.labels" . | nindent 4 }}
 data:

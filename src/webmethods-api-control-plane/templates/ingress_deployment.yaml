@@ -37,6 +37,18 @@ spec:
         envFrom:
         - configMapRef:
             name: {{ include "webmethods-api-control-plane.name-ingress" . }}
+        env:
+        {{- if .Values.applications.es_external.enabled }}
+        {{- with .Values.applications.es_external.connection.auth }}
+        - name: SERVICE_ELASTICSEARCH_USERNAME
+          value: {{ .userName }}
+        - name: SERVICE_ELASTICSEARCH_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: {{ .passwordSecret.name }}
+              key: {{ .passwordSecret.key }}
+        {{- end }}
+        {{- end }}
         imagePullPolicy: Always
         securityContext:
           {{- toYaml .Values.applications.ingress.containerSecurityContext | nindent 10 }}
@@ -80,12 +92,13 @@ spec:
           successThreshold: 1
           failureThreshold: 3
           timeoutSeconds: 5
-        volumeMounts:  
-          {{- if .Values.licenseSecret }}
-          - name: cp-license
-            mountPath: /home/license/licenseKey.xml
-            subPath: {{ .Values.licenseSecret.path }}
-            readOnly: false
+        volumeMounts:
+          {{- with .Values.applications.es_external }}
+          {{- if and .enabled .connection.auth.certsSecret.name }}
+          - name: es-certs
+            mountPath: /mnt/certs
+            readOnly: true
+          {{- end }}
           {{- end }}
 #  should be enabled if the certificate from host system is being mounted
 #        volumeMounts:
@@ -95,13 +108,12 @@ spec:
       imagePullSecrets:
         - name: {{ .Values.imagePullSecretName }}
       volumes:
-        {{- with .Values.licenseSecret }}
-        - name: cp-license
+        {{- with .Values.applications.es_external }}
+        {{- if and .enabled .connection.auth.certsSecret.name }}
+        - name: es-certs
           secret:
-            secretName: {{ .name }}
-            items:
-            - key: {{ .key }}
-              path: {{ .path }}
+            secretName: {{ .connection.auth.certsSecret.name }}
+        {{- end }}
         {{- end }}
 #      should be enabled if the certificate from host system is being mounted
 #      volumes:

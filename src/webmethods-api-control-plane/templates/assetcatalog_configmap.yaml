@@ -8,12 +8,16 @@ data:
   {{- if not .Values.applications.es_external.enabled }}
   SERVICE_ELASTICSEARCH_HOST: {{ .Values.applications.es.name }}-lb
   SERVICE_ELASTICSEARCH_PORT: "9200"
+  SERVICE_ELASTICSEARCH_USERNAME: ""
+  SERVICE_ELASTICSEARCH_PASSWORD: ""
   SERVICE_ELASTICSEARCH_CERTPATH: ""
   {{- else }}
   {{- with .Values.applications.es_external.connection }}
   SERVICE_ELASTICSEARCH_HOST: {{ .host }}
   SERVICE_ELASTICSEARCH_PORT:  {{ .port | quote }}
-  SERVICE_ELASTICSEARCH_CERTPATH:  {{ .cert_path }}
+  {{- if .auth.certsSecret.name }}
+  SERVICE_ELASTICSEARCH_CERTPATH: "/mnt/certs/{{ .auth.certsSecret.key }}"
+  {{- end }}
   {{- end }}
   {{- end }}
   OTEL_JAVAAGENT_ENABLED: "{{ .Values.applications.jaegertracing.enabled }}"
