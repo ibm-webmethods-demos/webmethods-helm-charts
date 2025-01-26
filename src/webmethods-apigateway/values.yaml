@@ -2,9 +2,6 @@
 # This is a YAML-formatted file.
 # Declare variables to be passed into your templates.
 
-## tenant id for the gateway
-integrationServerInstanceName: default
-
 ## number of replicas if autoscaling is not enabled
 replicaCount: 1
 
@@ -18,10 +15,10 @@ autoscaling:
 
 ## SAGGS image
 image:
-  registry: ghcr.io/sag-gov-integration-unit
-  repository: webmethods-apigateway
+  registry: cp.icr.io
+  repository: cp/webmethods/api/api-gateway
   pullPolicy: IfNotPresent
-  tag: 10.15-latest
+  tag: "11.1"
 
 ## image pull secrets
 imagePullSecrets: []
@@ -80,7 +77,7 @@ containerPorts:
 ## connectivity to external elastic search
 connectElasticSearch:
   enabled: false
-  configsExistingSecrets: []
+  configsExistingSecrets: {}
     # apigw_elasticsearch_http_password:
     #   secretName:
     #   secretKey:  
@@ -89,7 +86,6 @@ connectElasticSearch:
       elasticsearch:
         tenantId: apigateway
         hosts: elasticserver:9200
-        autostart: false
         http:
           username: elastic
           keepAlive: true
@@ -111,7 +107,7 @@ connectElasticSearch:
 
 connectAnalyticsDataStore:
   enabled: false
-  configsExistingSecrets: []
+  configsExistingSecrets: {}
     # apigw_analyticsdatastore_http_password:
     #   secretName:
     #   secretKey:
@@ -120,7 +116,6 @@ connectAnalyticsDataStore:
       analyticsdatastore:
         tenantId: apigateway
         hosts: elasticserver:9200
-        autostart: false
         http:
           username: elastic
           keepAlive: true
@@ -192,19 +187,8 @@ waitforelastic:
   image:
     registry: 
     repository: curlimages/curl
-    tag: "7.81.0"
+    tag: latest
     pullPolicy: IfNotPresent
-
-# the licensing needed for the product
-licenseSecret: {}
-  # name: ""
-  # key: ""
-  # path: ""
-
-licenseTerracottaSecret: {}
-  # name: ""
-  # key: ""
-  # path: ""
 
 ingress:
   gwruntime:

@@ -185,10 +185,6 @@ spec:
             - name: IS_CLUSTER_TSAURLS
               value: "{{ (.terracotta).url }}"
             {{- end }}
-            {{- if (.terracotta).licenseFileName }}
-            - name: IS_CLUSTER_TERRACOTTALICENSE_FILEPATH
-              value: "/opt/softwareag/common/conf/{{ (.terracotta).licenseFileName }}"
-            {{- end }}
             {{- end }}
             {{- end }}
             {{- if .Values.connectElasticSearch.enabled }}
@@ -220,24 +216,12 @@ spec:
             {{- end }}
           volumeMounts:
             - name: configs-volume
-              mountPath: /opt/softwareag/IntegrationServer/instances/{{ .Values.integrationServerInstanceName }}/packages/WmAPIGateway/resources/configuration
+              mountPath: /opt/softwareag/IntegrationServer/packages/WmAPIGateway/resources/configuration
             - name: custom-scripts
               mountPath: /opt/softwareag/custom
             - name: wm-derbydb-volume
-              mountPath: /opt/softwareag/IntegrationServer/instances/{{ .Values.integrationServerInstanceName }}/db
+              mountPath: /opt/softwareag/IntegrationServer/db
               subPath: wmderbydb
-            {{- if .Values.licenseSecret }}
-            - name: apigateway-license
-              mountPath: /opt/softwareag/IntegrationServer/instances/{{ .Values.integrationServerInstanceName }}/config/licenseKey.xml
-              subPath: {{ .Values.licenseSecret.path }}
-              readOnly: false
-            {{- end }}
-            {{- if .Values.licenseTerracottaSecret }}
-            - name: terracotta-license
-              mountPath: /opt/softwareag/common/conf/terracotta-license.key
-              subPath: {{ .Values.licenseTerracottaSecret.path }}
-              readOnly: false
-            {{- end }}
             {{- with .Values.extraVolumeMounts }}
             {{- tpl . $ | nindent 12 }}
             {{- end }}
@@ -251,22 +235,6 @@ spec:
         - name: wm-derbydb-volume
           emptyDir:
             sizeLimit: 5Gi
-        {{- with .Values.licenseSecret }}
-        - name: apigateway-license
-          secret:
-            secretName: {{ .name }}
-            items:
-            - key: {{ .key }}
-              path: {{ .path }}
-        {{- end }}
-        {{- with .Values.licenseTerracottaSecret }}
-        - name: terracotta-license
-          secret:
-            secretName: {{ .name }}
-            items:
-            - key: {{ .key }}
-              path: {{ .path }}
-        {{- end }}
         {{- with .Values.extraVolumes }}
         {{- tpl . $ | nindent 8 }}
         {{- end }}
