@@ -171,6 +171,7 @@ fullConfigs: {}
 waitforelastic:
   enabled: false
   uri: "http://es:9200"
+  status: green
   # username: ""
   # usernameSecret:
   #   # name: ""
