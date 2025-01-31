@@ -161,13 +161,17 @@ spec:
             - name: SPRING_PROFILES_ACTIVE
               value: "{{ .Values.settings.profile }}"
             {{- end }}
-            {{- if .Values.settings.javaMemMin }}
+            {{- if .Values.settings.javaMemMinMB }}
             - name: JAVA_MIN_MEM
-              value: "{{ .Values.settings.javaMemMin }}"
+              value: "{{ .Values.settings.javaMemMinMB }}m"
+            - name: JVM_INIT_MEMORY
+              value: "{{ .Values.settings.javaMemMinMB }}"
             {{- end }}
-            {{- if .Values.settings.javaMemMax }}
+            {{- if .Values.settings.javaMemMaxMB }}
             - name: JAVA_MAX_MEM
-              value: "{{ .Values.settings.javaMemMax }}"
+              value: "{{ .Values.settings.javaMemMaxMB }}m"
+            - name: JVM_MAX_MEMORY
+              value: "{{ .Values.settings.javaMemMaxMB }}"
             {{- end }}
             {{- if .Values.settings.javaOpts }}
             - name: JAVA_OPTS
@@ -179,6 +183,8 @@ spec:
             {{- end }}
             {{- if .Values.settings.elastic.uris }}
             - name: SPRING_ELASTICSEARCH_URIS
+              value: "{{ .Values.settings.elastic.uris }}"
+            - name: SPRING_ELASTICSEARCH_REST_URIS
               value: "{{ .Values.settings.elastic.uris }}"
             {{- end }}
             {{- if .Values.settings.elastic.usernameSecret }}

@@ -63,8 +63,8 @@ settings:
   tenant: default
   # profile: dev
   # loadbalancerUrl:
-  javaMemMin: 512m
-  javaMemMax: 512m
+  javaMemMinMB: 512
+  javaMemMaxMB: 512
   # javaOpts:
   envConfigs: {}
   envSecretConfigs: {}
