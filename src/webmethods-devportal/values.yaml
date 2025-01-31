@@ -4,11 +4,12 @@
 
 replicaCount: 1
 
+# from IBM webmethods registry
 image:
-  registry: ghcr.io/sag-gov-integration-unit
-  repository: webmethods-devportal
+  registry: cp.icr.io
+  repository: cp/webmethods/api/ibm-webmethods-developer-portal
   pullPolicy: IfNotPresent
-  tag: 10.11-latest
+  tag: "11.1"
 
 ## image pull secrets
 imagePullSecrets: []
@@ -38,6 +39,7 @@ licenseSecret: {}
 waitforelastic:
   enabled: false
   uri: "http://es:9200"
+  status: green
   # username: ""
   # usernameSecret:
     # name: ""
@@ -54,7 +56,7 @@ waitforelastic:
   image:
     registry: 
     repository: curlimages/curl
-    tag: "7.81.0"
+    tag: latest
     pullPolicy: IfNotPresent
 
 settings:

@@ -84,8 +84,8 @@ spec:
                   curl -XGET -s -k --fail ${BASIC_AUTH} ${ELASTIC_URI}${path}
               }
 
-              until http "/_cluster/health?wait_for_status=green&timeout=1s"; do
-                  echo "waiting for Elasticsearch..."
+              until http "/_cluster/health?wait_for_status={{ .Values.waitforelastic.status }}&timeout=1s"; do
+                  echo "waiting for Elasticsearch at ${ELASTIC_URI} to reach status {{ .Values.waitforelastic.status }}"
                   sleep 10;
               done
               echo ""
