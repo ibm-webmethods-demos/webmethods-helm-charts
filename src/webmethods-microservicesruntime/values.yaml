@@ -9,7 +9,7 @@ replicaCount: 1
 
 ## SAGGS image
 image:
-  registry: ghcr.io/sag-gov-integration-unit
+  registry: ghcr.io/ibm-webmethods-demos
   repository: webmethods-microservicesruntime
   pullPolicy: IfNotPresent
   tag: 10.15
