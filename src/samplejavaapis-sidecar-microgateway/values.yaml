@@ -5,7 +5,7 @@
 replicaCount: 1
 
 image:
-  registry: ghcr.io/sag-gov-integration-unit
+  registry: ghcr.io/ibm-webmethods-demos
   repository: webmethods-sample-apis-bookstore
   pullPolicy: IfNotPresent
   tag: dev-0.0.4
@@ -40,7 +40,7 @@ livenessProbe:
 microgateway:
   enabled: false
   image:
-    registry: ghcr.io/sag-gov-integration-unit
+    registry: ghcr.io/ibm-webmethods-demos
     repository: webmethods-microgateway
     pullPolicy: IfNotPresent
     tag: 10.11-latest

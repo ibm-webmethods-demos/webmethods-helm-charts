@@ -10,7 +10,7 @@ global:
 replicaCount: 1
 
 image:
-  registry: ghcr.io/sag-gov-integration-unit
+  registry: ghcr.io/ibm-webmethods-demos
   repository: webmethods-mftgateway
   pullPolicy: IfNotPresent
   tag: 10.15
@@ -95,7 +95,7 @@ icapAntivirus:
     runAsUser: 0
     runAsGroup: 0
   image:
-    registry: ghcr.io/sag-gov-integration-unit
+    registry: ghcr.io/ibm-webmethods-demos
     repository: icap-clamav
     pullPolicy: IfNotPresent
     tag: 1.0-latest

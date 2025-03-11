@@ -105,6 +105,8 @@ spec:
           image: {{ printf "%s:%s" .Values.image.repository (.Values.image.tag | default .Chart.AppVersion) }}
           {{- end }}
           imagePullPolicy: {{ .Values.image.pullPolicy }}
+          # this block allows us to load a custom script to start the container...
+          command: ["/bin/sh","/opt/softwareag/custom/entrypoint.sh"]
           {{- with .Values.containerPorts }}
           ports:
             - containerPort:  {{ int .http }}
@@ -229,6 +231,8 @@ spec:
             {{- toYaml . | nindent 12 }}
             {{- end }}
           volumeMounts:
+            - name: custom-scripts
+              mountPath: /opt/softwareag/custom
             {{- if .Values.licenseSecret }}
             - name: devportal-license
               mountPath: /opt/softwareag/licenseKey.xml
@@ -239,6 +243,9 @@ spec:
             {{- tpl . $ | nindent 12 }}
             {{- end }}
       volumes:
+      - name: custom-scripts
+        configMap:
+          name: {{ include "webmethods-devportal.fullname" . }}-customscripts
       {{- if .Values.licenseSecret }}
       - name: devportal-license
         secret:
