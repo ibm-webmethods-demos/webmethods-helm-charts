@@ -5,7 +5,7 @@ This is a public Helm charts repo to have all the webMethods product deployments
 ## Install the Chart Repo
 
 ```bash
-helm repo add webmethods-helm-charts https://sag-gov-integration-unit.github.io/webmethods-helm-charts
+helm repo add webmethods-helm-charts https://ibm-webmethods-demos.github.io/webmethods-helm-charts
 helm repo update
 ```
 
@@ -37,7 +37,7 @@ helm install webmethods-apigateway webmethods-helm-charts/webmethods-apigateway
 
 Having trouble with these charts? Please submit an issue, right here, on GitHub!
 
-Also, please refer to our blue-print sample deployments project at [webmethods-container-deployments](https://github.com/sag-gov-integration-unit/webmethods-container-deployments)
+Also, please refer to our blue-print sample deployments project at [webmethods-container-deployments](https://github.com/ibm-webmethods-demos/webmethods-container-deployments)
 
 For more information on the Software AG products:
  - You can Ask a Question in the [TECHcommunity Forums](http://tech.forums.softwareag.com).
