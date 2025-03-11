@@ -7,7 +7,7 @@ entries:
     description: Configure webmethods apigateway using simple environment variables
       - Configuration as Code for continuous-curl-runner.
     digest: 41729c3ff9ca360dcfae8d7f3e795163822948f32c81dd45cff9487abc2eb2e7
-    home: https://github.com/sag-gov-integration-unit/continuous-curl-runner
+    home: https://github.com/ibm-webmethods-demos/continuous-curl-runner
     keywords:
     - continuous-curl-runner
     - softwareag
@@ -21,7 +21,7 @@ entries:
       url: https://github.com/fabien-sanglier-saggs
     name: continuous-curl-runner
     sources:
-    - https://github.com/sag-gov-integration-unit/continuous-curl-runner
+    - https://github.com/ibm-webmethods-demos/continuous-curl-runner
     urls:
     - continuous-curl-runner-1.0.0.tgz
     version: 1.0.0
@@ -239,7 +239,7 @@ entries:
     description: Configure webmethods apigateway using simple environment variables
       - Configuration as Code for webmethods-apigateway-configurator.
     digest: efc963e984169195a06d04e43f9ac15da8df13b2763cf2637538fbf16386ecfa
-    home: https://github.com/sag-gov-integration-unit/webmethods-apigateway-configurator
+    home: https://github.com/ibm-webmethods-demos/webmethods-apigateway-configurator
     keywords:
     - webmethods-apigateway
     - softwareag
@@ -253,7 +253,7 @@ entries:
       url: https://github.com/fabien-sanglier-saggs
     name: webmethods-apigateway-configurator
     sources:
-    - https://github.com/sag-gov-integration-unit/webmethods-apigateway-configurator
+    - https://github.com/ibm-webmethods-demos/webmethods-apigateway-configurator
     urls:
     - webmethods-apigateway-configurator-1.0.0.tgz
     version: 1.0.0
@@ -264,7 +264,7 @@ entries:
     description: Configure supported databases for webmethods using the webmethods
       dbconfigurator component / coontainer
     digest: 91d566816a5e0026ac3673d62b63255bf7b560f81f565f5a40cd13908a9421d7
-    home: https://github.com/sag-gov-integration-unit/saggov-helm-charts/tree/main/src/webmethods-dbconfigurator
+    home: https://github.com/ibm-webmethods-demos/webmethods-helm-charts/tree/main/src/webmethods-dbconfigurator
     keywords:
     - webmethods
     - softwareag
@@ -278,7 +278,7 @@ entries:
       url: https://github.com/fabien-sanglier-saggs
     name: webmethods-dbconfigurator
     sources:
-    - https://github.com/sag-gov-integration-unit/saggov-helm-charts/tree/main/src/webmethods-dbconfigurator
+    - https://github.com/ibm-webmethods-demos/webmethods-helm-charts/tree/main/src/webmethods-dbconfigurator
     urls:
     - webmethods-dbconfigurator-1.0.2.tgz
     version: 1.0.2
@@ -288,7 +288,7 @@ entries:
     description: Configure supported databases for webmethods using the webmethods
       dbconfigurator component / coontainer
     digest: 3a9009a0d165abd5abdfa314069a9674cdd2970be8e3097298f5d604b223f639
-    home: https://github.com/sag-gov-integration-unit/saggov-helm-charts/tree/main/src/webmethods-dbconfigurator
+    home: https://github.com/ibm-webmethods-demos/webmethods-helm-charts/tree/main/src/webmethods-dbconfigurator
     keywords:
     - webmethods
     - softwareag
@@ -302,7 +302,7 @@ entries:
       url: https://github.com/fabien-sanglier-saggs
     name: webmethods-dbconfigurator
     sources:
-    - https://github.com/sag-gov-integration-unit/saggov-helm-charts/tree/main/src/webmethods-dbconfigurator
+    - https://github.com/ibm-webmethods-demos/webmethods-helm-charts/tree/main/src/webmethods-dbconfigurator
     urls:
     - webmethods-dbconfigurator-1.0.1.tgz
     version: 1.0.1
@@ -414,7 +414,7 @@ entries:
     description: Configure webmethods devportal using simple environment variables
       - Configuration as Code for webmethods-devportal-configurator.
     digest: 59f62f6f06f37d6545ac9bc72626fcf552d07941e24b93451bf49271dd6a4584
-    home: https://github.com/sag-gov-integration-unit/webmethods-devportal-configurator
+    home: https://github.com/ibm-webmethods-demos/webmethods-devportal-configurator
     keywords:
     - webmethods-devportal
     - softwareag
@@ -428,7 +428,7 @@ entries:
       url: https://github.com/fabien-sanglier-saggs
     name: webmethods-devportal-configurator
     sources:
-    - https://github.com/sag-gov-integration-unit/webmethods-devportal-configurator
+    - https://github.com/ibm-webmethods-demos/webmethods-devportal-configurator
     urls:
     - webmethods-devportal-configurator-1.0.0.tgz
     version: 1.0.0
