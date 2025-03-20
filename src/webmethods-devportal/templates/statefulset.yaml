@@ -106,7 +106,7 @@ spec:
           {{- end }}
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           # this block allows us to load a custom script to start the container...
-          command: ["/bin/sh","/opt/softwareag/custom/entrypoint.sh"]
+          # command: ["/bin/sh","/opt/softwareag/custom/entrypoint.sh"]
           {{- with .Values.containerPorts }}
           ports:
             - containerPort:  {{ int .http }}
