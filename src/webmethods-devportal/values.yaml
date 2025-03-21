@@ -20,14 +20,14 @@ fullnameOverride: ""
 service:
   type: ClusterIP
   portName: http
-  port: 8083
+  port: 8080
   targetPort: http
   annotations: {}
 
 ## ports exposed by the container
 containerPorts:
-  http: 8083
-  https: 8084
+  http: 8080
+  https: 8443
 
 # the licensing needed for the product
 licenseSecret: {}
