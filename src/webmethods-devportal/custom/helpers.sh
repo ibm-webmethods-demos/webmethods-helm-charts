@@ -20,6 +20,24 @@ function logger() {
         echo "[ $level ] - MSG: ${message}"
     fi
 }
+function join_by { local d=$1; shift; echo -n "$1"; shift; printf "%s" "${@/#/$d}"; }
+function comment_line_in_file { 
+    local pattern=$1;
+    local file=$2;
+    
+    logger $LOGGER_DEBUG "Begin comment_line_in_file[pattern=$pattern,file=$file]"
+
+    sed -i '/^[^#]/ s/\(^.*'$pattern'.*$\)/#\ \1/' $file
+}
+function replace_line { 
+    local pattern=$1;
+    local replacement=$2;
+    local file=$3;
+
+    logger $LOGGER_DEBUG "Begin replace_line[pattern=$pattern,replacement=$replacement,file=$file]"
+
+    sed -i '/'"$pattern"'/c\'"$replacement" $file
+}
 function replace_or_add_line { 
     local pattern=$1;
     local replacement=$2;

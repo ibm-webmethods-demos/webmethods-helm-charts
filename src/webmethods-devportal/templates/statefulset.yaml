@@ -106,7 +106,7 @@ spec:
           {{- end }}
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           # this block allows us to load a custom script to start the container...
-          # command: ["/bin/sh","/opt/softwareag/custom/entrypoint.sh"]
+          command: ["/opt/softwareag/custom/entrypoint.sh"]
           {{- with .Values.containerPorts }}
           ports:
             - containerPort:  {{ int .http }}
@@ -186,8 +186,6 @@ spec:
             {{- if .Values.settings.elastic.uris }}
             - name: SPRING_ELASTICSEARCH_URIS
               value: "{{ .Values.settings.elastic.uris }}"
-            - name: SPRING_ELASTICSEARCH_REST_URIS
-              value: "{{ .Values.settings.elastic.uris }}"
             {{- end }}
             {{- if .Values.settings.elastic.usernameSecret }}
             - name: SPRING_ELASTICSEARCH_USERNAME
@@ -246,6 +244,7 @@ spec:
       - name: custom-scripts
         configMap:
           name: {{ include "webmethods-devportal.fullname" . }}-customscripts
+          defaultMode: 0777
       {{- if .Values.licenseSecret }}
       - name: devportal-license
         secret:
