@@ -28,6 +28,17 @@ entries:
   samplejavaapis-sidecar-microgateway:
   - apiVersion: v2
     appVersion: 1.0.0
+    created: "2025-03-21T21:01:28.224144-04:00"
+    description: A Helm chart to demonstrate the deployment of some sample java apis
+      with SoftwareAG Microgateway loaded as a side-car container
+    digest: 78f0967412d005228b84382e974ae8cc402e555f881d6662679197757b1e9c97
+    name: samplejavaapis-sidecar-microgateway
+    type: application
+    urls:
+    - samplejavaapis-sidecar-microgateway-0.1.4.tgz
+    version: 0.1.4
+  - apiVersion: v2
+    appVersion: 1.0.0
     created: "2024-09-28T16:38:01.886813-04:00"
     description: A Helm chart to demonstrate the deployment of some sample java apis
       with SoftwareAG Microgateway loaded as a side-car container
@@ -626,4 +637,4 @@ entries:
     urls:
     - webmethods-terracotta-0.1.11.tgz
     version: 0.1.11
-generated: "2025-03-21T00:30:18.27294-04:00"
+generated: "2025-03-21T21:01:28.222365-04:00"
