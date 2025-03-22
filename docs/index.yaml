@@ -320,6 +320,16 @@ entries:
   webmethods-devportal:
   - apiVersion: v2
     appVersion: 11.x
+    created: "2025-03-21T22:16:35.953217-04:00"
+    description: A Helm chart for SoftwareAG webMethods Developer Portal in Kubernetes
+    digest: 141b32abb97e0de15ce2e079a5e60ee12c922867e1241d62f55d234f5bd04896
+    name: webmethods-devportal
+    type: application
+    urls:
+    - webmethods-devportal-1.0.2.tgz
+    version: 1.0.2
+  - apiVersion: v2
+    appVersion: 11.x
     created: "2025-03-21T00:30:18.273773-04:00"
     description: A Helm chart for SoftwareAG webMethods Developer Portal in Kubernetes
     digest: e7212843f5c323565cf94f904150099c76d8b5fb9c6ed06c6c0d4c612405d7ca
@@ -637,4 +647,4 @@ entries:
     urls:
     - webmethods-terracotta-0.1.11.tgz
     version: 0.1.11
-generated: "2025-03-21T21:01:28.222365-04:00"
+generated: "2025-03-21T22:16:35.952394-04:00"
