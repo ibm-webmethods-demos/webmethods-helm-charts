@@ -106,5 +106,4 @@ trap stop_server SIGTERM
 
 #start container
 logger $LOGGER_INFO "Start container with expected process..."
-/usr/local/bin/supervisord
-tail -f ${PROFILE_HOME}/logs/wrapper.log
+exec ${SAG_HOME}/common/bin/S01start.sh
