@@ -28,6 +28,7 @@ appPort: 7071
 appContextPath: ""
 appHealthCheckPath: ""
 appHealthCheckHeaders: []           
+appJavaOpts: "-Xms256m -Xmx256m"
 
 livenessProbe:
   successThreshold: 1

@@ -70,7 +70,11 @@ spec:
             {{- if .Values.appHealthCheckPath }}
             - name: app_healthcheck_path
               value: {{ .Values.appHealthCheckPath | quote }}
-            {{- end }} 
+            {{- end }}
+            {{- if .Values.appJavaOpts }}
+            - name: JAVA_OPTS
+              value: {{ .Values.appJavaOpts | quote }}
+            {{- end }}
             {{- with .Values.env }}
             {{- toYaml . | nindent 12 }}
             {{- end }}
