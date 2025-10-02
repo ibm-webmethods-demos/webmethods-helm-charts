@@ -1,12 +1,11 @@
 ---
 {{- if .Values.ingress.gwruntime -}}
 {{- if .Values.ingress.gwruntime.enabled -}}
+{{- $uname := (include "webmethods-apigateway.gwruntimeFullname" .) }}
+{{- $port := .Values.service.gwruntime.port }}
 {{- if .Values.ingress.gwruntime.backendSSL -}}
 {{- $uname := (include "webmethods-apigateway.gwruntimeFullname" .) }}-ssl
 {{- $port := .Values.service.gwruntimessl.port }}
-{{- else }}
-{{- $uname := (include "webmethods-apigateway.gwruntimeFullname" .) }}
-{{- $port := .Values.service.gwruntime.port }}
 {{- end }}
 apiVersion: networking.k8s.io/v1
 kind: Ingress
@@ -50,12 +49,11 @@ spec:
 ---
 {{- if .Values.ingress.gwui -}}
 {{- if .Values.ingress.gwui.enabled -}}
+{{- $uname := (include "webmethods-apigateway.gwuiFullname" .) }}
+{{- $port := .Values.service.gwui.port }}
 {{- if .Values.ingress.gwui.backendSSL -}}
 {{- $uname := (include "webmethods-apigateway.gwuiFullname" .) }}-ssl
 {{- $port := .Values.service.gwuissl.port }}
-{{- else }}
-{{- $uname := (include "webmethods-apigateway.gwuiFullname" .) }}
-{{- $port := .Values.service.gwui.port }}
 {{- end }}
 apiVersion: networking.k8s.io/v1
 kind: Ingress
@@ -99,12 +97,11 @@ spec:
 ---
 {{- if .Values.ingress.isruntime -}}
 {{- if .Values.ingress.isruntime.enabled -}}
+{{- $uname := (include "webmethods-apigateway.isruntimeFullname" .) }}
+{{- $port := .Values.service.isruntime.port }}
 {{- if .Values.ingress.isruntime.backendSSL -}}
 {{- $uname := (include "webmethods-apigateway.isruntimeFullname" .) }}-ssl
 {{- $port := .Values.service.isruntimessl.port }}
-{{- else }}
-{{- $uname := (include "webmethods-apigateway.isruntimeFullname" .) }}
-{{- $port := .Values.service.isruntime.port }}
 {{- end }}
 apiVersion: networking.k8s.io/v1
 kind: Ingress
