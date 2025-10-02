@@ -40,27 +40,32 @@ service:
     port: 5555
     targetPort: gwruntime
     annotations: {}
-  # gwruntimessl:
-  #   type: ClusterIP
-  #   port: 5543
-  #   targetPort: gwruntimessl
-  #   annotations: {}
+  gwruntimessl:
+    type: ClusterIP
+    port: 5543
+    targetPort: gwruntimessl
+    annotations: {}
   gwui:
     type: ClusterIP
     port: 9072
     targetPort: gwui
     annotations: {}
-  # gwuissl:
-  #   type: ClusterIP
-  #   port: 9073
-  #   targetPort: gwuissl
-  #   annotations: {}
+  gwuissl:
+    type: ClusterIP
+    port: 9073
+    targetPort: gwuissl
+    annotations: {}
   ## isruntime is generally the same as gwruntime
   ## But could be useful to set if it was set to a different port from the gw api runtime
   # isruntime:
   #   type: ClusterIP
   #   port: 6655
   #   targetPort: isruntime
+  #   annotations: {}
+  # isruntimessl:
+  #   type: ClusterIP
+  #   port: 6643
+  #   targetPort: isruntimessl
   #   annotations: {}
 
 ## ports exposed by the container
@@ -73,6 +78,7 @@ containerPorts:
   ## isruntime is generally the same as gwruntime
   ## But could be useful to set if it was set to a different port from the gw api runtime
   # isruntime: 5555
+  # isruntimessl: 5543
 
 ## connectivity to external elastic search
 connectElasticSearch:
@@ -194,6 +200,7 @@ waitforelastic:
 ingress:
   gwruntime:
     enabled: false
+    backendSSL: false
     annotations: {}
     host: webmethods-apigateway.local
     # tls:
@@ -211,6 +218,7 @@ ingress:
         pathType: Prefix
   gwui:
     enabled: false
+    backendSSL: false
     annotations: {}
     host: webmethods-apigateway.local
     # tls:
@@ -222,6 +230,7 @@ ingress:
         pathType: Prefix
   isruntime:
     enabled: false
+    backendSSL: false
     annotations: {}
     host: webmethods-apigateway-isruntime.local
     # tls:
