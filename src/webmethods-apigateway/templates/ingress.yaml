@@ -3,6 +3,7 @@
 {{- if .Values.ingress.gwruntime.enabled -}}
 {{- $backendUname := (include "webmethods-apigateway.gwruntimeFullname" .) }}
 {{- $backendPort := .Values.service.gwruntime.port }}
+apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
   name: {{ include "webmethods-apigateway.gwruntimeFullname" . }}
@@ -31,6 +32,94 @@ spec:
       http:
         paths:
           {{- range .Values.ingress.gwruntime.paths }}
+          - path: {{ .path | quote }}
+            pathType: {{ .pathType | quote }}
+            backend:
+              service:
+                name: {{ $backendUname }}
+                port:
+                  number: {{ $backendPort }}
+          {{- end }}
+{{- end }}
+{{- end }}
+---
+{{- if .Values.ingress.gwui -}}
+{{- if .Values.ingress.gwui.enabled -}}
+{{- $backendUname := (include "webmethods-apigateway.ingressBackendServiceGwui" .) }}
+{{- $backendPort := (include "webmethods-apigateway.ingressBackendPortGwui" .) }}
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: {{ include "webmethods-apigateway.gwuiFullname" . }}
+  labels:
+    {{- include "webmethods-apigateway.labels" . | nindent 4 }}
+  {{- with .Values.ingress.gwui.annotations }}
+  annotations:
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
+spec:
+  {{- if and .Values.ingress.gwui.className (semverCompare ">=1.18-0" .Capabilities.KubeVersion.GitVersion) }}
+  ingressClassName: {{ .Values.ingress.gwui.className }}
+  {{- end }}
+  {{- if .Values.ingress.gwui.tls }}
+  tls:
+    {{- range .Values.ingress.gwui.tls }}
+    - hosts:
+        {{- range .hosts }}
+        - {{ . | quote }}
+        {{- end }}
+      secretName: {{ .secretName }}
+    {{- end }}
+  {{- end }}
+  rules:
+    - host: {{ .Values.ingress.gwui.host | quote }}
+      http:
+        paths:
+          {{- range .Values.ingress.gwui.paths }}
+          - path: {{ .path | quote }}
+            pathType: {{ .pathType | quote }}
+            backend:
+              service:
+                name: {{ $backendUname }}
+                port:
+                  number: {{ $backendPort }}
+          {{- end }}
+{{- end }}
+{{- end }}
+---
+{{- if .Values.ingress.isruntime -}}
+{{- if .Values.ingress.isruntime.enabled -}}
+{{- $backendUname := (include "webmethods-apigateway.isruntimeFullname" .) }}
+{{- $backendPort := .Values.service.isruntime.port }}
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: {{ include "webmethods-apigateway.isruntimeFullname" . }}
+  labels:
+    {{- include "webmethods-apigateway.labels" . | nindent 4 }}
+  {{- with .Values.ingress.isruntime.annotations }}
+  annotations:
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
+spec:
+  {{- if and .Values.ingress.isruntime.className (semverCompare ">=1.18-0" .Capabilities.KubeVersion.GitVersion) }}
+  ingressClassName: {{ .Values.ingress.isruntime.className }}
+  {{- end }}
+  {{- if .Values.ingress.isruntime.tls }}
+  tls:
+    {{- range .Values.ingress.isruntime.tls }}
+    - hosts:
+        {{- range .hosts }}
+        - {{ . | quote }}
+        {{- end }}
+      secretName: {{ .secretName }}
+    {{- end }}
+  {{- end }}
+  rules:
+    - host: {{ .Values.ingress.isruntime.host | quote }}
+      http:
+        paths:
+          {{- range .Values.ingress.isruntime.paths }}
           - path: {{ .path | quote }}
             pathType: {{ .pathType | quote }}
             backend:
