@@ -38,7 +38,7 @@ spec:
             pathType: {{ .pathType | quote }}
             backend:
               service:
-              {{- if .Values.ingress.gwruntime.backendSSL -}}
+              {{- if $.Values.ingress.gwruntime.backendSSL -}}
                 name: {{ $unamessl }}
                 port:
                   number: {{ $portssl }}
@@ -90,7 +90,7 @@ spec:
             pathType: {{ .pathType | quote }}
             backend:
               service:
-              {{- if .Values.ingress.gwui.backendSSL -}}
+              {{- if $.Values.ingress.gwui.backendSSL -}}
                 name: {{ $unamessl }}
                 port:
                   number: {{ $portssl }}
@@ -142,7 +142,7 @@ spec:
             pathType: {{ .pathType | quote }}
             backend:
               service:
-              {{- if .Values.ingress.isruntime.backendSSL -}}
+              {{- if $.Values.ingress.isruntime.backendSSL -}}
                 name: {{ $unamessl }}
                 port:
                   number: {{ $portssl }}
