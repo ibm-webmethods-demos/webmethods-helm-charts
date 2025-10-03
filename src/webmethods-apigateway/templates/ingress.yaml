@@ -45,8 +45,8 @@ spec:
 ---
 {{- if .Values.ingress.gwui -}}
 {{- if .Values.ingress.gwui.enabled -}}
-{{- $backendUname := (include "webmethods-apigateway.gwuiFullname" .) }}
-{{- $backendPort := .Values.service.gwui.port }}
+{{- $backendUname := (include "webmethods-apigateway.gwuiFullname" .) -}}
+{{- $backendPort := (include "webmethods-apigateway.ingressBackendPortGwui" .) -}}
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
