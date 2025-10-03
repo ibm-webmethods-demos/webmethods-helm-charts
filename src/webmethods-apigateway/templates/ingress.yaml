@@ -109,7 +109,6 @@ spec:
 {{- $port := .Values.service.isruntime.port }}
 {{- $unamessl := (include "webmethods-apigateway.isruntimeFullname" .) }}-ssl
 {{- $portssl := .Values.service.isruntimessl.port }}
-{{- end }}
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
