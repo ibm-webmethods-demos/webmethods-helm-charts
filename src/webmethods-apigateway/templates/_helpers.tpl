@@ -125,14 +125,14 @@ the name of the gw-ui backend service for the ingress
 the gw-ui backend port for the ingress
 */}}
 {{- define "webmethods-apigateway.ingressBackendPortGwui" -}}
-{{- $port := .Values.service.gwui.port }}
-{{- $portssl := .Values.service.gwuissl.port }}
-{{- if .Values.ingress.gwui.backendSSL }}
-{{- printf "%s" $port }}
-{{- else }}
-{{- printf "%s" $portssl }}
-{{- end }}
-{{- end }}
+{{- $port := .Values.service.gwui.port -}}
+{{- $portssl := .Values.service.gwuissl.port -}}
+{{- if .Values.ingress.gwui.backendSSL -}}
+{{- printf "%s" $port -}}
+{{- else -}}
+{{- printf "%s" $portssl -}}
+{{- end -}}
+{{- end -}}
 
 {{/*
 Is Clustering enabled
