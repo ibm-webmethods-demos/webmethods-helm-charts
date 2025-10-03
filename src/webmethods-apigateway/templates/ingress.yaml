@@ -3,10 +3,8 @@
 {{- if .Values.ingress.gwruntime.enabled -}}
 {{- $uname := (include "webmethods-apigateway.gwruntimeFullname" .) }}
 {{- $port := .Values.service.gwruntime.port }}
-{{- if .Values.ingress.gwruntime.backendSSL -}}
-{{- $uname := (include "webmethods-apigateway.gwruntimeFullname" .) }}-ssl
-{{- $port := .Values.service.gwruntimessl.port }}
-{{- end }}
+{{- $unamessl := (include "webmethods-apigateway.gwruntimeFullname" .) }}-ssl
+{{- $portssl := .Values.service.gwruntimessl.port }}
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
@@ -40,9 +38,15 @@ spec:
             pathType: {{ .pathType | quote }}
             backend:
               service:
+              {{- if .Values.ingress.gwruntime.backendSSL -}}
+                name: {{ $unamessl }}
+                port:
+                  number: {{ $portssl }}
+              {{- else }}
                 name: {{ $uname }}
                 port:
                   number: {{ $port }}
+              {{- end }}
           {{- end }}
 {{- end }}
 {{- end }}
@@ -51,10 +55,8 @@ spec:
 {{- if .Values.ingress.gwui.enabled -}}
 {{- $uname := (include "webmethods-apigateway.gwuiFullname" .) }}
 {{- $port := .Values.service.gwui.port }}
-{{- if .Values.ingress.gwui.backendSSL -}}
-{{- $uname := (include "webmethods-apigateway.gwuiFullname" .) }}-ssl
-{{- $port := .Values.service.gwuissl.port }}
-{{- end }}
+{{- $unamessl := (include "webmethods-apigateway.gwuiFullname" .) }}-ssl
+{{- $portssl := .Values.service.gwuissl.port }}
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
@@ -88,9 +90,15 @@ spec:
             pathType: {{ .pathType | quote }}
             backend:
               service:
+              {{- if .Values.ingress.gwui.backendSSL -}}
+                name: {{ $unamessl }}
+                port:
+                  number: {{ $portssl }}
+              {{- else }}
                 name: {{ $uname }}
                 port:
                   number: {{ $port }}
+              {{- end }}
           {{- end }}
 {{- end }}
 {{- end }}
@@ -99,9 +107,8 @@ spec:
 {{- if .Values.ingress.isruntime.enabled -}}
 {{- $uname := (include "webmethods-apigateway.isruntimeFullname" .) }}
 {{- $port := .Values.service.isruntime.port }}
-{{- if .Values.ingress.isruntime.backendSSL -}}
-{{- $uname := (include "webmethods-apigateway.isruntimeFullname" .) }}-ssl
-{{- $port := .Values.service.isruntimessl.port }}
+{{- $unamessl := (include "webmethods-apigateway.isruntimeFullname" .) }}-ssl
+{{- $portssl := .Values.service.isruntimessl.port }}
 {{- end }}
 apiVersion: networking.k8s.io/v1
 kind: Ingress
@@ -136,9 +143,15 @@ spec:
             pathType: {{ .pathType | quote }}
             backend:
               service:
+              {{- if .Values.ingress.isruntime.backendSSL -}}
+                name: {{ $unamessl }}
+                port:
+                  number: {{ $portssl }}
+              {{- else }}
                 name: {{ $uname }}
                 port:
                   number: {{ $port }}
+              {{- end }}
           {{- end }}
 {{- end }}
 {{- end }}
