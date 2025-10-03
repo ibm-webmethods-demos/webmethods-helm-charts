@@ -1,14 +1,11 @@
 ---
 {{- if .Values.ingress.gwruntime -}}
 {{- if .Values.ingress.gwruntime.enabled -}}
-{{- $uname := (include "webmethods-apigateway.gwruntimeFullname" .) }}
-{{- $port := .Values.service.gwruntime.port }}
-{{- $unamessl := (include "webmethods-apigateway.gwruntimeFullname" .) }}-ssl
-{{- $portssl := .Values.service.gwruntimessl.port }}
-apiVersion: networking.k8s.io/v1
+{{- $backendUname := (include "webmethods-apigateway.gwruntimeFullname" .) }}
+{{- $backendPort := .Values.service.gwruntime.port }}
 kind: Ingress
 metadata:
-  name: {{ $uname }}
+  name: {{ include "webmethods-apigateway.gwruntimeFullname" . }}
   labels:
     {{- include "webmethods-apigateway.labels" . | nindent 4 }}
   {{- with .Values.ingress.gwruntime.annotations }}
@@ -38,29 +35,21 @@ spec:
             pathType: {{ .pathType | quote }}
             backend:
               service:
-              {{- if $.Values.ingress.gwruntime.backendSSL -}}
-                name: {{ $unamessl }}
+                name: {{ $backendUname }}
                 port:
-                  number: {{ $portssl }}
-              {{- else }}
-                name: {{ $uname }}
-                port:
-                  number: {{ $port }}
-              {{- end }}
+                  number: {{ $backendPort }}
           {{- end }}
 {{- end }}
 {{- end }}
 ---
 {{- if .Values.ingress.gwui -}}
 {{- if .Values.ingress.gwui.enabled -}}
-{{- $uname := (include "webmethods-apigateway.gwuiFullname" .) }}
-{{- $port := .Values.service.gwui.port }}
-{{- $unamessl := (include "webmethods-apigateway.gwuiFullname" .) }}-ssl
-{{- $portssl := .Values.service.gwuissl.port }}
+{{- $backendUname := (include "webmethods-apigateway.ingressBackendServiceGwui" .) }}
+{{- $backendPort := (include "webmethods-apigateway.ingressBackendPortGwui" .) }}
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
-  name: {{ $uname }}
+  name: {{ include "webmethods-apigateway.gwuiFullname" . }}
   labels:
     {{- include "webmethods-apigateway.labels" . | nindent 4 }}
   {{- with .Values.ingress.gwui.annotations }}
@@ -90,29 +79,21 @@ spec:
             pathType: {{ .pathType | quote }}
             backend:
               service:
-              {{- if $.Values.ingress.gwui.backendSSL -}}
-                name: {{ $unamessl }}
+                name: {{ $backendUname }}
                 port:
-                  number: {{ $portssl }}
-              {{- else }}
-                name: {{ $uname }}
-                port:
-                  number: {{ $port }}
-              {{- end }}
+                  number: {{ $backendPort }}
           {{- end }}
 {{- end }}
 {{- end }}
 ---
 {{- if .Values.ingress.isruntime -}}
 {{- if .Values.ingress.isruntime.enabled -}}
-{{- $uname := (include "webmethods-apigateway.isruntimeFullname" .) }}
-{{- $port := .Values.service.isruntime.port }}
-{{- $unamessl := (include "webmethods-apigateway.isruntimeFullname" .) }}-ssl
-{{- $portssl := .Values.service.isruntimessl.port }}
+{{- $backendUname := (include "webmethods-apigateway.isruntimeFullname" .) }}
+{{- $backendPort := .Values.service.isruntime.port }}
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
-  name: {{ $uname }}
+  name: {{ include "webmethods-apigateway.isruntimeFullname" . }}
   labels:
     {{- include "webmethods-apigateway.labels" . | nindent 4 }}
   {{- with .Values.ingress.isruntime.annotations }}
@@ -142,26 +123,19 @@ spec:
             pathType: {{ .pathType | quote }}
             backend:
               service:
-              {{- if $.Values.ingress.isruntime.backendSSL -}}
-                name: {{ $unamessl }}
+                name: {{ $backendUname }}
                 port:
-                  number: {{ $portssl }}
-              {{- else }}
-                name: {{ $uname }}
-                port:
-                  number: {{ $port }}
-              {{- end }}
+                  number: {{ $backendPort }}
           {{- end }}
 {{- end }}
 {{- end }}
 ---
 {{- if .Values.ingress.custom -}}
 {{- if .Values.ingress.custom.enabled -}}
-{{- $uname := (include "webmethods-apigateway.fullname" .) }}
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
-  name: {{ $uname }}
+  name: {{ include "webmethods-apigateway.fullname" . }}
   labels:
     {{- include "webmethods-devportal.labels" . | nindent 4 }}
   {{- with .Values.ingress.custom.annotations }}

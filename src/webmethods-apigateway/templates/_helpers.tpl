@@ -108,6 +108,32 @@ the name of the IS runtime service
 {{- printf "%s-%s" $uname "isruntime" }}
 {{- end }}
 
+
+{{/*
+the name of the gw-ui backend service for the ingress
+*/}}
+{{- define "webmethods-apigateway.ingressBackendServiceGwui" -}}
+{{- $uname := (include "webmethods-apigateway.gwuiFullname" .) }}
+{{- if .Values.ingress.gwui.backendSSL -}}
+{{- printf "%s-%s" $uname "ssl" }}
+{{- else }}
+{{- printf "%s" $uname }}
+{{- end }}
+{{- end }}
+
+{{/*
+the gw-ui backend port for the ingress
+*/}}
+{{- define "webmethods-apigateway.ingressBackendPortGwui" -}}
+{{- $port := .Values.service.gwui.port }}
+{{- $portssl := .Values.service.gwuissl.port }}
+{{- if .Values.ingress.gwui.backendSSL -}}
+{{- printf "%s" $port }}
+{{- else }}
+{{- printf "%s" $portssl }}
+{{- end }}
+{{- end }}
+
 {{/*
 Is Clustering enabled
 */}}
