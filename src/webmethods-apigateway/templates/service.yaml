@@ -94,4 +94,3 @@ spec:
   selector:
     {{- include "webmethods-apigateway.selectorLabels" . | nindent 4 }}
 {{- end }}
-...
