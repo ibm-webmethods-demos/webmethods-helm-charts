@@ -2,7 +2,7 @@
 {{- if .Values.ingress.gwruntime -}}
 {{- if .Values.ingress.gwruntime.enabled -}}
 {{- $backendUname := (include "webmethods-apigateway.gwruntimeFullname" .) }}
-{{- $backendPort := .Values.service.gwruntime.port }}
+{{- $backendPort := .Values.ingress.gwruntime.backendPort }}
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
@@ -46,7 +46,7 @@ spec:
 {{- if .Values.ingress.gwui -}}
 {{- if .Values.ingress.gwui.enabled -}}
 {{- $backendUname := (include "webmethods-apigateway.gwuiFullname" .) -}}
-{{- $backendPort := (include "webmethods-apigateway.ingressBackendPortGwui" .) -}}
+{{- $backendPort := .Values.ingress.gwui.backendPort }}
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
@@ -90,7 +90,7 @@ spec:
 {{- if .Values.ingress.isruntime -}}
 {{- if .Values.ingress.isruntime.enabled -}}
 {{- $backendUname := (include "webmethods-apigateway.isruntimeFullname" .) }}
-{{- $backendPort := .Values.service.isruntime.port }}
+{{- $backendPort := .Values.ingress.isruntime.backendPort }}
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:

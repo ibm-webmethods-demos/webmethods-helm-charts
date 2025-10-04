@@ -19,30 +19,14 @@ spec:
       {{- end }}
       protocol: TCP
       name: gwruntime
-  selector:
-    {{- include "webmethods-apigateway.selectorLabels" . | nindent 4 }}
-{{- end }}
----
-{{- if .Values.service.gwruntimessl }}
-apiVersion: v1
-kind: Service
-metadata:
-  name: {{ include "webmethods-apigateway.gwruntimeFullname" . }}-ssl
-  labels:
-    {{- include "webmethods-apigateway.labels" . | nindent 4 }}
-  {{- with .Values.service.gwruntimessl.annotations }}
-  annotations:
-    {{- toYaml . | nindent 4 }}
-  {{- end }}
-spec:
-  type: {{ .Values.service.gwruntimessl.type }}
-  ports:
-    - port: {{ .Values.service.gwruntimessl.port }}
-      {{- if .Values.service.gwruntimessl.targetPort }}
-      targetPort: {{ .Values.service.gwruntimessl.targetPort }}
+    {{- if .Values.service.gwruntime.portSsl }}
+    - port: {{ .Values.service.gwruntime.portSsl }}
+      {{- if .Values.service.gwruntime.targetPortSsl }}
+      targetPort: {{ .Values.service.gwruntime.targetPortSsl }}
       {{- end }}
       protocol: TCP
       name: gwruntimessl
+    {{- end }}
   selector:
     {{- include "webmethods-apigateway.selectorLabels" . | nindent 4 }}
 {{- end }}
@@ -67,30 +51,14 @@ spec:
       {{- end }}
       protocol: TCP
       name: gwui
-  selector:
-    {{- include "webmethods-apigateway.selectorLabels" . | nindent 4 }}
-{{- end }}
----
-{{- if .Values.service.gwuissl }}
-apiVersion: v1
-kind: Service
-metadata:
-  name: {{ include "webmethods-apigateway.gwuiFullname" . }}-ssl
-  labels:
-    {{- include "webmethods-apigateway.labels" . | nindent 4 }}
-  {{- with .Values.service.gwuissl.annotations }}
-  annotations:
-    {{- toYaml . | nindent 4 }}
-  {{- end }}
-spec:
-  type: {{ .Values.service.gwuissl.type }}
-  ports:
-    - port: {{ .Values.service.gwuissl.port }}
-      {{- if .Values.service.gwuissl.targetPort }}
-      targetPort: {{ .Values.service.gwuissl.targetPort }}
+    {{- if .Values.service.gwui.portSsl }}
+    - port: {{ .Values.service.gwui.portSsl }}
+      {{- if .Values.service.gwui.targetPortSsl }}
+      targetPort: {{ .Values.service.gwui.targetPortSsl }}
       {{- end }}
       protocol: TCP
       name: gwuissl
+    {{- end }}
   selector:
     {{- include "webmethods-apigateway.selectorLabels" . | nindent 4 }}
 {{- end }}
@@ -115,30 +83,15 @@ spec:
       {{- end }}
       protocol: TCP
       name: isruntime
-  selector:
-    {{- include "webmethods-apigateway.selectorLabels" . | nindent 4 }}
-{{- end }}
----
-{{- if .Values.service.isruntimessl }}
-apiVersion: v1
-kind: Service
-metadata:
-  name: {{ include "webmethods-apigateway.isruntimeFullname" . }}-ssl
-  labels:
-    {{- include "webmethods-apigateway.labels" . | nindent 4 }}
-  {{- with .Values.service.isruntimessl.annotations }}
-  annotations:
-    {{- toYaml . | nindent 4 }}
-  {{- end }}
-spec:
-  type: {{ .Values.service.isruntimessl.type }}
-  ports:
-    - port: {{ .Values.service.isruntimessl.port }}
-      {{- if .Values.service.isruntimessl.targetPort }}
-      targetPort: {{ .Values.service.isruntimessl.targetPort }}
+    {{- if .Values.service.isruntime.portSsl }}
+    - port: {{ .Values.service.isruntime.portSsl }}
+      {{- if .Values.service.isruntime.targetPortSsl }}
+      targetPort: {{ .Values.service.isruntime.targetPortSsl }}
       {{- end }}
       protocol: TCP
       name: isruntimessl
+    {{- end }}
   selector:
     {{- include "webmethods-apigateway.selectorLabels" . | nindent 4 }}
 {{- end }}
+...

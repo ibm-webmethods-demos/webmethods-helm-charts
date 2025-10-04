@@ -38,34 +38,25 @@ service:
   gwruntime:
     type: ClusterIP
     port: 5555
+    portSsl: 5543
     targetPort: gwruntime
-    annotations: {}
-  gwruntimessl:
-    type: ClusterIP
-    port: 5543
-    targetPort: gwruntimessl
+    targetPortSsl: gwruntimessl
     annotations: {}
   gwui:
     type: ClusterIP
     port: 9072
+    portSsl: 9073
     targetPort: gwui
-    annotations: {}
-  gwuissl:
-    type: ClusterIP
-    port: 9073
-    targetPort: gwuissl
+    targetPortSsl: gwuissl
     annotations: {}
   ## isruntime is generally the same as gwruntime
   ## But could be useful to set if it was set to a different port from the gw api runtime
   # isruntime:
   #   type: ClusterIP
-  #   port: 6655
+  #   port: 5555
+  #   portSsl: 5543
   #   targetPort: isruntime
-  #   annotations: {}
-  # isruntimessl:
-  #   type: ClusterIP
-  #   port: 6643
-  #   targetPort: isruntimessl
+  #   targetPortSsl: isruntimessl
   #   annotations: {}
 
 ## ports exposed by the container
@@ -200,9 +191,9 @@ waitforelastic:
 ingress:
   gwruntime:
     enabled: false
-    backendSSL: false
     annotations: {}
     host: webmethods-apigateway.local
+    backendPort: 5555
     # tls:
     #  - secretName: chart-example-tls
     #    hosts:
@@ -218,9 +209,9 @@ ingress:
         pathType: Prefix
   gwui:
     enabled: false
-    backendSSL: false
     annotations: {}
     host: webmethods-apigateway.local
+    backendPort: 9072
     # tls:
     #  - secretName: chart-example-tls
     #    hosts:
@@ -230,9 +221,9 @@ ingress:
         pathType: Prefix
   isruntime:
     enabled: false
-    backendSSL: false
     annotations: {}
     host: webmethods-apigateway-isruntime.local
+    backendPort: 5555
     # tls:
     #  - secretName: chart-example-tls
     #    hosts:
